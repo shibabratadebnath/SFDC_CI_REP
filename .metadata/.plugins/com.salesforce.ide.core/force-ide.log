@@ -93,3 +93,4 @@ ERROR [2014-09-10 15:45:26,393] (ProjectPackageList.java:generateComponents:481)
  WARN [2014-09-10 15:45:27,279] (ComponentFactory.java:getComponentByFilePath:622) - No id found for filepath 'applicationManifests/Salesforce_Services_Digital_Sales_Aid', tagging as component of type 'Unknown'
  WARN [2014-09-10 15:45:29,776] (ProjectPackageList.java:saveResources:1158) - Component list in project package 'Salesforce1 and Chatter Apps' is empty.  No resources to save.
  WARN [2014-09-10 15:45:29,928] (ProjectPackageList.java:saveResources:1158) - Component list in project package 'Salesforce Connected Apps' is empty.  No resources to save.
+ WARN [2014-09-10 15:50:45,413] (DefaultBuilder.java:applyDirtyMarkers:94) - TODO: apply 'Save locally only...' markers on each resource

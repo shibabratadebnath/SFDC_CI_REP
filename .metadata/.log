@@ -392,3 +392,7 @@ This warning can be switched off on the Team > Git > Confirmations and Warnings 
 !ENTRY com.salesforce.ide.core 2 0 2014-09-10 15:45:29.929
 !MESSAGE  WARN [2014-09-10 15:45:29,928] (ProjectPackageList.java:saveResources:1158) - Component list in project package 'Salesforce Connected Apps' is empty.  No resources to save.
 
+
+!ENTRY com.salesforce.ide.core 2 0 2014-09-10 15:50:45.414
+!MESSAGE  WARN [2014-09-10 15:50:45,413] (DefaultBuilder.java:applyDirtyMarkers:94) - TODO: apply 'Save locally only...' markers on each resource
+
