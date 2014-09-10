@@ -1,0 +1,10 @@
+<apex:page controller="Phase1_calc">
+    <h1>Calculator</h1>
+    <apex:form >
+        Enter 1st number:<apex:inputText value="{!num1}"/><br/>
+        Enter 2nd number:<apex:inputText value="{!num2}"/><br/>
+        <apex:commandButton value="Add" action="{!add}"/><br/>
+        <apex:commandButton value="Sub" action="{!sub}"/><br/>
+        Result: <apex:outputText value="{!result}"/>
+    </apex:form>
+</apex:page>

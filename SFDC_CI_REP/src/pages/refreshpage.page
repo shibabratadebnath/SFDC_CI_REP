@@ -1,0 +1,11 @@
+<apex:page standardcontroller="Account">
+<script type="text/javascript">
+function myfunc()
+{
+      window.parent.location=window.parent.location;
+ }     
+</script>
+<apex:form >
+<apex:commandButton value="Refresh" onclick="myfunc()"/>
+</apex:form>
+</apex:page>

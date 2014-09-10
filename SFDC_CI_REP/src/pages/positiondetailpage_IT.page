@@ -1,0 +1,165 @@
+<apex:page standardcontroller="Position__c"><apex:messages />
+	<apex:sectionheader title="{!$ObjectType.Position__c.label} Detail" subtitle="{!Position__c.name}"/>
+	<chatter:feedwithfollowers entityId="{!Position__c.Id}"/>
+	<apex:form >
+		<apex:pageblock mode="maindetail" title="{!$ObjectType.Position__c.label} Detail">
+			<apex:pageblockbuttons >
+				<apex:commandbutton value="Edit" action="{!Edit}"/>
+				<apex:commandbutton value="Delete" action="{!Delete}"/>
+				<!-- *************** Uncomment as needed LAYOUT PAGE :: http://WWW.CLERISOFT.COM (2008-2013) *************** -->
+					<!-- <apex:commandbutton value="Include Offline" action="{!URLFOR($Action.Position__c.IncludeOffline,Position__c.id)}"/> -->
+					<!-- <apex:commandbutton value="Clone" action="{!URLFOR($Action.Position__c.Clone,Position__c.id)}"/> -->
+					<!-- <apex:commandbutton value="Convert" action="{!URLFOR($Action.Position__c.Convert,Position__c.id)}"/> -->
+					<!-- <apex:commandbutton value="Find Duplicates" action="{!URLFOR($Action.Position__c.FindDup,Position__c.id)}"/> -->
+					<!-- <apex:commandbutton value="Request Update" action="{!URLFOR($Action.Position__c.RequestUpdate,Position__c.id)}"/> -->
+					<!-- <apex:commandbutton value="Advanced Setup" action="{!URLFOR($Action.Position__c.AdvancedSetup,Position__c.id)}"/> -->
+					<!-- <apex:commandbutton value="Manage Members" action="{!URLFOR($Action.Position__c.ManageMembers,Position__c.id)}"/> -->
+					<!-- <apex:commandbutton value="Close Case" action="{!URLFOR($Action.Position__c.CloseCase,Position__c.id)}"/> -->
+				<!-- *************** Uncomment as needed LAYOUT PAGE :: http://WWW.CLERISOFT.COM (2008-2013) *************** -->
+			</apex:pageblockbuttons>
+
+			<!-- ********** Output Panel for Record Type : IT Position **********  -->
+			<apex:outputpanel rendered="{!CASESAFEID(Position__c.RecordTypeId)='01290000000XQvUAAW'}">
+				<apex:pageblocksection title="Information" showheader="false" collapsible="false" columns="2">
+					<apex:outputfield value="{!Position__c.Name}"/>
+					<apex:pageblocksectionitem >
+						<apex:outputlabel value="Owner"/>
+							<apex:outputpanel >
+							<apex:outputfield value="{!Position__c.OwnerId}"/>
+							<apex:outputlink value="{!URLFOR($Action.Position__c.ChangeOwner,Position__c.id)}" rendered="{!NOT(ISNULL(Position__c.Id))}">[Change]</apex:outputlink>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+					<apex:pageblocksectionitem />
+					<apex:pageblocksectionitem />
+					<apex:outputfield value="{!Position__c.Status__c}"/>
+					<apex:outputfield value="{!Position__c.Open_Date__c}"/>
+					<apex:outputfield value="{!Position__c.Type__c}"/>
+					<apex:outputfield value="{!Position__c.Hire_By__c}"/>
+					<apex:outputfield value="{!Position__c.Functional_Area__c}"/>
+					<apex:outputfield value="{!Position__c.Close_Date__c}"/>
+					<apex:outputfield value="{!Position__c.Travel_Required__c}"/>
+					<apex:outputfield value="{!Position__c.Days_Open__c}"/>
+					<apex:pageblocksectionitem />
+					<apex:pageblocksectionitem />
+					<apex:outputfield value="{!Position__c.Hiring_Manager__c}"/>
+					<apex:outputfield value="{!Position__c.RecordTypeId}"/>
+					<apex:outputfield value="{!Position__c.Job_Level__c}"/>
+					<apex:pageblocksectionitem />
+					<apex:outputfield value="{!Position__c.Location__c}"/>
+					<apex:pageblocksectionitem />
+				</apex:pageblocksection>
+				<apex:pageblocksection title="System Information" showheader="false" collapsible="false" columns="2">
+					<apex:pageblocksectionitem >
+						<apex:outputlabel value="Created By"/>
+						<apex:outputpanel >
+							<apex:outputfield value="{!Position__c.CreatedById}"/>
+							<apex:outputfield value="{!Position__c.CreatedDate}"/>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+					<apex:pageblocksectionitem >
+						<apex:outputlabel value="Last Modified By"/>
+						<apex:outputpanel >
+							<apex:outputfield value="{!Position__c.LastModifiedById}"/>
+							<apex:outputfield value="{!Position__c.LastModifiedDate}"/>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+				</apex:pageblocksection>
+				<apex:pageblocksection title="Compensation" showheader="true" collapsible="true" columns="2">
+					<apex:outputfield value="{!Position__c.Min_Pay__c}"/>
+					<apex:outputfield value="{!Position__c.Max_Pay__c}"/>
+				</apex:pageblocksection>
+				<apex:pageblocksection title="Description" showheader="true" collapsible="true" columns="1">
+					<apex:outputfield value="{!Position__c.Job_Description__c}"/>
+					<apex:outputfield value="{!Position__c.Skills_Required__c}"/>
+					<apex:outputfield value="{!Position__c.Responsibilities__c}"/>
+					<apex:outputfield value="{!Position__c.Educational_Requirements__c}"/>
+				</apex:pageblocksection>
+				<apex:pageblocksection title="Required Programming Languages" showheader="true" collapsible="true" columns="2">
+					<apex:outputfield value="{!Position__c.Apex__c}"/>
+					<apex:outputfield value="{!Position__c.Java__c}"/>
+					<apex:outputfield value="{!Position__c.C__c}"/>
+					<apex:outputfield value="{!Position__c.JavaScript__c}"/>
+				</apex:pageblocksection>
+			</apex:outputpanel>
+
+			<!-- ********** Output Panel for Record Type : Standard Position **********  -->
+			<apex:outputpanel rendered="{!OR(ISNULL(Position__c.RecordTypeId),CASESAFEID(Position__c.RecordTypeId)='01290000000XQvFAAW')}">
+				<apex:pageblocksection title="Information" showheader="false" collapsible="false" columns="2">
+					<apex:outputfield value="{!Position__c.Name}"/>
+					<apex:pageblocksectionitem >
+						<apex:outputlabel value="Owner"/>
+							<apex:outputpanel >
+							<apex:outputfield value="{!Position__c.OwnerId}"/>
+							<apex:outputlink value="{!URLFOR($Action.Position__c.ChangeOwner,Position__c.id)}" rendered="{!NOT(ISNULL(Position__c.Id))}">[Change]</apex:outputlink>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+					<apex:pageblocksectionitem />
+					<apex:pageblocksectionitem />
+					<apex:outputfield value="{!Position__c.Status__c}"/>
+					<apex:outputfield value="{!Position__c.Open_Date__c}"/>
+					<apex:outputfield value="{!Position__c.Type__c}"/>
+					<apex:outputfield value="{!Position__c.Hire_By__c}"/>
+					<apex:outputfield value="{!Position__c.Functional_Area__c}"/>
+					<apex:outputfield value="{!Position__c.Close_Date__c}"/>
+					<apex:outputfield value="{!Position__c.Travel_Required__c}"/>
+					<apex:outputfield value="{!Position__c.Days_Open__c}"/>
+					<apex:pageblocksectionitem />
+					<apex:pageblocksectionitem />
+					<apex:outputfield value="{!Position__c.Hiring_Manager__c}"/>
+					<apex:outputfield value="{!Position__c.RecordTypeId}"/>
+					<apex:outputfield value="{!Position__c.Job_Level__c}"/>
+					<apex:pageblocksectionitem />
+					<apex:outputfield value="{!Position__c.Location__c}"/>
+					<apex:pageblocksectionitem />
+				</apex:pageblocksection>
+				<apex:pageblocksection title="System Information" showheader="false" collapsible="false" columns="2">
+					<apex:pageblocksectionitem >
+						<apex:outputlabel value="Created By"/>
+						<apex:outputpanel >
+							<apex:outputfield value="{!Position__c.CreatedById}"/>
+							<apex:outputfield value="{!Position__c.CreatedDate}"/>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+					<apex:pageblocksectionitem >
+						<apex:outputlabel value="Last Modified By"/>
+						<apex:outputpanel >
+							<apex:outputfield value="{!Position__c.LastModifiedById}"/>
+							<apex:outputfield value="{!Position__c.LastModifiedDate}"/>
+						</apex:outputpanel>
+					</apex:pageblocksectionitem>
+				</apex:pageblocksection>
+				<apex:pageblocksection title="Compensation" showheader="true" collapsible="true" columns="2">
+					<apex:outputfield value="{!Position__c.Min_Pay__c}"/>
+					<apex:outputfield value="{!Position__c.Max_Pay__c}"/>
+				</apex:pageblocksection>
+				<apex:pageblocksection title="Description" showheader="true" collapsible="true" columns="1">
+					<apex:outputfield value="{!Position__c.Job_Description__c}"/>
+					<apex:outputfield value="{!Position__c.Skills_Required__c}"/>
+					<apex:outputfield value="{!Position__c.Responsibilities__c}"/>
+					<apex:outputfield value="{!Position__c.Educational_Requirements__c}"/>
+				</apex:pageblocksection>
+			</apex:outputpanel>
+		</apex:pageblock>
+	</apex:form>
+
+	<!-- ********** Related Lists Output Panel for Record Type : IT Position **********  -->
+	<apex:outputpanel rendered="{!CASESAFEID(Position__c.RecordTypeId)='01290000000XQvUAAW'}">
+		<apex:relatedlist list="OpenActivities" title="Open Activities"/>
+		<apex:relatedlist list="ActivityHistories" title="Activity History"/>
+		<apex:relatedlist list="NotesAndAttachments" title="Notes & Attachments"/>
+		<apex:relatedlist list="Job_Applications__r" title="Job Applications"/>
+		<apex:relatedlist list="Job_Postings__r" title="Employment Websites"/>
+	</apex:outputpanel>
+
+	<!-- ********** Related Lists Output Panel for Record Type : Standard Position **********  -->
+	<apex:outputpanel rendered="{!OR(ISNULL(Position__c.RecordTypeId),CASESAFEID(Position__c.RecordTypeId)='01290000000XQvFAAW')}">
+		<apex:relatedlist list="OpenActivities" title="Open Activities"/>
+		<apex:relatedlist list="ActivityHistories" title="Activity History"/>
+		<apex:relatedlist list="NotesAndAttachments" title="Notes & Attachments"/>
+		<apex:relatedlist list="Job_Applications__r" title="Job Applications"/>
+		<apex:relatedlist list="Job_Postings__r" title="Employment Websites"/>
+	</apex:outputpanel>
+	<center><br/>
+		<i style="font-size:10px;color:#aaa;">Generated By LAYOUT PAGE <a href="http://www.clerisoft.com" target="_blank">[http://www.clerisoft.com]</a> (2008-2013) : Sat Mar 01 2014 11:07:32 GMT+0000 (GMT Standard Time)</i>
+	</center><br/>
+</apex:page>

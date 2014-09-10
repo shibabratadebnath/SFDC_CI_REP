@@ -1,0 +1,402 @@
+<apex:page standardController="CnP_PaaS_EVT__Event__c" extensions="CnP_PaaS_EVT.reportclass_2" standardStylesheets="false" sidebar="false" showHeader="false" action="{!loadhelpContent}" readOnly="true">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__ExtLibrary, 'bootstrap.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__ChartConfig, 'Pie.js')}"/> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+
+<!--<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap-responsive.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/main.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/grey.css"/>-->
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__jqplot, 'js/jquery-1.3.2.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/main.js')}"/> 
+<style>
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+
+#ext-gen1021{
+    height:300px;
+    
+}
+a.reportlink{
+    color: #06C;
+    cursor: pointer;
+    display: block;
+    margin-top: 7px;
+    text-decoration: none;
+    text-align:left;
+}
+a.levellink{
+    color: #06C;
+    cursor: pointer;
+    display: block;
+    margin-top: 3px;
+    text-decoration: none;
+    text-align:left;
+    }
+.stats{
+    font-weight:bold;
+    top:5px;
+    padding-left:40px;
+    position:relative;
+}
+.clr{
+
+   clear:both;
+}
+.jqplot-grid-canvas {
+    display:none;
+     
+
+}
+table.jqplot-table-legend {
+    position:relative;
+    float:right;
+
+}
+.chartbg{
+    /*box-shadow: 0 0.1px 3px rgba(0, 0, 0, 0.4); 
+     -moz-box-shadow: 0 0.1px 3px rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: 0 0.1px 3px rgba(0, 0, 0, 0.4);
+    border-radius:10px;
+     -moz-border-radius: 10px;
+    -webkit-border-radius: 10px; */
+    position:relative;
+
+}
+.ctitle{
+text-align:left;
+line-height:25px;
+font-weight:bold;
+font-size:14px;
+}
+</style>
+
+
+<apex:form >
+
+ <div id="content-header">
+    <h1><i class="icon icon-tasks"></i> Dashboard</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"><!-- <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a> -->
+    <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Event Dashboard'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Event Dashboard'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Event Dashboard'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Event Dashboard'].link}" target="_blank" >{!subTab['Active Events']['Event Dashboard'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Event Dashboard'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Event Dashboard'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Event Dashboard'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel> 
+    
+    
+    </div>
+  </div>
+    
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="current">Dashboard</a></div>
+
+<!--<apex:outputLabel value="Total" ></apex:outputLabel>-->
+<div id="frame-content" class="container-fluid">
+<apex:pageBlock >
+
+<apex:iframe src="{!pagename}" height="0"/>
+
+<div class="row-fluid">
+    <div class="span12">
+            <apex:messages id="errMsg"/>
+    <div >     
+      
+       <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Statistics</h5>
+          </div>
+          <div class="widget-content" style="text-align: center;">
+            
+                        <ul class="stat-boxes">
+                            <li class="popover-visits">
+                                <div class="left"><span>Registered</span></div>
+                                <div class="right">
+                                    <strong><apex:outputText value="{!totalattendee}"></apex:outputText></strong>                                    
+                                </div>
+                            </li>
+                            <li class="popover-users">
+                                <div class="left"><span>Revenue</span></div>
+                                <div class="right">
+                                    <strong><apex:outputText value="{0, number,$###,###,##0.00}">
+                                    <apex:param value="{!totalrevenue}"/></apex:outputText></strong>                                   
+                                </div>
+                            </li>
+                             <li class="popover-users">
+                                <div class="left"><span>Additional Revenue</span></div>
+                                <div class="right">
+                                    <strong><apex:outputText value="{0, number,$###,###,##0.00}">
+                                    <apex:param value="{!totalrevenuedump}"/></apex:outputText></strong>                                   
+                                </div>
+                            </li>
+                        </ul>
+                        
+       </div>
+       </div>
+        
+    </div>
+    
+    <div>
+    
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Reports</h5>
+          </div>
+          <div class="widget-content">
+
+            <ul>
+            <li>
+            <apex:outputLink value="/apex/Registrantpage_2" target="_self">Registrant Information
+           <!-- <apex:outputLabel value="Registrant Information" ></apex:outputLabel>-->
+            <apex:param name="id" value="{!id}" ></apex:param>
+            </apex:outputLink>
+            </li>
+            <li>
+            <apex:outputLink value="/apex/Eventattendee_2" target="_self">Attendee Information
+           <!-- <apex:outputLabel value="Attendee Information" ></apex:outputLabel>-->
+            <apex:param name="id" value="{!id}" ></apex:param>
+            </apex:outputLink>
+            </li>
+            <li>
+            <apex:outputLink value="/apex/Revreg_Event_2" target="_self">Revenue/Registration by date
+            <!--<apex:outputLabel value="Revenue/Registration by date"  ></apex:outputLabel>-->
+            <apex:param name="id" value="{!id}" assignTo="{!para}"></apex:param>
+            </apex:outputLink>
+            </li>
+            </ul>
+    
+        </div>
+        </div>
+        
+    </div>
+    <div class="clr"></div>
+
+<!--<apex:outputLabel value="Registration Level"></apex:outputLabel><br/>-->
+
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Charts / Reports</h5>
+            
+          </div>
+          <div class="widget-content">
+            
+            <div style="float: left; width: 40%; margin-right:30px;" >
+            <apex:pageblockTable value="{!ResultSet3}" var="reg" id="regtable" style="width:100%;">
+            <apex:column >
+            
+                <apex:pageblockTable value="{!reg.Name}" var="lel" styleClass="table table-bordered table-striped chartstable" style="width:100%;">
+                <apex:column headerValue="{!reg.Name}" headerClass="">
+                <!-- <apex:outputLabel value="{!reg.Name_on_reports__c}" id="regname" style="font-weight:bold;font-size:14px;"> </apex:outputLabel> -->
+                
+                        <ul class="stat-boxes">
+                            <li class="popover-visits">
+                                <div class="left"><span>Registered</span></div>
+                                <div class="right">
+                                    <strong><apex:outputText value="{0, number,###,###,##0}">
+                                    <apex:param value="{!reg.CnP_PaaS_EVT__Current_inventory__c}" id="inventory" />
+                                    </apex:outputText></strong>                                    
+                                </div>
+                            </li>
+                            <li class="popover-users">
+                                <div class="left"><span>Revenue</span></div>
+                                <div class="right">
+                                    <strong><apex:outputText value="{0, number,$###,###,##0.00}">
+                                    <apex:param value="{!reg.CnP_PaaS_EVT__Additional_Fee__c}" id="price"/>
+                                    </apex:outputText></strong>                                   
+                                </div>
+                            </li>
+                        </ul>
+                
+                
+                <!--<apex:outputLabel value="Registered: " style="font-weight:bold;display:inline;"></apex:outputLabel>
+                <apex:outputText value="{0, number,###,###,##0}">
+                <apex:param value="{!reg.CnP_PaaS_EVT__Current_inventory__c}" id="inventory" />
+                </apex:outputText><br/>
+                
+                <apex:outputlabel value="Revenue: " style="font-weight:bold;display:inline;"></apex:outputlabel>
+                <apex:outputText value="{0, number,$###,###,##0.00}">
+                <apex:param value="{!reg.CnP_PaaS_EVT__Additional_Fee__c}" id="price"/>
+                </apex:outputText>-->
+                <br/>            
+                <apex:outputlabel value="Reports: " style="font-weight:bold;"></apex:outputlabel>
+                <ul>
+                <li>
+                <apex:outputLink value="/apex/levelattendee_2"  target="_self">Attendee Information
+                <apex:param name="id" value="{!reg.Id}" assignTo="{!para}"></apex:param>
+                </apex:outputLink>
+                </li><li>
+                <apex:outputLink value="/apex/Revreg_level_2"  target="_self">Revenue/Registration by date
+                <apex:param name="id" value="{!reg.Id}" assignTo="{!para}"></apex:param>
+                </apex:outputLink>
+                </li>
+                </ul>
+                </apex:column>            
+                </apex:pageBlockTable>
+            </apex:column>
+            </apex:pageblockTable>
+         </div>
+            
+            <div style="float: left; width: 56%;" >
+             <div id="chart3"></div>
+             
+             <div id="chart2"></div>
+            </div>
+            
+            <div class="clearboth"></div>
+    
+         </div>
+        </div>
+
+    <apex:variable value="0" var="rowNum"/>
+    <apex:pageblockTable value="{!ResultSet2}" var="rs" styleClass="regtable" style="display:none">
+      <apex:column ><apex:outputLabel value="{!rs.CnP_PaaS_EVT__Name_on_reports__c}" styleClass="regname{!rowNum}"></apex:outputLabel></apex:column>
+      <apex:column ><apex:outputLabel value="{!rs.CnP_PaaS_EVT__Additional_Fee__c}" styleClass="regprice{!rowNum}"></apex:outputLabel></apex:column> 
+      <apex:column ><apex:outputLabel value="{!rs.CnP_PaaS_EVT__Current_inventory__c}" styleClass="regcount{!rowNum}"></apex:outputLabel></apex:column>   
+      <apex:column ><apex:outputLabel value="{!rs.CnP_PaaS_EVT__Report_Color__c}" styleClass="regcolor{!rowNum}"></apex:outputLabel></apex:column>           
+      <apex:column ><apex:variable var="rowNum" value="{!VALUE(rowNum) + 1}"/></apex:column>      
+    </apex:pageBlockTable>
+    
+    <input type="hidden" id="rev" name="rev"/>
+
+
+
+</div>
+</div><!-- row-fluid -->
+</apex:pageBlock>
+
+</div>
+</apex:form>
+<script>
+
+$(document).ready(function(){ 
+
+var i=0;
+              var data=[];
+              var data1=[]; 
+              var data_count=[]; 
+              var data_color=[];    
+              var size=$(".regtable tbody tr").length;
+             $(".regtable tbody tr").each(function(){       
+               var data1=[];
+               
+               var data2=[];               
+               var name = $(".regname"+i).text();              
+               var price = $(".regprice"+i).text();
+               var count = $(".regcount"+i).text();
+               var color = $(".regcolor"+i).text().trim(); 
+               data_color.push(color); 
+             
+             
+              data.push({name:name.replace('\n',''),data1:parseFloat(price.replace('\n',''))}); 
+          
+              
+
+              //if(count !=0){  
+               data_count.push({name:name.replace('\n',''),data1:parseInt(count.replace('\n',''))}); //  }       
+               i++;              
+
+ 
+      })
+
+              
+
+         Ext.require(['Ext.data.*']);              
+
+//Revenue Data
+    window.generateData = function(){ 
+    //alert(data);  
+    var data1 = data;
+   
+    return data1;
+    };
+//Attendee Data    
+    window.generateDataNegative = function(){
+         var data1 = data_count;   
+    window.piewidth = 550;
+    //alert(data1.length);
+ if (data1.length >= 0  && data1.length <= 9)
+    {
+    window.piepadd = 20;
+    window.pieheight=280;
+    }
+     if (data1.length >= 10  &&  data1.length <= 15)
+    {
+        window.piepadd = 50;
+        window.pieheight=420;
+    }
+    if (data1.length >= 16  &&  data1.length <= 20)
+    {
+    window.piepadd = 60;
+    window.pieheight= 600;
+    }
+     if (data1.length >= 21  &&  data1.length <= 25)
+    {
+    window.piepadd = 60;
+    window.pieheight= 750;
+    }
+    if (data1.length >= 25)
+    {
+    window.piepadd = 60;
+    window.pieheight= 900;
+    }
+         return data1 ;
+    };
+    window.store1 = Ext.create('Ext.data.JsonStore', {
+        fields: ['name', 'data1', 'data2', 'data3', 'data4', 'data5', 'data6', 'data7', 'data9'],
+        data: generateData()
+    });
+    window.storeNegatives = Ext.create('Ext.data.JsonStore', {
+        fields: ['name', 'data1', 'data2', 'data3', 'data4', 'data5', 'data6', 'data7', 'data9'],
+        data: generateDataNegative()
+
+    });  
+    window.colors = data_color;
+         });
+         
+ jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+
+ </script>       
+       
+       
+ <script>
+ $("#ext-sprite-1028").removeAttr("height");
+ 
+  $(svg).removeAttr("height");
+ 
+ </script>      
+       
+       
+
+
+</apex:page>

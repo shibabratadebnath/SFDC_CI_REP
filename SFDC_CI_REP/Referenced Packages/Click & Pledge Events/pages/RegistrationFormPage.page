@@ -1,0 +1,1882 @@
+<apex:page controller="CnP_PaaS_EVT.RegistrationForm_class" sidebar="false" showHeader="false" standardStylesheets="false" TabStyle="CnP_PaaS_EVT__Event__c" action="{!loadhelpContent}" >
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__JqueryUi, '/development-bundle/themes/base/jquery.ui.all.css')}"/>
+<script src="{!URLFOR($Resource.JqueryUi, '/development-bundle/jquery-1.5.1.js')}" />
+ 
+<script src="{!URLFOR($Resource.JqueryUi, '/development-bundle/ui/jquery.ui.core.js')}"/>
+<script src="{!URLFOR($Resource.JqueryUi, '/development-bundle/ui/jquery.ui.widget.js')}"/>
+<script src="{!URLFOR($Resource.JqueryUi, '/development-bundle/ui/jquery.ui.mouse.js')}"/>
+<script src="{!URLFOR($Resource.JqueryUi, '/development-bundle/ui/jquery.ui.sortable.js')}"/>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+ <apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/> 
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/website.css')}"/>
+
+
+<!--<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap-responsive.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/main.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/grey.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/website.css"/>-->
+
+<!--<apex:includeScript value="{!URLFOR($Resource.bootstrap,'admin/js/main.js')}"/>-->
+<style>
+.Required{
+color: #CC0000;
+}
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+
+
+</style>     
+<script type="text/javascript">
+
+
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+ function validate(){
+                     var EventName = $(".EventNameC").val();
+                     
+                     
+                   var g = $(".group").val();
+                                   
+                   var q = $(".qu").val();
+                
+                if($(".levelselect").length>0){
+                   if($('.levelselect input[type=checkbox]:checked').length == 0) {
+                     alert("Please select at least one check box.");
+                     $(".levelselect").focus();
+                            return false;
+                    }
+                 }
+                           
+                   if(EventName=='')
+                   {
+                   alert("Please Select Event");
+                   $(".EventNameC").focus();
+                       return false;
+                   }
+                   
+                   if(g=="Select")
+                   {
+                       alert("Please Select a Section or Create a New Section");
+                       $(".group").focus();
+                       return false;
+                   }
+                 
+                   var newsec=$(".newsection").val();
+                  
+                   if(newsec=="" )
+                   {
+                       alert("Please Enter a New Section Heading");
+                       $(".newsection").focus();
+                       return false;
+                       
+                   }
+                  
+                   var questionval =$(".question").val();
+                   if(questionval=="" || !questionval.indexOf(' ',0) )
+                   {
+                       alert("Please Enter The Question");
+                      $(".question").focus();
+                       return false;
+                   }
+                    if(questionval.length>80)
+                   {
+                       alert("Question size should be 80 characters");
+                      
+                       return false;
+                   }
+                   if(q=="")
+                   {
+                       alert("Please Select Answer type");
+                       $(".qu").focus();
+                       return false;
+                   }
+                   
+                   var question_type=$(".qu").val();
+                   
+                   if(question_type=="Radio button" || question_type=="Check box" || question_type=="Select list")
+                   {
+                       var question_value=$(".qu1").val();
+                       if(question_value=="" || question_value==" ")
+                       {
+                           alert("Please Enter Answer Options");
+                           $(".qu1").focus();
+                           return false;
+                       }
+                       if(question_value.length>255)
+                       {
+                       alert("Answer Options size should be 255 characters");
+                       $(".qu1").focus();
+                       return false;
+                       }
+                       
+                   }                   
+                    var req = $(".FieldInfo_FieldVlaues").is(':checked');
+                    var visible = $(".FieldInfo_visible").is(':checked');
+                    var def = $(".default1").val();
+                   
+                  if(visible==false)
+                  {
+                   if((req==true && visible==false && def=="") || !def.indexOf(' ',0) )
+                    {
+                          alert("Please Enter Default Value");
+                          $(".default1").focus();
+                          return false;
+                    }
+                    if((req==false && visible==false && def=="") || !def.indexOf(' ',0) )
+                    {
+                          alert("Please Enter Default Value");
+                          $(".default1").focus();
+                          return false;
+                    }
+                   } 
+                    if($(".checkallclass").is(':checked')){ 
+                 $('.checkallclass').attr('checked', false); 
+               }
+                 
+                                     
+ } 
+function LoadFunction(){
+
+    window.location.reload();
+}
+
+function reportdelete()
+{
+  if(confirm("Are you sure you want to permanently delete this record?")==true)
+  {
+    return true;
+  }
+}
+
+
+function CheckVisiblecustom(value)
+{ 
+  
+      if(value)
+      {         
+          $(".FieldInfo_visible").attr('checked',true);
+      }
+}
+function CheckRequiredcustom(value)
+{
+     if(!value)
+     {
+          $(".default").show();
+          $(".default1").show();
+          var def=$(".default1").val();
+          if(def=="")
+          {
+             alert("Enter Default Value!");
+             $(".default1").focus();
+             return false;
+          }
+     }
+     if(value)
+     {   
+        $(".default1").hide();      
+        $(".default").hide();
+     }
+}
+</script>
+<script>
+function LoadFunction(){
+
+window.location.reload();
+}
+
+ $(document).ready(function(){  
+                           
+  var rowvalue=$(".rowvalues").val();
+ 
+   for(var i=0;i<rowvalue;i++)
+      {
+             var mapped = $(".mapped"+i).val(); 
+            var req = $(".required"+i).is(':checked');
+            var visible = $(".visable"+i).is(':checked');
+            var def = $(".default"+i).val();
+        
+        
+        if(mapped!="Email" && mapped!="MailingCountry" && mapped!="Phone" && mapped!="MailingCity" && mapped!="MailingState" && mapped!="MailingPostalCode" && mapped!="MailingStreet")
+            {
+            if((req==true && visible==false && def=="") || !def.indexOf(' ',0))
+            {
+                   t=t+1;
+                  alert('Please Enter "Default Value"');
+                  $(".default"+i).focus();
+                  return false;
+            }
+            }
+            else
+            {
+              $(".default"+i).hide();
+            }
+            
+     
+      }   
+  })
+
+function CheckSaveData()
+{
+      
+      var rowvalue=$(".rowvalues").val();
+      var t=0;
+      var ename=$(".LookupEvent").val();
+      if(ename==""){
+      t=t+1;
+      alert("Please select an event.");
+      return false;
+      }
+      
+      for(var i=0;i<rowvalue;i++)
+      {
+            var label = $(".LabelName"+i).val();
+            var req = $(".required"+i).is(':checked');
+            var visible = $(".visable"+i).is(':checked');
+            var def = $(".default"+i).val();
+            var mapped = $(".mapped"+i).val();  
+           
+            var reg_text=/^([a-zA-Z0-9\'\,\.\-\ ])+$/;
+            var reg = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+            reg_dob = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+            var reg_num=/^([0-9\.\-\(\)\ ])+$/;
+            var reg_zip=/^([0-9\.\-\ ])+$/;
+       
+            if(mapped=="First Name" || mapped=="Last Name" || mapped=="Mailing Street" || mapped=="Other City" || mapped=="Lead Source" || mapped=="Mailing State/Province" || mapped=="Assistant's Name" || mapped=="Contact Description" || mapped=="Department" || mapped=="Mailing City" || mapped=="Other Country" || mapped=="Mailing Country" || mapped=="Other Province" || mapped=="Other State/Province" || mapped=="Other Street" || mapped=="Title" )
+            {
+               
+                if(!reg_text.test(def) && def!="")
+                {
+                      t=t+1;
+                      alert("Please Enter The Valid Data");
+                      $(".default"+i).focus();
+                      return false;
+                }
+            }
+            if(mapped=="Email")
+            {
+                 if(!reg.test(def) && def!="")
+                 {
+                     t=t+1;
+                     alert("Please Enter a valid Email");
+                     $(".default"+i).focus();
+                     return false;
+                 }
+            }
+            if(mapped=="Birthdate")
+            {               
+                if(!reg_dob.test(def) && def!="")
+                {
+                    t=t+1;
+                    alert("Please Enter Valid Birth Date");
+                    $(".default"+i).focus();
+                    return false;
+                }
+            }
+            if(mapped=="Mobile Phone" || mapped=="Asst. Phone" || mapped=="Business Phone" || mapped=="Home Phone")
+            {
+                if(!reg_num.test(def) && def!="")
+                {
+                    t=t+1;
+                    alert("Please Enter a valid mobile number");
+                    $(".default"+i).focus();
+                    return false;
+                }  
+            }
+            if(mapped=="Business Fax")
+            {
+                 if(!reg_num.test(def) && def!="")
+                {
+                    t=t+1;
+                    alert("Please Enter a valid fax number");
+                    $(".default"+i).focus();
+                    return false;
+                }    
+            }
+            if(mapped=="Mailing Zip/Postal Code" || mapped=="Other Zip/Postal Code" )
+            {
+             
+                if(!reg_zip.test(def) && def!="")
+                {
+                    t=t+1;
+                    alert("Please Enter a valid zip/postal code");
+                    $(".default"+i).focus();
+                    return false;
+                }        
+            }
+            reg_text=/^([a-zA-Z0-9\'\,\_\&\(\)\.\/\-\ ])+$/;
+            if(label=='' || !label.indexOf(' ',0))
+            {
+                 t=t+1;
+                alert("Please Enter The Field Label");
+                $(".LabelName"+i).focus();
+                return false;
+            }else if(!reg_text.test(label))
+            {
+                 t=t+1;
+                 alert("Please Enter a valid data");
+                 $(".LabelName"+i).focus();
+                 return false;
+            }
+            if(label.length>80)
+            { 
+                t=t+1;
+                alert("Field Label should be 80 characters");
+                $(".LabelName"+i).focus();
+                return false;
+             
+            }
+             
+            if(mapped!="Email" && mapped!="MailingCountry" && mapped!="Phone" && mapped!="MailingCity" && mapped!="MailingState" && mapped!="MailingPostalCode" && mapped!="MailingStreet")
+            {
+            if((req==true && visible==false && def=="") || !def.indexOf(' ',0))
+            {
+                   t=t+1;
+                  alert('Please Enter "Default Value"');
+                  $(".default"+i).focus();
+                  return false;
+            }
+            }
+            else
+            {
+              $(".default"+i).hide();
+            }
+            
+             var order = $(".orderno"+i).val();
+             
+             for(var j=i+1;j<rowvalue;j++)
+            {
+                var mapped_dup = $(".mapped"+j).val();
+                var label_dup = $(".LabelName"+j).val();
+                var order_dup = $(".orderno"+j).val();
+                
+                if(mapped == mapped_dup)
+                {
+                     alert("Error:  Duplicate field mapping! Field Labels: " + label  + ',' + label_dup);
+                     $(".mapped"+j).focus();
+                     return false;
+                } 
+                if(parseInt(order)==parseInt(order_dup))
+                {
+                     alert("Error:  Duplicate field order! Field Labels: " + label  + ',' + label_dup);
+                     $(".orderno"+j).focus();
+                     return false;
+                }
+            }         
+             
+      } 
+      if(t==0)
+      {
+           return true;
+      }else{
+           return false;
+      }     
+}
+
+function CheckVisible(value,no)
+{
+  
+      if(value)
+      {
+         
+          $(".visable"+no).attr('checked',true);
+          
+      }
+}
+function popup(message) {
+    
+    //alert(message);
+    // get the screen height and width  
+    var maskHeight = $(document).height();  
+    var maskWidth = $(window).width();
+    
+    // calculate the values for center alignment
+    var dialogTop =  (maskHeight/3) - ($('#dialog-box').height());  
+    var dialogLeft = (maskWidth/2) - ($('#dialog-box').width()/2); 
+    if(message != "")
+    {
+
+    $('#dialog-overlay').css({height:maskHeight, width:'100%'}).show();
+    $('#dialog-box').css({top:'100px'}).show();
+    
+   
+    $('body,html').animate({ scrollTop: 0 }, 0);
+  
+   
+       $('#dialog-message').html(message);
+    }
+   if(message == "")
+    {
+         
+    $('#dialog-overlay').css({height:maskHeight, width:'100%'}).show();
+    $('#dialog-box').css({top:'100px'}).show();
+    
+    // $('#dialog-overlay').css({height:maskHeight, width:maskWidth}).show();
+   // $('#dialog-box').css({top:dialogTop, left:dialogLeft}).show();
+
+    $('body,html').animate({ scrollTop: 0 }, 0);
+    // display the message
+   
+    $('#dialog-message').html('Sorry! No Description');
+         
+         
+    }
+            
+} 
+function CheckRequired(value,no)
+{
+ 
+    var mapped = $(".mapped"+no).val(); 
+    
+  
+   if(mapped!="Email" && mapped!="MailingCountry" && mapped!="Phone" && mapped!="MailingCity" && mapped!="MailingState" && mapped!="MailingPostalCode" && mapped!="MailingStreet")
+    {
+     if(!value)
+     {
+       
+       $(".default"+no).show();
+         var def=$(".default"+no).val();
+          if(def=="")
+          {
+             alert('Please Enter "Default Value"');
+             $(".default"+no).focus();
+             return false;
+          }
+          
+     }
+     if(value)
+     {
+        
+        $(".default"+no).hide();
+     }
+     }
+     
+     if(mapped=="Email" || mapped=="MailingCountry" || mapped=="Phone" || mapped=="MailingCity" || mapped=="MailingState" || mapped=="MailingPostalCode" || mapped=="MailingStreet")
+     {
+       var req = $(".required"+no).is(':checked');
+       var visible = $(".visable"+no).is(':checked');
+      
+      if(req==true && visible==false)
+      {
+        alert("Invisible is not possible when the field is required");
+        $(".visable"+no).attr('checked',true);
+        return false;
+        
+      }
+      
+    } 
+     
+     
+     
+}
+
+function CheckRequiredlevel(value,no)
+{
+    var mapped = $(".mapped"+no).val(); 
+     
+   
+   if(mapped!="Email" && mapped!="MailingCountry" && mapped!="Phone" && mapped!="MailingCity" && mapped!="MailingState" && mapped!="MailingPostalCode" && mapped!="MailingStreet")
+    {
+    
+     if(!value)
+     {
+       
+       $(".default"+no).show();
+         var def=$(".default"+no).val();
+          if(def=="")
+          {
+             alert('Please Enter "Default Value"');
+             $(".default"+no).focus();
+             return false;
+          }
+          
+     }
+     if(value)
+     {
+        
+        $(".default"+no).hide();
+     }
+     }
+     
+    
+     
+   if(mapped=="Email" || mapped=="MailingCountry" || mapped=="Phone" || mapped=="MailingCity" || mapped=="MailingState" || mapped=="MailingPostalCode" || mapped=="MailingStreet")
+    {
+       var req = $(".required"+no).is(':checked');
+       var visible = $(".visable"+no).is(':checked');
+      
+      if(req==true && visible==false)
+      {
+        alert("Invisible is not possible when the field is required");
+        $(".visable"+no).attr('checked',true);
+        return false;
+        
+      }
+      
+    }
+     
+    
+}
+
+
+function checkdefault(no)
+{
+     var req=$(".required"+no).attr('checked');
+     var visible =$(".visable"+no).attr('checked');
+     var def=$(".default"+no).val();
+     if(req==true && visible==false && def=="")
+     {
+          alert('Please Enter "Default Value"');
+          $(".default"+no).focus();
+          return false;
+     }
+     
+}
+
+function visiblecheck()
+{
+  var rowvalue=$(".rowvalues").val();
+  
+  
+  for(var i=0;i<rowvalue;i++)
+  {
+   
+   var mapped = $(".mapped"+i).val(); 
+  
+     if(mapped=="Email" || mapped=="MailingCountry" || mapped=="Phone" || mapped=="MailingCity" || mapped=="MailingState" || mapped=="MailingPostalCode" || mapped=="MailingStreet")
+            {
+     
+              $(".default"+i).hide();
+            }
+   }
+}
+
+
+
+function trimvalue(value,fieldclass)
+{
+     var replace=value.trim();
+     $("."+fieldclass).attr('value',replace);
+}
+
+function ValidateEvent(){
+//alert("naresh");
+var Eventname= document.getElementById('{!$Component.CreateCustomQuestions.block.EventNameInfo.EventNameItem.Eventinfo_Name}').value;
+
+var RegistrantId= document.getElementById('{!$Component.CreateCustomQuestions.block.EventNameInfo.RegistrantItems.RegistrantFieldId}').checked;
+var AttendeeId= document.getElementById('{!$Component.CreateCustomQuestions.block.EventNameInfo.AttendeeItems.AttendeeFieldId}').checked;
+//alert();
+if((RegistrantId==true && Eventname=="") || (AttendeeId==true && Eventname=="")){
+alert('Please select the "event"');
+return false;
+}
+
+}
+
+
+
+function newfieldsJS(){
+//alert("naresh1");
+Lookupname();
+}
+
+/* $(function() {
+        $( "#sortable" ).sortable();
+        $( "#sortable" ).disableSelection();
+       
+    });*/
+
+
+</script>
+<style>
+    #classtable {cursor: pointer;}
+    #classtable classspan {width:50%}
+    #classtable table {margin-bottom: 1px;}
+    #sortable { list-style-type: none; margin: 0; padding: 0; width: 100%; background-color:white;border:1px 1px 1px 1px;}
+    #sortable li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+    #sortable li span { position: absolute; margin-left: -1.3em; }
+    </style>
+<style>
+ .customquestionapplycss input {
+     float:left;
+ }
+ .customquestionapplycss label {
+     padding-left: 18px;
+ }
+ .customquestionapplycss .overview, .customquestionapplycss table{
+     width:100%;
+ }
+ .customquestionapplycss td {
+     padding: 0px 10px;
+     line-height: normal;
+ }
+.sftree{
+    border:1px solid #ccc;
+    width:200px;
+}
+.sftree.title{
+    background-color: #1797C0;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+   /* height: 20px;*/
+    margin:2px;
+    padding-top: 4px;
+    padding-top: -2px;
+    text-align: center;
+    width:158px;
+}
+.filetree li{
+    text-align:left;
+    font:14px "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, sans-serif;
+}
+
+</style>
+<style>
+.labelCol  {
+
+   height: 0;
+
+    margin: 0;
+    padding: 0;
+
+
+
+}
+.add_btn {
+ // background:url( {!URLFOR($Resource.CnP_PaaS_EVT__PopupPage, "add_text_btn.png")}) no-repeat top;
+ border: medium none;
+ cursor: pointer;
+ height: 26px;
+ width: 70px;
+}
+.labelCol  label{
+
+   padding:0px;
+   margin:0px;
+
+.custPopup {
+    background-color: white;
+    /* border-width: 3px;
+            border-style: solid;*/
+            z-index: 9999;
+    left: 48%;
+    padding:10px 10px 10px 60px;
+    position: absolute;
+    /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+    margin-left: -250px;
+    top:100px;
+    box-shadow:inset 0px 1px 5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow:inset 0px 1px 5px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow:inset 0px 1px 5px rgba(0, 0, 0, 0.5);
+    border-radius:10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.Close, .cls { 
+ height: 30px;
+ width: 30px;
+ border: medium none;
+ cursor: pointer;
+ color: black;
+ line-height: 20px;
+ position: absolute;
+ background:url( {!URLFOR($Resource.CnP_PaaS_EVT__PopupPage, "close-button.png")}) no-repeat top;
+ right: 10px;
+ top: 10px;
+}
+.overlay {
+    
+ background-color:black;
+ display:none;
+ background:url( {!URLFOR($Resource.CnP_PaaS_EVT__PopupPage, "overlay.png")}) repeat;
+ opacity: 0.40;
+ filter: alpha(opacity = 40);
+ position: absolute;
+ width: 100%;
+ z-index: 9999;
+ top: 0;
+ left: 0;
+}
+.popupBackground {
+
+ opacity: 0.70;
+ filter: alpha(opacity = 70);
+ position: absolute;
+ width: 100%;
+ height: 1000px;
+ top: 0;
+  background:url( {!URLFOR($Resource.CnP_PaaS_EVT__PopupPage, "overlay.png")}) repeat;
+ left: 0;
+ z-index: 9998;
+}
+}
+</style>
+
+    
+    
+<apex:form >
+
+ <div id="content-header">
+    <h1><i class="icon icon-tasks"></i> Registration Form</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"> <!--<a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a>-->
+     <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Registration Form'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Registration Form'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Registration Form'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Registration Form'].link}" target="_blank" >{!subTab['Active Events']['Registration Form'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Registration Form'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Registration Form'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Registration Form'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel>  
+    </div>
+  </div>
+    
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a >{!eventname}</a><a class="current">Registration Form</a> </div>
+  <div class="eventdatebar">
+        <i class="icon-time"></i>&nbsp;&nbsp;
+        <span class="popover-startdate">Event:</span>
+        <span><strong>{!eventname} &nbsp;&nbsp;</strong></span>    
+        <span class="popover-startdate">Start Date:</span>
+        <span><strong>{!startdate}</strong></span>                                   
+        <span class="popover-endson">End Date:</span>
+        <span><strong>{!enddate}</strong></span>                             
+        <span class="popover-endson">Publish Date:</span>
+        <span><strong>{!Publishdate}</strong></span>                          
+    </div>
+    
+    
+<div id="frame-content" class="container-fluid">
+
+<apex:pageBlock >
+  
+    <br />
+    <apex:outputPanel id="tabs">
+    <apex:selectRadio value="{!selectedoption}" styleClass="tabletabs">
+    <apex:actionSupport event="onchange" action="{!dispalycontactorcustom}" reRender="AttendeeInfoFieldsId,AttendeeInfoFieldsIdA,AttendeeInfoFieldsIdB,AttendeeFieldInfo,AttendeeFieldInfoA,AttendeeFieldInfoB,customquestionblock,previewblock,tabs,tabsblock,CustomQuestionscheck1,ManageOrderBlock,ManageSectionBlock" oncomplete="CheckSaveData();" />
+    <apex:selectOptions value="{!Values}">
+    </apex:selectOptions>
+  
+    </apex:selectRadio></apex:outputPanel>
+
+</apex:pageBlock>
+
+<!---------------- CONTACT INFORMATION FIELD ---------------------------->
+<div class="tab-content">
+  <div class="tab-pane active noborder" id="tab1">
+  
+   
+<apex:pageBlock > 
+      
+      <apex:outputPanel id="AttendeeInfoFieldsId">
+      <apex:outputPanel rendered="{!IF((RegistrationFrom==true && anonymousevent==false),true,false)}">
+         <apex:pageMessage severity="info" strength="1" summary="Mapping to Rich Text Area, Multi-Picklist, and Geolocation fields is disabled. For security reasons aliases will be created with new information and NOT updated in the contact records." />  
+        <div class="btn-block pagination-centered">
+        <apex:outputLabel value="Fields for:" style="font-size:15px;font-weight:bold; display:inline;padding-right:10px;" />
+        <apex:selectList value="{!selectedLevel}" size="1" >
+        <apex:actionSupport event="onchange" action="{!ContactFieldget}"  reRender="AttendeeInfoFieldsId,AttendeeInfoFieldsIdA,AttendeeInfoFieldsIdB,AttendeeFieldInfo,AttendeeFieldInfoA,AttendeeFieldInfoB,customquestionblock,previewblock,tabs,tabsblock,CustomQuestionscheck1" oncomplete="CheckSaveData();"  />
+        <apex:selectOptions value="{!levelnames}"></apex:selectOptions>
+        </apex:selectList>
+        </div>
+        
+                         <apex:actionstatus id="statusId1" startText="Please wait...">
+                         <apex:facet name="stop">
+                         <apex:outputPanel rendered="{!AddAttendeeInfoFields}">
+                         <apex:messages />
+                         <div class="row-fluid">
+                          <div class="span12">
+                            
+                            <div class="widget-box">
+                              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                <h5>{!if(checkselection=='Eventdisplay','Payee Information Fields','Attendee Information Fields')}  </h5>
+                              </div>
+                              <div class="widget-content">
+                          
+                         <apex:pageBlock id="AttendeeFieldInfo">         
+                                                     
+                                         <apex:outputPanel id="RefreshBlockA">              
+                                             
+                                             <apex:variable value="0" var="rowNum"/>
+                                                    <apex:dataTable styleClass="detailList" columns="9" value="{!FieldValueslist}" var="item" rendered="{!AddAttendeeInfoFields}">
+                                                            <!-- <apex:column headerValue="Item" style="height:25px">
+                                                            <apex:outputtext value="{!VALUE(rowNum) + 1}." style="width:30px"/>&nbsp;</apex:column> -->
+                                                            
+                                                            <apex:column headerValue="Order" style="width:10%;" >
+                                                            <apex:inputText value="{!item.Sno}" styleClass="orderno{!rowNum}"  style="width:20px"/></apex:column>
+                                                            
+                                                            <apex:column headerValue="" styleClass="display_none" headerClass="display_none">
+                                                            <apex:inputHidden value="{!item.RecordId}"/></apex:column>
+                                                            
+                                                            <apex:column headerValue="Field Label">
+                                                            <apex:inputText value="{!item.Label }" styleClass="LabelName{!rowNum}" style="width:200px"/></apex:column>
+                                                            
+                                                            <apex:column headerValue="Mapped to">
+                                                             
+                                                          <!--      <apex:inputText value="{!mappedfields[VALUE(rowNum)].Name}" rendered="{!IF(VALUE(rowNum)<=8,true,false)}" styleClass="mapped{!rowNum}" disabled="{!IF((item.Field_mapping=='First Name' || item.Field_mapping=='Last Name' || item.Field_mapping=='Email' || mappedfields[VALUE(rowNum)].Name=='Phone' || mappedfields[VALUE(rowNum)].Name=='Address' || mappedfields[VALUE(rowNum)].Name=='City' || mappedfields[VALUE(rowNum)].Name=='State' || mappedfields[VALUE(rowNum)].Name=='Country' || mappedfields[VALUE(rowNum)].Name=='Postal' ),true,false)}"/>-->
+                                                       
+                                                           <apex:outputLabel value="C&P Settings: {!item.Field_mapping}" rendered="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),true,false)}"> </apex:outputLabel>
+                                                           
+                                                            <apex:selectlist value="{!item.Field_Name}" disabled="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),true,false)}" rendered="{!IF(selectedLevel==EventRecordId ,true,false)}" styleClass="mapped{!rowNum}"   size="1" style="display:{!if((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),"none","block")};width:150px" >             
+                                                            <apex:selectOptions value="{!showFields}"/>
+                                                            </apex:selectlist>
+                                                        
+                                                              <apex:selectlist value="{!item.Field_Name}" disabled="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),true,false)}" rendered="{!IF(selectedLevel!=EventRecordId ,true,false)}" styleClass="mapped{!rowNum}"   size="1" style="display:{!if((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),"none","block")};width:150px">             
+                                                            <apex:selectOptions value="{!showFields}"/>
+                                                            </apex:selectlist>
+                                                            
+                                                            </apex:column>
+                                                            
+                                                            <apex:column headerValue="Required" styleClass="text_align_center" headerClass="text_align_center">
+                                                            <apex:inputCheckbox value="{!item.Required}" disabled="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName'  ),true,false)}" rendered="{!IF(selectedLevel==EventRecordId,true,false)}" styleClass="required{!rowNum}" onchange="return CheckVisible(this.checked,{!rowNum})"/>
+                                                            
+                                                           <!-- || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode'-->
+                                                        
+                                                              <apex:inputCheckbox value="{!item.Required}" disabled="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName'),true,false)}" onchange="return CheckVisible(this.checked,{!rowNum})" rendered="{!IF(selectedLevel!=EventRecordId,true,false)}" styleClass="required{!rowNum}" >
+                                                            </apex:inputCheckbox></apex:column><!--|| item.Field_Name=='Email'-->
+                                                            
+                                                            <apex:column headerValue="Visible" styleClass="text_align_center" headerClass="text_align_center">
+                                                            <apex:inputCheckbox value="{!item.Visible}" disabled="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' ) ,true,false)}"  styleClass="visable{!rowNum}" rendered="{!IF(selectedLevel=EventRecordId,true,false)}" onchange="return CheckRequired(this.checked,{!rowNum})">
+                                                            </apex:inputCheckbox>
+                                                             
+                                                            <!-- || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode'--> 
+                                                             
+                                                            <apex:inputCheckbox value="{!item.Visible}" disabled="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' ),true,false)}"  styleClass="visable{!rowNum}" rendered="{!IF(selectedLevel!=EventRecordId,true,false)}" onchange="return CheckRequiredlevel(this.checked,{!rowNum})"/>
+                                                            </apex:column><!-- || item.Field_Name=='Email'-->
+                                                            
+                                                            <apex:column headerValue="Default Value" styleClass="text_align_center" headerClass="text_align_center">
+                                                          <apex:inputText maxlength="250" value="{!item.DefaultValue}" styleClass="default{!rowNum}" style="display:{!if(item.visible==true,"none","block")}" />&nbsp;
+                                                        
+                                                            </apex:column>
+                                                              
+                                                            <apex:column headerValue="Delete" styleClass="text_align_center" headerClass="text_align_center">
+                                                            
+                                                            <apex:commandLink action="{!delCont}" reRender="RefreshBlockA" status="statusIdForDeleteA" style="display:{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),'none','')};height:22px" onclick="if(!reportdelete()) return false;" styleClass="icon-trash" rendered="{!IF(selectedLevel==EventRecordId,true,false)}" oncomplete="CheckSaveData();" >
+                                                            
+                                                            <apex:param name="contIdParam" value="{!rowNum}" assignTo="{!DeleteId}"/>
+                                                            <apex:param name="contIdParam1" value="{!item.RecordId}" assignTo="{!DeleteFromObjectId}"/>                                                            
+                                                            </apex:commandLink>
+                                                         
+                                                            <apex:commandLink action="{!delCont}" reRender="RefreshBlockA" status="statusIdForDeleteA" style="display:{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),'none','')};height:22px" styleClass="icon-trash"  onclick="if(!reportdelete()) return false;" rendered="{!IF(selectedLevel!=EventRecordId,true,false)}" oncomplete="CheckSaveData();">
+                                                            <apex:param name="contIdParam" value="{!rowNum}" assignTo="{!DeleteId}"/>
+                                                            <apex:param name="contIdParam1" value="{!item.RecordId}" assignTo="{!DeleteFromObjectId}"/>                                                            
+                                                            </apex:commandLink>
+                                                       
+                                                                <apex:actionstatus id="statusIdForDeleteA" startText="Please wait...">                                
+                                                                <apex:facet name="stop">                                                    
+                                                                </apex:facet>
+                                                                </apex:actionstatus>
+                                                            </apex:column> 
+                                                             
+                                                             
+                                                           <apex:column headerValue="" styleClass="display_none" headerClass="display_none"><apex:variable var="rowNum" value="{!VALUE(rowNum) + 1}"/></apex:column>      
+                                                    </apex:dataTable>
+                                                    
+                                            <div class="btn-block pagination-centered">          
+                                                    <input type="hidden" value="{!rowNum}" class="rowvalues" name="rowvalues"/>   
+                                                    <apex:commandButton action="{!addItem}" value="Add Next Field" onclick="if(!CheckSaveData()) return false;" reRender="RefreshBlockA" styleClass="btn btn-small btn-primary" status="NextRowStatusA" oncomplete="visiblecheck();"/>
+                                                    <apex:actionstatus id="NextRowStatusA" startText="Please wait...">                                
+                                                    <apex:facet name="stop">
+                                                    
+                                                    </apex:facet>
+                                                    </apex:actionstatus>  
+                                                   &nbsp;
+                                    
+                         
+                                 <apex:outputPanel > 
+                                     <apex:variable value="Attendee fields" var="RegInfo"/>
+                                        <apex:actionstatus id="SavingStatusA" startText="processing...">
+                                
+                                        <apex:facet name="stop">
+                                                <apex:commandButton action="{!Fields_Save}" value="Save"  onclick="if(!CheckSaveData()) return false;" styleClass="btn btn-small btn-primary" reRender="RefreshBlockA,previewblock" status="SavingStatusA" oncomplete="CheckSaveData();">
+                                                <apex:param name="RecordParamA" value="{!RecordType}" assignTo="{!RecordType}"/>
+                                                </apex:commandButton>                                                                       
+                                        </apex:facet>
+                                
+                                        <apex:facet name="start">
+                                             <apex:outputPanel >
+                                             <apex:image value="/img/loading32.gif" style="height: 15px;"/>
+                                            <apex:commandbutton value="Processing..." status="SavingStatusA" disabled="true" styleClass="btn-small btn-primary" />               
+                                                
+                                             </apex:outputPanel>
+                                        </apex:facet>
+                                        
+                                     </apex:actionstatus> 
+                                   </apex:outputPanel> 
+                                   <apex:outputPanel >
+                                 <span class="btn btn-small btn-primary" >
+                                  
+                                    <apex:outputField value="{!FieldsList[0].Event_name__r.Event_Site_2v__c}"  id="ViewSite" rendered="{!IF(selectedLevel==EventRecordId,true,false)}"/>
+                                   <apex:outputField value="{!FieldsList[0].Registration_level__r.Event_name__r.Event_Site_2v__c}"  rendered="{!IF(selectedLevel!=EventRecordId,true,false)}"/>
+                                 
+                                     </span>
+                                   </apex:outputPanel>  
+                                  </div> 
+                                </apex:outputPanel> 
+                                  
+                               
+                         </apex:pageBlock>
+                         
+                         </div>
+                         </div>
+                         </div>
+                         </div>
+                         
+                         </apex:outputPanel>
+                         </apex:facet>
+                         </apex:actionstatus>
+  
+  
+      </apex:outputPanel> 
+      </apex:outputPanel>            
+                         
+      <apex:outputpanel id="AttendeeInfoFieldsIdA">            
+      <apex:outputPanel rendered="{!IF((RegistrationFrom==true && anonymousevent==true),true,false)}">
+       <apex:pageMessage severity="info" strength="1" summary="Mapping to rich textarea,multi picklist,geo location fields is disabled. For security reasons aliases will be created with new information and NOT updated in the contact records." />  
+                         <apex:actionstatus id="statusId1A" startText="Please wait...">
+                         <apex:facet name="stop">
+                         <apex:outputPanel rendered="{!AddAttendeeInfoFields}">
+                         
+                         <div class="row-fluid">
+                          <div class="span12">
+                            
+                            <div class="widget-box">
+                              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                <h5>Payee/Registrant Information Fields</h5>
+                              </div>
+                              <div class="widget-content">
+                         
+                         <apex:pageBlock id="AttendeeFieldInfoA">         
+                                 <apex:pageblock id="ShowBlockItemA">                            
+                                         <apex:outputPanel id="RefreshBlockAA">              
+                                             
+                                             <apex:variable value="0" var="rowNumA"/>
+                                                    <apex:dataTable styleClass="table table-bordered table-striped" value="{!FieldValueslist}" var="item" rendered="{!AddAttendeeInfoFields}">
+                                                            <apex:column headerValue="Order" style="width:40px" >
+                                                            <apex:inputText value="{!item.Sno}" styleClass="orderno{!rowNumA}" style="width:20px"/></apex:column>
+                                                            <apex:column headerValue="" styleClass="display_none" headerClass="display_none">
+                                                            <apex:inputHidden value="{!item.RecordId}" /></apex:column>
+                                                            <apex:column headerValue="Field Label">
+                                                            <apex:inputText value="{!item.Label }" styleClass="LabelName{!rowNumA}" style="width:200px"/></apex:column>
+                                                            
+                                                            <apex:column headerValue="Mapped to" >
+                                                              <apex:outputLabel value="C&P Settings: {!item.Field_mapping}" rendered="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),true,false)}"> </apex:outputLabel>
+                                                           
+                                                            <apex:selectlist value="{!item.Field_Name}" disabled="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),true,false)}" rendered="{!IF(selectedLevel==EventRecordId ,true,false)}" styleClass="mapped{!rowNumA}"   size="1" style="display:{!if((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode'),"none","block")};width:150px">             
+                                                            <apex:selectOptions value="{!showFields}"/>
+                                                            </apex:selectlist>
+                                                            </apex:column>
+                                                            
+                                                            <apex:column headerValue="Required" styleClass="text_align_center" headerClass="text_align_center">
+                                                            
+                                                            <apex:inputCheckbox value="{!item.Required}" disabled="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName'),true,false)}" rendered="{!IF(selectedLevel==EventRecordId,true,false)}"  onchange="return CheckVisible(this.checked,{!rowNumA})" styleClass="required{!rowNumA}"/>
+                                                            
+                                                           
+                                                            </apex:column><!--|| item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode'-->
+                                                            
+                                                            <apex:column headerValue="Visible" styleClass="text_align_center" headerClass="text_align_center">
+                                                         
+                                                          
+                                                            <apex:inputCheckbox value="{!item.Visible}" disabled="{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName'   ),true,false)}"  styleClass="visable{!rowNumA}" rendered="{!IF(selectedLevel==EventRecordId ,true,false)}" onchange="return CheckRequired(this.checked,{!rowNumA})">
+                                                            </apex:inputCheckbox>
+                                                            <!--|| item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode'-->
+                                                           <!-- <apex:inputCheckbox value="{!item.Visible}"  styleClass="visable{!rowNumA}" rendered="{!IF(selectedLevel==EventRecordId && VALUE(rowNumA)>8,true,false)}" onchange="return CheckRequired(this.checked,{!rowNumA})">                                                                                                                   
+                                                            </apex:inputCheckbox>-->
+                                                            </apex:column>
+                                                            
+                                                            <apex:column headerValue="Default value" styleClass="text_align_center" headerClass="text_align_center">
+                                                            <apex:inputText maxlength="250" value="{!item.DefaultValue}" styleClass="default{!rowNumA}" style="display:{!if(item.visible==true,"none","block")}" /></apex:column>
+                                                           
+                                                              
+                                                            <apex:column headerValue="Delete" style="width:40px;" styleClass="text_align_center" headerClass="text_align_center">
+                                                          
+                                                                                                                      
+                                                              <apex:commandLink action="{!delCont}" reRender="RefreshBlockAA" status="statusIdForDeleteAA" style="display:{!IF((item.Field_Name=='FirstName' || item.Field_Name=='LastName' || item.Field_Name=='Email' || item.Field_Name=='Phone' || item.Field_Name=='MailingStreet' || item.Field_Name=='MailingCity' || item.Field_Name=='MailingState' || item.Field_Name=='MailingCountry' || item.Field_Name=='MailingPostalCode' ),'none','')};height:22px" onclick="if(!reportdelete()) return false;" styleClass="icon-trash" rendered="{!IF(selectedLevel==EventRecordId,true,false)}" oncomplete="CheckSaveData();" >
+                                                            
+                                                            <apex:param name="contIdParam" value="{!rowNumA}" assignTo="{!DeleteId}"/>
+                                                            <apex:param name="contIdParam1" value="{!item.RecordId}" assignTo="{!DeleteFromObjectId}"/>                                                            
+                                                            </apex:commandLink>
+                                                                                                                      
+                                                            <apex:actionstatus id="statusIdForDeleteAA" startText="Please wait...">                                
+                                                            <apex:facet name="stop">
+                                                    
+                                                            </apex:facet>
+                                                            </apex:actionstatus>
+                                                            <apex:variable var="rowNumA" value="{!VALUE(rowNumA) + 1}"/>
+                                                            </apex:column>  
+                                                           <!-- <apex:column ><apex:variable var="rowNumA" value="{!VALUE(rowNumA) + 1}"/></apex:column>    -->
+                                                    </apex:dataTable>
+                                                    
+                                                    <div class="btn-block pagination-centered">
+                                                        <input type="hidden" value="{!rowNumA}" class="rowvalues" name="rowvalues"/>                                                    
+                                                        <apex:commandButton action="{!addItem}" value="Add Next Field" onclick="if(!CheckSaveData()) return false;" reRender="RefreshBlockAA" styleClass="btn btn-small btn-primary" status="NextRowStatusAA" oncomplete="visiblecheck();"/>
+                                                        <apex:actionstatus id="NextRowStatusAA" startText="Please wait...">                                
+                                                        <apex:facet name="stop">                                                        
+                                                        </apex:facet>
+                                                        </apex:actionstatus> 
+                                                        &nbsp;                                                        
+                                                      <apex:outputPanel > 
+                                                          <apex:variable value="Attendee fields" var="RegInfo"/>
+                                                          <apex:actionstatus id="SavingStatusAA" startText="processing...">
+                                                        
+                                                        <apex:facet name="stop">
+                                                                <apex:commandButton action="{!Fields_Save}" value="Save"  onclick="if(!CheckSaveData()) return false;" styleClass="btn btn-small btn-primary" reRender="RefreshBlockAA,previewblock" status="SavingStatusAA" oncomplete="CheckSaveData();">
+                                                                <apex:param name="RecordParamA" value="{!RecordType}" assignTo="{!RecordType}"/>
+                                                                </apex:commandButton>                                                                       
+                                                        </apex:facet>
+                                                        <apex:facet name="start">
+                                                            <apex:outputPanel >
+                                                            <apex:image value="/img/loading32.gif" style="height: 15px;"/>
+                                                            <apex:commandbutton value="Processing..." status="SavingStatusAA" disabled="true" styleClass="btn btn-small btn-primary" />
+                                                            </apex:outputPanel>
+                                                        </apex:facet>
+                                                        
+                                                        </apex:actionstatus> 
+                                                       </apex:outputPanel> 
+                                                        <span class="btn btn-small btn-primary" >
+                                                
+                                                 <apex:outputField value="{!FieldsList[0].Event_name__r.Event_Site_2v__c}" id="ViewSite"/>
+                                                 </span>                                                   
+                                                    </div>
+                                            
+                                         </apex:outputPanel>
+                                         
+                                 </apex:pageblock>
+                                 </apex:pageBlock>
+                         </div>
+                         </div>
+                         </div>
+                         </div>
+
+                         </apex:outputPanel>
+                         </apex:facet>
+                         </apex:actionstatus>
+
+           </apex:outputPanel>                      
+           </apex:outputpanel>
+          
+  
+          
+                 
+ </apex:pageBlock> 
+  </div>
+  <!----------------- CONTACT INFO ------------------->
+  
+  <script>
+
+    function checkAll(cb)
+    {
+        var inputElem = document.getElementsByTagName("input");
+       
+        for(var i=0; i<inputElem.length; i++)
+        {
+            if(inputElem[i].id.indexOf("checkedone")!=-1)
+            inputElem[i].checked = cb.checked;
+
+        }
+
+    }   
+
+</script>
+
+  
+  
+<!--------- CUSTOM QUESTION ---------------------------->
+
+<apex:outputpanel id="CustomQuestionscheck1"> 
+<apex:outputPanel id="mainblock" rendered="{!maincustom}">
+<div class="tab-pane active noborder" id="tab1">
+
+        <apex:outputPanel id="customquestionblock12">
+        <apex:outputPanel rendered="{!customques12}">
+          <apex:pageBlock >
+          <apex:messages />
+          <div class="row-fluid">
+                                  <div class="span12">
+                                    
+                                    <div class="widget-box">
+                                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                        <h5><apex:outputtext value="{!if(CustomFieldId !=null,'Edit Custom Question','Create Custom Question')}" /> </h5>
+                                      </div>
+                                      <div class="widget-content">
+                                        
+                                      <div class="btn-block pagination-centered">                                          
+                                           
+                                           <apex:commandButton value="Save" styleClass="btn btn-small btn-primary" onclick="return validate();" action="{!CustomQuestionSave}" id="CustomSave"  >
+                                           <apex:param value="Save" assignTo="{!Redirect}"/> 
+                                           </apex:commandButton>&nbsp;&nbsp;&nbsp;  
+                                           <apex:commandButton action="{!CustomQuestionCancel}" value="Cancel" styleClass="btn btn-small btn-primary" rendered="{!if(CustomFieldId !=null,true,false)}" reRender="AttendeeInfoFieldsId,AttendeeInfoFieldsIdA,AttendeeInfoFieldsIdB,AttendeeFieldInfo,AttendeeFieldInfoA,AttendeeFieldInfoB,customquestionblock,previewblock,tabs,tabsblock,CustomQuestionscheck1"  />
+                                         
+                                         
+                                         <span class="btn btn-primary" >
+                                         <apex:outputField value="{!FieldsList[0].Event_name__r.Event_Site_2v__c}" id="ViewSite" rendered="{!IF(selectedLevel==EventRecordId,true,false)}"/>
+                                   <apex:outputField value="{!FieldsList[0].Registration_level__r.Event_name__r.Event_Site_2v__c}" rendered="{!IF(selectedLevel!=EventRecordId,true,false)}"/>
+                                 
+                                     </span>
+                                         
+                                         
+                                      </div> 
+
+                                      <apex:pageMessages />
+
+                            <apex:pageBlockSection id="custom" columns="1" >
+                          
+                             <apex:pageBlockSectionItem rendered="{!if(anonymousevent==false,true,false)}" dataStyle="width:86%;">
+                                    <apex:outputLabel value="Question Applies to:"><span class="Required">*</span></apex:outputLabel>
+                                    <apex:outputpanel styleClass="customquestionapplycss">
+                                     <script>
+                                        $(document).ready(function(){
+                           
+                                            $('#scrollbar1').tinyscrollbar();
+                                        })
+                                     </script>
+                                     <apex:inputCheckbox value="{!Selectallcheckbox}" styleClass="checkallclass" label="Select All" onclick="checkAll(this)" disabled="{!if(CustomFieldId !=null,true,false)}"/>
+                                   
+                                    <apex:outputLabel >Select All</apex:outputLabel>
+                                    <div id="scrollbar1">
+                                        <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>
+                                        
+                                        <div class="viewport">
+                                        <div class="overview">
+               
+                                          <apex:selectCheckboxes value="{!CustomeQuestionforall}" id="checkedone" layout="pageDirection"  styleClass="levelselect" disabled="{!if(CustomFieldId !=null,true,false)}"  >
+                                              <apex:selectOptions value="{!levelnames}"/>                                         
+                                          </apex:selectCheckboxes>
+                                        </div>
+                                        </div>
+                                   </div>
+                                   
+                                   
+                                   </apex:outputpanel>
+                                </apex:pageBlockSectionItem>
+                                
+                                <apex:pageBlockSectionItem dataStyle="width:86%" HELPText="You can select the custom questions to appear in an existing section or create a new section for your custom questions to appear under">
+                                    
+                                <apex:outputLabel value="Section" ><span class="Required">*</span></apex:outputLabel>
+                                <apex:outputpanel >                                  
+                                    <apex:selectList value="{!selectsectionvalue}"  size="1" id="values" styleClass="group" style="display:inline;margin-right:10px;"  >
+                                    <apex:actionSupport event="onchange" reRender="CreateNewSection" /> 
+                                    <apex:selectOptions value="{!GroupList}"/>                                
+                                    </apex:selectList> 
+                                
+                                    <apex:outputpanel > 
+                                    <apex:commandButton rendered="{!if(CustomFieldId !=null,false,true)}" value="Manage Section" action="{!ManageSectionButt}" styleClass="btn btn-small btn-primary" style="display:inline;margin-right:10px;"></apex:commandButton>
+                                    
+                                     <apex:outputpanel id="CreateNewSection">                                
+                                     <apex:outputPanel rendered="{!selectsectionvalue=='NewSection'}"> 
+                                      <apex:outputlabel value="New Section Name:" style="display:inline;padding-right:10px;" > <span class="Required">*</span></apex:outputLabel>                             
+                                      <apex:inputText value="{!NewSectionValue}" maxlength="35"  id="FieldInfo_Newgroup" styleClass="newsection" onblur="trimvalue(this.value,'newsection');"/>
+                                     </apex:outputPanel>
+                                     </apex:outputpanel>
+                                    </apex:outputpanel>
+                                </apex:outputpanel> 
+                                </apex:pageBlockSectionItem>                               
+                                 
+                                <apex:pageBlockSectionItem HElpText="Question or text as it should appear on the registration form"> 
+                                <apex:outputlabel value="Question" for="values" > <span class="Required">*</span></apex:outputLabel>
+                                <apex:inputText value="{!CreateCustomField.CnP_PaaS_EVT__Question__c}" maxlength="100"  id="FieldInfo_FieldLabel" styleClass="question span12" onblur="trimvalue(this.value,'question');"/>
+                                </apex:pageBlockSectionItem>
+                                <!--<apex:inputField value="{!CreateCustomField.Field_name__c}" id="FieldInfo_FieldName"/>-->
+                              
+                              
+                                
+                                <apex:pageBlockSectionItem helpText="Answer format for the custom question">
+                                <apex:outputlabel value="Answer Type" for="values" style="display:inline;padding-right:10px;" ><span class="Required">*</span></apex:outputLabel>
+                                
+                                    <apex:outputPanel id="FieldValuesBlock">
+                                    <apex:inputField value="{!CreateCustomField.CnP_PaaS_EVT__Field_type__c}" id="FieldInfo_FieldType" styleClass="qu">
+                                    <apex:actionSupport event="onchange" reRender="FieldValuesBlock"/>
+                                    </apex:inputField>                                 
+                                
+                                        <apex:outputPanel rendered="{!IF(CreateCustomField.CnP_PaaS_EVT__Field_type__c=='Radio button' || CreateCustomField.CnP_PaaS_EVT__Field_type__c=='Check box' || CreateCustomField.CnP_PaaS_EVT__Field_type__c=='Select list',true,false)}">
+                                        <br />
+                                        <div>                                
+                                        <apex:outputLabel value="Answers/Options" style="font-weight:bold;"/>
+                                        <apex:outputPanel layout="block" >
+                                        <apex:inputtextarea cols="20" rows="4" value="{!CreateCustomField.CnP_PaaS_EVT__Field_values__c}" onkeyup="javascript:this.value=this.value.replace(/\n|\s{2,}/g, '');" id="FieldInfo_FieldVlaues" styleClass="qu1"/>
+                                        <!--<apex:inputField value="{!CreateCustomField.CnP_PaaS_EVT__Field_values__c}" id="FieldInfo_FieldVlaues"  style="position:relative;left:35px;"/>-->
+                                        </apex:outputPanel>                                
+                                        (Separated by semicolon ; )
+                                        </div>
+                                        </apex:outputPanel>                                                            
+                                    </apex:outputPanel>
+                                
+                                </apex:pageBlockSectionItem>    
+                             <apex:pageBlockSectionItem > 
+                               <apex:outputLabel value="Required" ><span class="Required">*</span></apex:outputLabel>
+                            <apex:inputField value="{!CreateCustomField.CnP_PaaS_EVT__Required__c}" id="FieldInfo_FieldVlaues" styleClass="FieldInfo_FieldVlaues" onchange="return CheckVisiblecustom(this.checked)" />
+                            </apex:pageBlockSectionItem> 
+                            <apex:pageBlockSectionItem > 
+                              <apex:outputLabel value="Visible" ><span class="Required">*</span></apex:outputLabel>
+                            <apex:inputField value="{!CreateCustomField.CnP_PaaS_EVT__Visible__c}" id="FieldInfo_visible" styleClass="FieldInfo_visible" onchange="return CheckRequiredcustom(this.checked)" />
+                             </apex:pageBlockSectionItem> 
+                            <apex:pageBlockSectionItem > 
+                             <apex:outputLabel value="Default Value" styleClass="default"></apex:outputLabel>
+                            <apex:inputField value="{!CreateCustomField.CnP_PaaS_EVT__Default_value__c}" id="FieldInfo_Dvalue" styleClass="default1" /> 
+                            </apex:pageBlockSectionItem> 
+                                      
+                                         
+                                                  
+                            </apex:pageBlockSection>
+                                   <div class="btn-block pagination-centered">                                          
+                                           
+                                           <apex:commandButton value="Save" styleClass="btn btn-small btn-primary" onclick="return validate();" action="{!CustomQuestionSave}" id="CustomSave1"  >
+                                           <apex:param value="Save" assignTo="{!Redirect}"/> 
+                                           </apex:commandButton>&nbsp;&nbsp;&nbsp;  
+                                           <apex:commandButton action="{!CustomQuestionCancel}" value="Cancel" styleClass="btn btn-small btn-primary" rendered="{!if(CustomFieldId !=null,true,false)}" reRender="AttendeeInfoFieldsId,AttendeeInfoFieldsIdA,AttendeeInfoFieldsIdB,AttendeeFieldInfo,AttendeeFieldInfoA,AttendeeFieldInfoB,customquestionblock,previewblock,tabs,tabsblock,CustomQuestionscheck1"  />
+                                       
+                                       
+                                       <span class="btn btn-primary" >
+                                  
+                                     <apex:outputField value="{!FieldsList[0].Event_name__r.Event_Site_2v__c}" id="ViewSite1"/>
+                                     </span>
+                                      </div> 
+                            </div>
+                            </div>
+                            </div>
+                             
+                            </div>
+                                
+        </apex:pageBlock> 
+        </apex:outputPanel>  
+        </apex:outputPanel>
+        
+        
+        
+        
+        <apex:outputPanel id="customquestionblock">
+        <apex:outputPanel rendered="{!customques}">      
+         
+       
+         <script src="{!URLFOR($Resource.bootstrap,'admin/js/main.js')}" type="text/javascript"></script>
+            <apex:pageBlock >
+             
+                    <div class="row-fluid">
+                                  <div class="span12">
+                                    
+                                    <div class="widget-box">
+                                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                        <h5><apex:outputtext value="Custom Question Information Details" /> </h5>
+                                      </div>
+                                      <div class="widget-content"> 
+                                      
+                                      <div class="btn-block pagination-centered">  
+                                      <apex:commandButton value="Manage Order" action="{!ManageOrderButt}" reRender="ManageOrderBlock,CustomQuestionscheck1,ManageSectionBlock" styleClass="btn btn-small btn-primary">
+                                      <apex:param value="{!EventRecordId}" assignTo="{!SelectGroups}"/>
+                                      </apex:commandButton>
+                                      </div>
+                                      
+                    <table class="table table-bordered table-hover">
+                    <tr>
+                      <th class="text_align_center" style="width:10px">&nbsp;</th>
+                      <th>Type Name</th>                     
+                      </tr>
+                      
+                       <tr class="togglerow" id="togglerow0">
+                      <td>
+                      <a href="javascript:;" class="showlink" title=""  id="showlink0"><i class="icon icon-chevron-right"></i></a>
+                      <a href="javascript:;" class="hidelink" title="" id="hidelink0"><i class="icon icon-chevron-down"></i></a></td>                    
+                      
+                      <td class="align-center"><strong>Payee</strong><br/>
+                        </td>
+                     </tr>
+                     <tr class="display_none" id="0level_list">
+                     <td colspan="7" class="padding_5">                        
+                       <div class="small_text padding_5 text_align_right">
+                          <ul class="inlineUL">
+                            
+                            <li>Total Custom Questions: <span class="badge">{!Eventcustquescount}</span></li>
+                              
+                            </ul>
+                          </div>
+                          <div class="scroll_level_list" id="">
+                         
+                          <table class="table table-bordered table-hover small_text">
+                            <tr>
+                             <th width="40" class="text_align_center">Action</th>
+                              <th >Question</th>
+                              <th >Section Name</th>
+                              <th >Question Type</th>
+                              <th class="text_align_center">Required</th>
+                              <th class="text_align_center">Visible</th>
+                              <th class="text_align_center">Order Number</th>
+                             
+                              </tr>
+                               
+                              <apex:repeat value="{!RelatedLevelCustomQuestion[EventRecordId]}" var="relcustom" >
+                              <tr>
+                              <td class="text_align_center">
+                                     <apex:outputLink value="/apex/RegistrationFormPage?id={!EventRecordId}&qid={!relcustom.QuestionId}"  target="_self" >
+                                     <apex:outputLabel style="cursor: pointer;display:inline;" ><span class="icon-edit"></span></apex:outputLabel></apex:outputLink>
+                                     &nbsp;
+                                     <apex:commandLink style="cursor: pointer;display:inline;" action="{!deleteCustomquestion}" onclick="if(!reportdelete()) return false;" >
+                                     <span class="icon-trash"></span>
+                                     <apex:param name="Custrepid" value="{!relcustom.QuestionId}" />                                   
+                                     
+                                     </apex:commandLink></td>
+                              <td>{!relcustom.Label}</td>
+                              <td>{!relcustom.SectionNameHidden}</td>
+                              <td>{!relcustom.FieldType}</td>
+                              <td class="text_align_center">{!relcustom.req}</td>
+                              <td class="text_align_center">{!relcustom.visible}</td>
+                              <td class="text_align_center">{!relcustom.ordernumber}</td>
+                              
+                                     </tr>
+                              </apex:repeat> 
+                              </table>
+                              </div>
+                           </td>
+                      </tr>
+                      <apex:variable value="1" var="countoflevel"/>                     
+                     
+                      <apex:repeat value="{!Registrationlevellist}" var="Levellistdisplay">
+                       <tr class="togglerow" id="togglerow{!countoflevel}">
+                      <td>
+                      <a href="javascript:;" class="showlink" title=""  id="showlink{!countoflevel}"><i class="icon icon-chevron-right"></i></a>
+                      <a href="javascript:;" class="hidelink" title="" id="hidelink{!countoflevel}"><i class="icon icon-chevron-down"></i></a></td>                    
+                      
+                      <td><strong>{!Levellistdisplay.Name}</strong><br/>
+                        </td>
+                     </tr>
+                     <tr class="display_none" id="{!countoflevel}level_list">
+                     <td colspan="7" class="padding_5">                        
+                        <div class="small_text padding_5 text_align_right">
+                          <ul class="inlineUL">
+                            
+                            <li>Total Custom Questions: <span class="badge">{!Levelcustquescount[Levellistdisplay]}</span></li>
+                           
+                            </ul>
+                          </div>
+                          <div class="scroll_level_list" id="">
+                          <table class="table table-bordered table-hover small_text">
+                            <tr>
+                              <th width="40" class="text_align_center">Action</th>
+                              <th >Question</th>
+                              <th >Section Name</th>
+                              <th >Question Type</th>
+                              <th class="text_align_center">Required</th>
+                              <th class="text_align_center">Visible</th>
+                              <th class="text_align_center">Order Number</th>
+                            
+                              </tr>
+                               
+                              <apex:repeat value="{!RelatedLevelCustomQuestion[Levellistdisplay.id]}" var="relcustom">
+                              <tr>
+                              <td class="text_align_center"><apex:outputLink value="/apex/RegistrationFormPage?id={!EventRecordId}&qid={!relcustom.QuestionId}"  target="_self" >
+                                     <apex:outputLabel style="cursor: pointer;display:inline;" ><span class="icon-edit"></span></apex:outputLabel>
+                                     </apex:outputLink>  
+                                   
+                                     &nbsp;&nbsp;                                     
+                                     <apex:commandLink style="cursor: pointer;display:inline;" action="{!deleteCustomquestion}" onclick="if(!reportdelete()) return false;" >
+                                     <span class="icon-trash"></span>
+                                     <apex:param name="Custrepid" value="{!relcustom.QuestionId}" />
+                                     
+                                     
+                                     </apex:commandLink></td>
+                              <td>{!relcustom.Label}</td>
+                              <td>{!relcustom.SectionNameHidden}</td>
+                              <td>{!relcustom.FieldType}</td>
+                              <td class="text_align_center">{!relcustom.req}</td>
+                              <td class="text_align_center">{!relcustom.visible}</td>
+                              <td class="text_align_center">{!relcustom.ordernumber}</td>
+                              
+                                     </tr>
+                              </apex:repeat>
+                              </table>
+                              </div>
+                           </td>
+                      </tr>
+                      <apex:variable var="countoflevel" value="{!VALUE(countoflevel) + 1}"/>
+                     
+                      </apex:repeat>
+                  
+                    
+                      </table>                                 
+                                   
+                        <!--            <apex:pageBlockSection columns="1">
+                                    <apex:pageBlockTable value="{!availableAttendeeCustomFields}" var="field1" styleClass="table table-bordered" >
+                                    
+                                     <apex:column headerValue="Action"  >
+                                     <apex:outputLink value="/apex/RegistrationFormPage?id={!EventRecordId}&qid={!field1.QuestionId}"  target="_self" >
+                                     <apex:outputLabel style="cursor: pointer;display:inline;" ><span class="icon-edit"></span></apex:outputLabel></apex:outputLink>  
+                                   
+                                     &nbsp;|&nbsp;&nbsp;                                     
+                                     <apex:commandLink style="cursor: pointer;display:inline;" action="{!deleteCustomquestion}" onclick="if(!reportdelete()) return false;" >
+                                     <span class="icon-trash"></span>
+                                     <apex:param name="Custrepid" value="{!field1.QuestionId}" />
+                                     
+                                     
+                                     </apex:commandLink>
+                                    
+                                    </apex:column>
+                                    <apex:column headerValue="Question" value="{!field1.Label}"/>
+                                    
+                                    <apex:column headerValue="Section Name" value="{!field1.SectionNameHidden}"/>
+                                    <apex:column headerValue="Question Type" value="{!field1.FieldType}"/>
+                                    <apex:column headerValue="Required" value="{!field1.req}" styleClass="text_align_center"/>
+                                    <apex:column headerValue="Visible" value="{!field1.visible}"/>
+                                    
+                                    <apex:column headerValue="Order number" value="{!field1.ordernumber}"/>
+                                    </apex:pageBlockTable>
+                                    </apex:pageBlockSection> -->
+         
+                                 </div>
+                                 </div>
+                                 </div>
+                                 </div>
+            </apex:pageBlock>
+          </apex:outputPanel>
+          </apex:outputPanel>                     
+</div>
+</apex:outputPanel>
+</apex:outputpanel>
+
+<!------------------ CUSTOM QUESTION END------------------->
+
+
+<!------------------ Manage Order Start------------------->
+<apex:outputpanel id="ManageOrderBlock">
+<apex:outputpanel rendered="{!manageordercheck}">
+
+  <script>
+  
+    
+
+    $(function() {
+        $( "#sortable" ).sortable();
+        $( "#sortable" ).disableSelection();
+        
+    });
+    function SaveData(){
+    
+   var result = $('#sortable').sortable('toArray');
+   
+   
+    var ResultSet="";
+    for(i = 0; i < result.length; i++){
+    ResultSet+=result[i]+",";
+    }
+   
+    if(ResultSet==""){alert("No Sections/Questions for Reorder");}
+    else{
+    SendResult(ResultSet);
+   }
+    }
+    function testing()
+    {
+        // alert('testing');
+         $(".submitbutton").attr('style','display:none'); 
+    }
+    </script>
+<apex:pageBlock >
+<div class="tab-pane active noborder">
+ <div class="row-fluid">
+  <div class="span12">
+      <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+          <h5>Order the Custom Fields</h5>
+          </div>
+          <div class="widget-content">
+          
+           <div class="btn-block pagination-centered">           
+                        <apex:outputLabel value="Submit" styleClass="btn btn-small btn-primary submitbutton" onclick="SaveData()"/>&nbsp; &nbsp; &nbsp; &nbsp; 
+                        <apex:commandButton value="Back" action="{!CustomQuestionCancel}" reRender="AttendeeInfoFieldsId,AttendeeInfoFieldsIdA,AttendeeInfoFieldsIdB,AttendeeFieldInfo,AttendeeFieldInfoA,AttendeeFieldInfoB,customquestionblock,previewblock,tabs,tabsblock,CustomQuestionscheck1,ManageOrderBlock"  styleClass="btn btn-small btn-primary" />
+                        <apex:actionFunction id="SendResult" name="SendResult" action="{!saveGroup}"  oncomplete="testing()">
+                        <apex:param name="firstParam" assignTo="{!resultset}" value="" />
+                        </apex:actionFunction>                        
+           </div>
+
+                <!-- <apex:outputlabel value="Reorder" /> -->
+                <apex:outputpanel id="tabs" >                
+                 <apex:selectradio id="chooseReorder" value="{!ReorderRadio}" styleClass="tabletabs">
+                 <apex:actionSupport event="onchange" action="{!Reorderchange}" /> 
+                 <apex:selectOption itemValue="Reorder Sections" itemLabel="Sections"/>                               
+                 <apex:selectOption itemValue="Reorder Questions" itemLabel="Questions"/>                 
+                </apex:selectradio>
+                </apex:outputpanel>
+
+<div class="tab-content">
+  <div class="tab-pane active noborder" id="tab1">
+             
+                   <apex:outputPanel id="CustomOrder" title="{!ReorderRadio}" >
+
+                        
+                        <apex:outputPanel id="jsvalues"> 
+    <script>
+    $(function() {
+        $( "#sortable" ).sortable();
+        $( "#sortable" ).disableSelection();
+        
+    });
+    </script>
+                                <apex:outputPanel rendered="{!ReorderRadio=='Reorder Questions'}">
+                                
+                                <div class="btn-block pagination-centered">
+                                        <apex:outputlabel value="Select Type" for="values" style="display:inline;padding-right:10px;" />
+                                        <apex:selectList value="{!SelectedLevelcustom}" size="1" id="values1" style="display:inline;padding-right:10px;" >
+                                                <apex:actionSupport event="onchange" action="{!DisplaySectionasperLevel}" reRender="values"/>
+                                                <apex:selectOption itemLabel="Select" value="{!SelectLevelOption}"   />            
+                                                <apex:selectOptions value="{!levelnames}"/>
+                                        </apex:selectList> &nbsp;&nbsp; > &nbsp;&nbsp;                                       
+                                       
+                                        <apex:outputlabel value="Select Section" for="values" style="display:inline;padding-right:10px;" />
+                                        <apex:selectList value="{!Selectgroup}" size="1" id="values" style="display:inline;padding-right:10px;" >
+                                             <apex:actionSupport event="onchange" action="{!DisplayGroup}"/>                                                         
+                                             <apex:selectOptions value="{!sectionOrderValues1}"/>
+                                        </apex:selectList>
+                                 </div>
+                                 </apex:outputPanel>
+                                
+                         <apex:outputPanel id="customquetionlistdisplay"> 
+                         <p><i class="icon-move"></i> - Drag up and down to reorder.</p>
+                         <div id="sortable">                         
+                                <apex:repeat var="var" value="{!ListCustomFields}" rendered="{!ReorderRadio=='Reorder Questions'}">
+                                        <div id="{!var.Id}">
+                                                <div id="classtable"> 
+                                                        <table width="100%" class="table table-bordered table-striped">
+                                                            <tr>
+                                                                <td width="3%"><i class="icon-move"></i></td>
+                                                                <td width="10%">{!FLOOR(var.Int_order_Number__c)}</td>
+                                                                <td >{!var.Name}</td>
+                                                                <td width="25%">{!var.Field_type__c}</td>
+                                                                <!--<td width="35%">{!var.Select_group__c}</td>-->                                                               
+                                                            </tr>
+                                                        </table>
+                                                </div>
+                                        </div>
+                                </apex:repeat>
+                         
+                             <apex:repeat var="var" value="{!Sectionslist}" rendered="{!ReorderRadio=='Reorder Sections'}">                             
+                             <div id="{!var.Name}">
+                                 <div id="classtable">
+                                    <table width="100%" class="table table-bordered table-striped">
+                                        <tr>
+                                            <td width="3%"><i class="icon-move"></i></td>
+                                            <td width="10%">{!FLOOR(var.Section_Order__c)}</td>
+                                            <td >{!var.Name}</td>
+                                        </tr>
+                                     </table>
+                                  </div>
+                             </div>
+                            </apex:repeat>
+                
+                        </div>
+                        </apex:outputPanel>
+                </apex:outputPanel>
+ 
+                </apex:outputPanel>
+                
+</div>
+</div>                
+                
+                
+             </div>
+            </div>
+           </div>
+           </div>
+</div>
+</apex:pageBlock>
+</apex:outputpanel>
+</apex:outputpanel>
+
+
+<!------------------ Manage Order END------------------->
+
+
+
+<!---------------------- preview Block ------------------------->
+
+<apex:outputPanel id="previewblock">
+<apex:outputpanel rendered="{!IF(previewblockcheck==true,true,false)}">
+<div class="tab-pane active noborder">
+
+               <div class="row-fluid">
+                     <div class="span12">
+                            
+                     <div class="widget-box">
+                       <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                         <h5>Preview</h5>
+                       </div>
+                     <div class="widget-content">    
+           
+                    <div id="AttendeeInfo_1" style="width:50%;margin:0px auto;">
+                     <apex:pageBlock rendered="{!IF(tabsboolean==false,true,false)}">
+                  
+                         <apex:pageBlockSection columns="1"  collapsible="false" >
+                             <apex:repeat value="{!availableAttendeeFields}" var="field">
+                                 <apex:pageBlockSectionItem rendered="{!field.visible}">
+                                 <apex:outputPanel >
+                                   <apex:OutputText value="{!field.Label}" />
+                                   <apex:outputtext value="*" rendered="{!IF(field.req==true,true,false)}" styleclass="{!IF(field.req==true,'req','')}"></apex:outputText>
+                                  </apex:outputPanel>
+                                   <apex:outputPanel >
+                                     <apex:inputHidden value="{!acc.Id}" rendered="{!IF((EditAttendeeId!=null && EditAttendeeId!='test'),true,false)}"/>        
+                              
+                                     <apex:inputText value="{!acc.Name}" disabled="true" rendered="{!IF(field.FieldType=='STRING' || field.FieldType=='EMAIL' || field.FieldType=='PHONE'|| field.FieldType=='DOUBLE' || field.FieldType=='NUMBER' || field.FieldType=='CURRENCY' || field.FieldType=='DATETIME' || field.FieldType=='DATE',true,false)}"  ></apex:inputText>
+                                     
+                                     <apex:inputTextarea value="{!acc.Name}" disabled="true" rendered="{!IF(field.FieldType=='TEXTAREA',true,false)}"  />
+                                   
+                                    <apex:selectList value="{!field.field}"  size="1" disabled="true" rendered="{!IF(field.FieldType=='PICKLIST',true,false)}"  >
+                                       
+                                    </apex:selectList>
+                                
+                                   <apex:selectcheckboxes value="{!field.field}" disabled="true" layout="pageDirection"  rendered="{!IF(field.FieldType=='CHECKBOX',true,false)}"   >
+                                     
+                                    </apex:selectcheckboxes>
+                                
+                                
+                                
+                                   
+                                   </apex:outputPanel>
+                                 </apex:pageBlockSectionItem>   
+                             </apex:repeat>
+                         </apex:pageBlockSection>
+                         <br />
+                    
+                         <apex:pageBlockSection collapsible="false" columns="1" rendered="{!IF(PreviewAvailableCustomFields.size>0,true,false)}">
+                            <apex:variable value="0" var="rowNum"/>
+                             <apex:repeat value="{!PreviewAvailableCustomFields}" var="field1">                            
+                             
+                             <apex:outputText value="{!field1.SectionName}" rendered="{!IF(field1.SectionName!=null,true,false)}" style="font-weight:bold;width:100%;"></apex:outputText>
+
+                             <apex:pageBlockSectionItem rendered="{!field1.visible}">     
+                           
+                                <apex:outputPanel >
+                                <apex:outputText value="{!field1.label}"  rendered="{!IF(PreviewAvailableCustomFields.size>0,true,false)}"><apex:outputPanel rendered="{!field1.req}" styleClass="reqvalue"></apex:outputPanel></apex:outputText>
+                                 <apex:outputtext value="*" rendered="{!IF(field1.req==true,true,false)}" styleclass="{!IF(field1.req==true,'req','')}"></apex:outputText>
+                                </apex:outputPanel>
+                            
+                                <apex:outputPanel >
+                                          
+                                    <apex:inputText value="{!field1.DefaultValue}" disabled="true" rendered="{!IF(field1.FieldType=='Text box',true,false)}"  styleClass="{!IF(field1.req==true,'textbox required','textbox')}"></apex:inputText>
+                                    <apex:inputTextarea value="{!field1.DefaultValue}" disabled="true" rendered="{!IF(field1.FieldType=='Text area',true,false)}"  styleClass="{!IF(field1.req==true,'textarea required','textarea')}"/>
+                                    
+                                    <apex:selectRadio value="{!field1.DefaultValue}" layout="false"  disabled="true" rendered="{!IF(field1.FieldType=='Radio button',true,false)}"  styleClass="{!IF(field1.req==true,'radiobox'+rowNum,'noborder tablelist')}">
+                                    <apex:selectOptions value="{!field1.Fieldvalues}"/>
+                                    </apex:selectRadio>
+                                    
+                                    <apex:selectList value="{!field1.DefaultValue}"  size="1" disabled="true" rendered="{!IF(field1.FieldType=='Select list',true,false)}"  styleClass="{!IF(field1.req==true,'selectbox'+rowNum,'noborder tablelist')}">
+                                       <apex:selectOptions value="{!field1.Fieldvalues}"/>
+                                    </apex:selectList>
+                                
+                                    <apex:selectcheckboxes value="{!field1.checkedboxValues}" disabled="true" layout="pageDirection"  rendered="{!IF(field1.FieldType=='Check box',true,false)}"  styleClass="{!IF(field1.req==true && field1.FieldType=='Check box','checkbox'+rowNum,'noborder tablelist')}" >
+                                    <apex:selectOptions value="{!field1.Fieldvalues}" />
+                                    </apex:selectcheckboxes>
+                                
+                                    <apex:inputhidden value="{!field1.QuestionId}" />
+                                    <apex:inputhidden value="{!field1.SectionNamehidden}" />
+                                </apex:outputPanel>
+                            
+                            </apex:pageBlockSectionItem>
+                          
+                            
+                            <apex:pageBlockSectionItem rendered="{!(field1.visible==false)}" dataStyleClass="display_none" dataStyle="display:none;" >                            
+                            <apex:outputpanel >
+                            <apex:inputHidden value="{!field1.DefaultValue}" />
+                            <apex:inputhidden value="{!field1.QuestionId}"/>
+                            <apex:inputhidden value="{!field1.SectionNamehidden}"/> 
+                            </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            <apex:pageBlockSectionItem dataStyleClass="display_none" >  
+                            <apex:variable var="rowNum" value="{!VALUE(rowNum) + 1}" />
+                            </apex:pageBlockSectionItem>
+                            
+                            </apex:repeat>
+                            
+                            <input type="hidden" value="{!rowNum}" class="rowvalues" name="rowvalues"/> 
+                    
+                        </apex:pageBlockSection>                  
+                   
+                      
+                        
+                    </apex:pageBlock>
+                    </div>
+          
+            </div>
+            </div>
+            </div>
+            </div>
+</div>       
+</apex:outputPanel>
+</apex:outputPanel>
+
+
+<!------------------ Manage Section Start------------------->
+
+<apex:outputpanel id="ManageSectionBlock">
+<apex:outputpanel rendered="{!managesectioncheck}">
+<div class="tab-pane active noborder">
+ <div class="row-fluid">
+                                  <div class="span12">
+                                    
+                                    <div class="widget-box">
+                                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                        <h5><apex:outputtext value="Manage Sections" /> </h5>
+                                      </div>
+                                      <div class="widget-content">
+                                      <apex:pageblock >
+                                       <div class="btn-block pagination-centered">
+                                      <apex:commandButton value="Back" action="{!CustomQuestionCancel}" reRender="AttendeeInfoFieldsId,AttendeeInfoFieldsIdA,AttendeeInfoFieldsIdB,AttendeeFieldInfo,AttendeeFieldInfoA,AttendeeFieldInfoB,customquestionblock,previewblock,tabs,tabsblock,CustomQuestionscheck1,ManageOrderBlock,ManageSectionBlock"  styleClass="btn btn-small btn-primary" style=" text-decoration: none;" />
+                                      
+                                       </div>
+                                        <apex:messages id="displaymessage"/>
+                                       <apex:actionFunction action="{!EditSectionbutton}" name="editsec" rerender="SectionTableBlock,ManageSectionBlock">
+                                        <apex:param name="editid" assignTo="{!SectionEditId}" value=""/>
+                                     </apex:actionFunction>                                   
+                                     <apex:actionFunction action="{!CancelSectionbutton}" name="cancelid" rerender="SectionTableBlock,ManageSectionBlock"/>
+                                      <apex:actionFunction action="{!SaveSectionnutton}" name="savesecfun" rerender="SectionTableBlock,ManageSectionBlock" />
+                                      <apex:actionFunction action="{!DeleteSectionbutton}" name="deletesecfun" rerender="SectionTableBlock,ManageSectionBlock">
+                                        <apex:param name="deleteid" assignTo="{!SectionDeleteid}" value=""/>
+                                     </apex:actionFunction> 
+                                      <apex:dataTable value="{!Sectionslist}" var="SectionFields" styleClass="table table-bordered" id="SectionTableBlock" >
+                                      
+                                       <apex:column headerValue="Section Name"> 
+                                   
+                                   
+                                   <apex:outputField value="{!SectionFields.Name}" rendered="{!if(SectionEditId==SectionFields.Id,false,true)}"  />
+                                   <apex:inputfield value="{!SectionFields.Name}" rendered="{!if(SectionEditId==SectionFields.id,true,false)}" styleClass="newsection" onblur="trimvalue(this.value,'newsection');" />
+                                 
+                                       </apex:column> 
+                                       <apex:column headerValue="Section Order" >   
+                                              <apex:OutputField value="{!SectionFields.CnP_PaaS_EVT__Section_Order__c}" />                            
+                                       </apex:column>
+                                      <apex:column headerValue="Action" styleClass="text_align_center" headerClass="text_align_center">
+                                         <a href="#"  onclick="editsectionfunct('{!SectionFields.Id}');" style="display:{!IF(SectionFields.Id == SectionEditId,'none','inline')}"><i class="icon-edit"></i></a>
+                                         <a style="display:{!IF(SectionFields.Id == SectionEditId,'none','inline')}" onclick="deletesectionfunction('{!SectionFields.Id}');"><i class="icon-trash"></i></a>
+                                         <a style="display:{!IF(SectionFields.Id == SectionEditId,'inline','none')}" onclick="Savesectionfunction();"><i class="icon-ok"></i></a>
+                                         <a style="display:{!IF(SectionFields.Id == SectionEditId,'inline','none')}" onclick="cancelid();"><i class="icon-remove"></i></a>
+                                      </apex:column> 
+                                      
+                                      
+                                             </apex:dataTable>  
+                                                        
+                                      </apex:pageblock>
+                                     
+                                     <script>
+                                     function editsectionfunct(value){
+                                    
+                                     editsec(value);
+                                     }
+                                     function Savesectionfunction(){
+                                       var newsec=$(".newsection").val();
+                  
+                                       if(newsec=="" )
+                                       {
+                                           alert("Please Enter a New Section Heading");
+                                           $(".newsection").focus();
+                                           return false;
+                                           
+                                       }
+                                     savesecfun();
+                                     }
+                                    function deletesectionfunction(value){
+                                     
+                                     deletesecfun(value);
+                                     } 
+                                     </script> 
+                                      
+</div></div></div></div>
+               
+</div>                         
+</apex:outputpanel>
+</apex:outputpanel>  
+        
+        
+        <!------------------ Manage Section End------------------->
+        
+</div>
+ </div>
+</apex:form>
+  
+     
+  <script src="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/main.js')}"/>
+   <script src="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.tinyscrollbar.js')}"/>
+
+      
+     
+
+ <script>
+  $(document).ready(function(){  
+                           
+  $('#scrollbar1').tinyscrollbar();
+  
+   for(var i=0;i<rowvalue;i++)
+      {
+            
+            var mapped = $(".mapped"+i).val(); 
+  
+   if(mapped!="Email" && mapped!="MailingCountry" && mapped!="Phone" && mapped!="MailingCity" && mapped!="MailingState" && mapped!="MailingPostalCode" && mapped!="MailingStreet")
+            {
+            if((req==true && visible==false && def=="") || !def.indexOf(' ',0))
+            {
+                   t=t+1;
+                  alert('Please Enter "Default Value"');
+                  $(".default"+i).focus();
+                  return false;
+            }
+            }
+            else
+            {
+              $(".default"+i).hide();
+            }
+            
+         }   
+  })
+ </script>
+ 
+ <style>
+ 
+.sftree{
+    border:1px solid #ccc;
+    width:200px;
+}
+.sftree .title{
+    background-color: #1797C0;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+   /* height: 20px;*/
+    margin:2px;
+    padding-top: 4px;
+    padding-top: -2px;
+    text-align: center;
+    width:188px;
+}
+.filetree li{
+    text-align:left;
+    font:14px "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, sans-serif;
+}
+</style>
+
+</apex:page>

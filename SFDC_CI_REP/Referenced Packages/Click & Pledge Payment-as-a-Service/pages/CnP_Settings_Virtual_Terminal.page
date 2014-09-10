@@ -1,0 +1,890 @@
+<apex:page controller="CnP_PaaS.SettingsController" action="{!loadhelpContent}">
+<style>
+.helpLink {
+       position:relative;       
+    }
+
+   /* .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    }*/
+ 
+.sample th{
+    font-weight:normal;
+}
+.skualg div {
+    margin-left:20px;
+}
+    .radio input[type="radio"]
+    {
+     // margin-left:40px;
+    }
+
+    #RecurringSec{
+    position: absolute;
+    width: 920px;
+    }
+    .reclabel{
+        width: 111px;
+        display: block;
+        float: left;
+    }
+    body .bPageBlock .pbBody .labelCol {
+    
+    font-weight:normal;
+    font-size:12px;
+    
+    }
+.btn1{
+    color:#333;
+    margin: 1px;
+    padding: 4px 3px;
+    border: 1px solid #B5B5B5;
+    border-bottom-color: #7F7F7F;
+    background: #E8E8E9 url('/img/alohaSkin/btn_sprite.png') repeat-x right top;
+    font-weight: bold;
+    font-size: .9em;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    text-decoration:none;
+}
+.btn1 a hover{
+   text-decoration:none;
+}
+
+ .dataTables_wrapper{
+   width:50%;
+} 
+.vttable input{
+    margin-top: 0px;
+}
+.vttable label{
+    display: inline;
+    margin-left: 5px;
+}
+</style>
+<script>
+function addItemvtprocess(){
+    
+              processstart();
+            addItemvtsetting();
+   }
+   
+   function deletecustions(val1,val2){
+   if(confirm("Are you sure you want to delete this record?")==true){
+       processstart();
+       deletecustionsaction(val1,val2);
+       }
+   }
+   
+   function delVTTable(val1,val2){
+      if(confirm("Are you sure you want to delete this record?")==true){
+          processstart();
+          delVTTableaction(val1,val2);
+      }
+   }
+function checkvalue(){
+     var vt = 0;    
+     var rowvaluesVt = $(".rowvaluesVt").val();
+      var emaildata=$.trim($(".internalemaillist").val());
+      var reg_email = /^([A-Za-z0-9_\-\+\.\!\#\$\%\&\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9\-\.])+\.([A-Za-z]{2,4})$/;
+     for(var i=0;i<rowvaluesVt;i++){
+            var payfor = $.trim(($(".payfor"+i).val()));
+         var amtfor = ($(".amtfor"+i).val());
+         var dcfor = ($(".dcfor"+i).val());
+         var deductfor = ($(".deductfor"+i).val());
+       var taxfor = ($(".taxfor"+i).val());
+       var skufor = $.trim(($(".skufor"+i).val()));
+        var quantityfor = ($(".quantityfor"+i).val());
+        var campaign1 = ($(".campaign1"+i).val()); 
+          var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+           
+           
+           //var reg_email = /^([A-Za-z0-9_\-\+\.\!\#\$\%\&\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9\-\.])+\.([A-Za-z]{2,4})$/;
+           
+         if(payfor=='' && amtfor=='' && dcfor=='' && deductfor=='' && taxfor==''){    
+            vt=1;     
+            alert("Please Enter atleast one value for setting default items");
+            $(".payfor"+i).focus();
+            return false;
+       }
+      
+      if(payfor!='' && payfor.length<2)
+            {
+                vt=1; 
+                alert("Please enter atleast two characters in Payment for");
+                $(".payfor"+i).focus();
+                return false;
+            }           
+        if(skufor!='' && !reg_sku.test(skufor)){
+                vt=1; 
+                 alert("Please Enter a valid data in SKU ");
+                 $(".skufor"+i).focus();
+                 return false;
+            }        
+            if(quantityfor!='' && isNaN(quantityfor)){
+                  vt=1; 
+                  alert("Enter the valid Quantity ");
+                  $(".quantityfor"+i).focus();
+                    return false;
+            } 
+             var reg_quantity=/^([0-9])+$/; 
+             if(!reg_quantity.test(quantityfor) && quantityfor!=''){
+                vt=1; 
+                alert("Please Enter integer values only in Quantity  ");
+                  $(".quantityfor"+i).focus();
+                    return false;
+            }        
+      if(isNaN(amtfor)&& amtfor!="")
+        {                
+            vt=1; 
+            alert("Please Enter a Number or Decimal value in Unit Price");
+           $(".amtfor"+i).focus();
+            return false;
+        }
+        if(amtfor<0 || amtfor<0.0){
+            vt=1; 
+            alert("Please Enter Number in Unit Price");
+                  $(".amtfor"+i).focus();
+                    return false;
+        }
+         if(isNaN(deductfor))
+        {
+            vt=1; 
+            alert("Please Enter a Number or Decimal value in %Deductible field");
+            $(".deductfor"+i).focus();
+            return false;
+        }
+         if(parseInt(deductfor) > parseInt(amtfor)){
+             vt=1; 
+             alert("Unit Price must greater than Unit Deductible");
+            $(".deductfor"+i).focus();
+            return false;
+        
+        }  
+        if(deductfor < 0 || deductfor<0.0){
+            vt=1; 
+            alert("Tax Deductible must greater than 0");
+            $(".deductfor"+i).focus();
+            return false;
+        }   
+         if(isNaN(dcfor) ){
+           vt=1; 
+            alert("Please Enter a number or Decimal value in Discount field");
+            $(".dcfor"+i).focus();
+            return false;
+        }else if(parseInt(dcfor) > parseInt(amtfor)){
+            vt=1; 
+            alert("Unit Price($) must greater than Unit Discount($)");
+            $(".dcfor"+i).focus();
+            return false;
+        }
+        if(dcfor<0 || dcfor<0.0){
+            vt=1; 
+            alert("Unit Discount must be greater than or equal to 0");
+            $(".dcfor"+i).focus();
+            return false;
+        }
+        
+        if(isNaN(taxfor))
+        {
+            vt=1; 
+            alert("Please Enter a Number or Decimal value in Tax field");
+            $(".taxfor"+i).focus();
+            return false;
+        }else if(parseInt(taxfor) > parseInt(amtfor)){
+            vt=1; 
+            alert("Unit Price must be greater than Unit Tax");
+            $(".taxfor"+i).focus();
+            return false;
+        }
+        if(taxfor<0 || taxfor<0.0){
+            vt=1; 
+            alert("Unit tax must be greater than 0");
+            $(".taxfor"+i).focus();
+            return false;
+        }
+        for(var j=i+1;j<rowvaluesVt;j++){
+                var sku_dup = $(".skufor"+j).val();
+                
+                if(skufor.toLowerCase()== sku_dup.toLowerCase() && skufor != '')
+                {
+                     vt=1; 
+                     alert("Error:  Duplicate SKU found! " + skufor+ ',' + sku_dup);
+                     $(".skufor"+j).focus();
+                     return false;
+                } 
+          } 
+       
+     }
+
+        var amt=$(".amt").val();
+        var dc=$(".dc").val(); 
+        var sku = $(".sku").val();
+        var deduct=$(".deduct").val();
+        var ship=$(".ship").val();
+         var conv = $(".conv").val();
+        var convamount = $(".convamount").val();
+        var tax=$(".tax").val();
+        var ins=$(".ins").val();
+        var acc=$(".acc").val();
+        var reg = /^([0-9])+$/;
+         var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+        var checkrecur = $(".checkrecur").attr('checked');
+       var rectype = $(".rectype").val();
+     var itemname=trim($(".itemname").val());
+      
+    var visa = $(".visa").is(':checked');
+    var echeck = $(".echeck").is(':checked');
+    var invoice = $(".invoice").is(':checked');
+    var po = $(".po").is(':checked');
+    var ct = $(".ct").is(':checked');    
+    
+          if(itemname!='' && itemname.length<2)
+            {
+               vt=1; 
+                alert("Please enter atleast two characters in Payment for");
+               $(".itemname"+i).focus();
+                return false;
+            }  
+           if(sku!='' && !reg_sku.test(sku)){
+                 vt=1; 
+                 alert("Please Enter a valid data (Alphanumerics,-,_,:,space) in SKU ");
+                 $(".sku"+i).focus();
+                 return false;
+            } 
+        
+       
+        if(isNaN(amt)&& amt!=""){
+            vt=1; 
+            alert("Please Enter a Number or Decimal value in Amount field");
+           $(".amt").focus();
+            return false;
+        }
+        
+        if(dc != "" && isNaN(dc) )
+        {
+            vt=1; 
+            alert("Please Enter a number or Decimal value in Discount field");
+            $(".dc").focus();
+            return false;
+        }
+          else if(dc >100)
+        {
+        vt=1; 
+        alert("%Unit Discount value should be less than or equal to 100");
+         $(".dc").focus();
+            return false;
+        }
+       
+      
+        if(isNaN(deduct))
+        {
+            vt=1; 
+            alert("Please Enter a Number or Decimal value in %Deductible field");
+            $(".deduct").focus();
+            return false;
+        }
+        else if(deduct >100)
+        {
+        vt=1; 
+        alert("% Unit Tax Deductible value should be less than or equal to 100");
+         $(".deduct").focus();
+            return false;
+        }
+        if(isNaN(ship))
+        {
+            vt=1; 
+            alert("Please Enter a Number or Decimal value in Shipping field");
+            $(".ship").focus();
+            return false;
+        }
+        
+        if(conv !="" && isNaN(conv)){
+            vt=1;
+           alert("Please Enter a Number or Decimal value in Convenience Fee field");
+           $(".conv").focus();
+           return false;
+       }else if(conv > 100 || conv < 0 || conv < 0.0){
+           vt=1;
+           alert("Convenience value should be greater than 0 and less than or equal to 100");
+           $(".conv").focus();
+           return false;
+       }
+        
+        if(convamount != "" && isNaN(convamount)){
+            vt=1;
+            alert("Please Enter a Number or Decimal value in Convenience Fee field");
+            $(".convamount").focus();
+           return false;
+        }
+        if(convamount != "" && (convamount <0 || convamount < 0.00)){
+            vt=1;
+            alert("Please Enter valid data in Convenience Fee field");
+            $(".convamount").focus();
+           return false;
+        }
+        if(tax !="" && isNaN(tax))
+        {
+            vt=1; 
+            alert("Please Enter a Number or Decimal value in Tax field");
+            $(".tax").focus();
+            return false;
+        }
+      else if(tax >100)
+        {
+        vt=1; 
+        alert("%Unit Tax value should be less than or equal to 100");
+         $(".tax").focus();
+            return false;
+        }
+     
+        if(checkrecur=='checked'){
+            
+            if(ins!="" && (reg.test(ins)==false) ){
+                vt=1; 
+               alert("Please Enter Number in # of Installments field");
+                $(".ins").focus();
+                return false;
+            }else if(ins!="" && (parseInt(ins) <=1 || parseInt(ins) > 999) && rectype =='Subsription'){
+              vt=1; 
+                alert("Please Enter a Number greater than 1 and less than 999");
+                $(".ins").focus();
+                 return false;
+            }
+            else if(ins!="" && (parseInt(ins) <=1 || parseInt(ins) > 998) && rectype =='Installment'){
+                vt=1; 
+                alert("Please Enter a Number greater than 1 and less than 998");
+                $(".ins").focus();
+                 return false;
+            }
+
+         }
+         
+     
+        if(acc!="" && reg.test(acc)==false)
+        {
+             vt=1; 
+            alert("Please Enter Valid Account Number");
+            $(".acc").focus();
+            return false;
+        }
+         if(visa == false && echeck == false && invoice == false && po == false && ct == false){
+             vt=1;
+          alert("Please select any one Payment Method ");
+          return false;
+      }
+         
+         if(emaildata!='')
+           {
+            var emailsdata=$(".internalemaillist").val().split(';'); 
+          
+             for(var i=0;i<emailsdata.length;i++)
+             {
+               
+                 if(!reg_email.test(emailsdata[i]) && emailsdata[i] != '' )
+                   {
+                       
+                        vt=1;
+                        alert("Please Enter the Valid Email ids");
+                        $(".internalemaillist").focus();
+                        return false;
+                   }
+                   
+             }
+           }   
+       
+      var rowNumCus = $(".rowNumCus").val();
+      
+   for(var i=0;i<rowNumCus;i++){
+         var required = jQuery.trim(jQuery(".required"+i).val());
+         var qn1 = jQuery.trim(jQuery(".qn1"+i).val());
+        reg_qn1=/^([a-zA-Z0-9\.\,\#\-\'\@\$\%\*\^\(\)\{\}\\\[\]\_\;\:\"\<\>\?\/\`\|\!\+\ ])+$/
+          
+      //   var reg_qn1=/^([a-zA-Z0-9\.\#\,\'\_\:\-\+\(\)\{\}\[\]\/\-\%\$\@\*\;\"\<\>\?\])+$/;
+        if(qn1 == ''){
+            vt=1; 
+           alert("Please Enter any Custom Question");
+           $(".qn1"+i).focus();
+           return false;
+        }
+        if(qn1!='' && !reg_qn1.test(qn1)){
+            vt=1; 
+            alert("Enter valid data for Custom Question");
+            $(".qn1"+i).focus();
+            return false;
+    }
+      if(required !='' && !reg_qn1.test(required)){
+           vt=1; 
+            alert("Enter valid data for Custom Answer");
+            $(".required"+i).focus();
+            return false;
+    }
+    
+    }
+    
+     /****************Custom payment name **************/
+        var rowCustom      = $(".rowCustom").val();
+     var reg_cusname=/^([a-zA-Z0-9\.\,\#\-\'\ ])+$/;
+    
+     for(var i=0;i<rowCustom;i++){
+        var cuspaymentname = jQuery.trim(jQuery(".cuspaymentname"+i).val());
+         if(cuspaymentname == ''){
+             vt=1;
+              alert("Please Enter data in Custom Payment Name");
+                      $(".cuspaymentname"+i).focus();
+                      return false;
+        
+     
+     }
+        if(cuspaymentname !="" &&!reg_cusname.test(cuspaymentname)){ 
+            vt=1;   
+              alert("Please Enter valid data in Custom Payment Name");
+                      $(".cuspaymentname"+i).focus();
+                      return false;
+      } else if(cuspaymentname!="" && cuspaymentname.length >50){
+              vt=1;
+              alert("Custom Payment Name should not exceed 50 Characters");
+                $(".cuspaymentname"+i).focus();
+                 return false;
+     }
+     }     
+  
+        
+   
+    if(vt == 0){ 
+        processstart();
+        savemethodVTsetting();
+       return true;
+       }
+    else{
+       return false;
+
+    }
+      }
+   function addqn(){
+   processstart();
+   addqn1();
+   }
+  </script>   
+ 
+  <apex:form >
+  
+          <div class="padding_5" style="float:right;">
+          
+          <apex:outputLink styleClass="helpLink align_right" rendered="{!subTab['Settings']['Virtualterminal'].display=='true'}"   >          
+             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo2]').css('display','block');" />
+              <apex:image value="/s.gif" styleClass="helpIcon"  onmouseover="jQuery('[id$=Foo2]').css('display','block');" style="display:inline;" />
+           </apex:outputLink>
+           
+           <apex:outputPanel id="Foo2" styleClass="video"  >
+             <ul style="padding-left:5px;" > {!subTab['Settings']['Virtualterminal'].description} <br/>
+              <apex:outputpanel rendered="{!subTab['Settings']['Virtualterminal'].activeLink=='true'}">
+                <li><a href="{!subTab['Settings']['Virtualterminal'].link}" target="_blank" >{!subTab['Settings']['Virtualterminal'].strlink}</a> <br/></li></apex:outputpanel>
+               <apex:outputpanel rendered="{!subTab['Settings']['Virtualterminal'].ActiveVideo=='true'}">
+                <li><a href="{!subTab['Settings']['Virtualterminal'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['Virtualterminal'].strvideo}</a> </li></apex:outputpanel>
+              </ul>
+             </apex:outputPanel> 
+           </div>
+             
+             
+             
+            <apex:actionFunction action="{!delItemvt}" name="delVTTableaction" id="delVTTableaction" reRender="RefreshPage" oncomplete="processcomplete();" status="ItemDeletevalue">
+              <apex:param name="DeleteIdvt" value="" assignTo="{!DeleteIdvt}"/>
+              <apex:param name="DeleteFromIdvt" value="" assignTo="{!DeleteFromIdvt}"/>
+            </apex:actionFunction>
+            <apex:actionFunction action="{!deletecustions}" name="deletecustionsaction" id="deletecustionsaction" reRender="customquestion_refreshblock"  oncomplete="processcomplete();" status="ItemDeletevalue">
+              <apex:param name="DeleteId_custom" value="" assignTo="{!DeleteId_custom}"/>
+              <apex:param name="DeleteFromQunId" value="" assignTo="{!DeleteFromQunId}"/>
+            </apex:actionFunction>
+            <apex:actionFunction action="{!save}" name="savemethodVTsetting" id="savemethodVTsetting" reRender="thevt" oncomplete="processcomplete();"/>
+            <apex:actionFunction action="{!addItemvt}" name="addItemvtsetting" id="addItemvtsetting" reRender="RefreshPage"  oncomplete="processcomplete();"/>
+            <apex:actionFunction action="{!addcustions}"  name="addqn1" id="addqn1" reRender="customquestion_refreshblock" oncomplete="processcomplete();"/>
+
+
+<div id="content-header">
+    <h1><img alt="Virtual Terminal" title="Virtual Terminal" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/virtual_terminal_icon.png" style="display:inline;vertical-align:top;" width="25" /> Virtual Terminal</h1>                                    
+</div>
+<div class="container-fluid"> 
+    <apex:outputpanel id="thevt">
+        <apex:pageBlock mode="maindetail">
+        
+            <!--   <apex:actionstatus id="vtstatus" startText="processing..."> 
+                 <apex:facet name="stop">
+             <apex:outputPanel >
+                   <apex:outputPanel ><p>Virtual Terminal Settings Saved Successfully.</p></apex:outputPanel>
+                  </apex:outputPanel>
+                 </apex:facet>
+              </apex:actionstatus> -->
+         
+              <apex:pagemessages />
+              
+           
+                <div class="btn-block pagination-centered">
+                      <a class="btn btn-primary" href="javascript:void(0)" onclick="checkvalue();" ><i class="icon-edit icon-white"></i> Update Settings</a>                                                        
+                </div>
+                
+                <!--  <apex:pageBlockButtons>
+                    <apex:commandButton action="{!save}" Value="Update Settings" rerender="thevt" onclick="if(!checkvalue()){return false;}" />
+                </apex:pageBlockButtons> -->
+                
+                
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Virtual Terminal</h5>
+                      </div>
+                      <div class="widget-content"> 
+                        
+                        <div class="overflow_x">            
+                        <apex:pageBlockSection collapsible="true" id="currency">
+                          <apex:pageBlockSectionItem > 
+                            
+                            <!--###############Contacts Selection#################-->
+                            
+                            <apex:outputLabel value="Click & Pledge Account Information" style="font-weight:bold" ></apex:outputLabel>
+                          </apex:pageBlockSectionItem>
+                          <br/>
+                          <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="C&P Account Number:" />
+                            <!-- <apex:inputText value="{!accountnumber}" styleClass="acc"/>-->
+                            <apex:selectList value="{!accountnumber}" size="1" styleclass="acc">
+                              <apex:actionSupport event="onchange" action="{!Currency_Change}" reRender="currency,payment" />
+                              <apex:selectOptions value="{!CnPAccount}"></Apex:selectOptions>
+                            </apex:selectList>
+                          </apex:pageBlockSectionItem>
+                          <br/>
+                          <apex:pageBlockSectionItem > 
+                            <!--###############Contacts Selection#################-->                            
+                            <apex:outputLabel ><b>Payment Description</b></apex:outputLabel>
+                          </apex:pageBlockSectionItem>
+                          <br/>
+                          <apex:pageBlockSectionItem > Payment for:
+                            <apex:inputText value="{!paymentfor}" maxlength="100" styleClass="itemname"/>
+                          </apex:pageBlockSectionItem>
+                          <!-- <apex:pageBlockSectionItem >
+                                          <apex:inputhidden/>
+                                           </apex:pageBlockSectionItem> -->
+                          <apex:pageBlockSectionItem > SKU:
+                            <apex:inputText value="{!skuvalue}" maxlength="100" styleClass="sku"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem > Unit Price {!currency_code}:
+                            <apex:inputText value="{!amountvalue}" styleClass="amt"  maxlength="6" size="6"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem > % Unit Tax Deductible:
+                            <apex:inputText value="{!deductablevalue}" styleClass="deduct" maxlength="5" size="6"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem > % Unit Discount:
+                            <apex:inputText value="{!discountvalue}" styleClass="dc" maxlength="5" size="6"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem > Total Shipping {!currency_code}:
+                            <apex:inputText value="{!shippingvalue}" styleClass="ship" maxlength="6" size="6"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem > % Unit Tax:
+                            <apex:inputText value="{!taxvalue}" styleClass="tax" maxlength="5" size="6"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                            <apex:outputLabel >Convenience Fee: </apex:outputLabel>
+                            <apex:outputPanel >
+                              <apex:inputText value="{!convfee}" styleClass="conv width_initial" maxlength="4" size="3"  />
+                              % + {!currency_code} 
+                              <apex:inputText value="{!convenienceamountvalue}" styleClass="convamount width_initial" maxlength="11" size="6"/>
+                            </apex:outputPanel>
+                          </apex:pageBlockSectionItem>
+                        </apex:pageblockSection>
+                        </div>
+                        <br/>
+
+                        <!------Code for Multi-Products ------------------>
+                        <div class="overflow_x"> 
+                        <apex:pageblockSection columns="1" id="payment">
+                          <apex:outputLabel ><b>Default Items</b></apex:outputLabel>
+                          <apex:outputPanel >
+                            <apex:actionstatus id="statusId" startText="Please wait....">
+                            <apex:facet name="stop">
+                              <apex:outputpanel id="RefreshPage">
+                                <apex:variable value="0" var="rowItemVt"/>
+                                
+                                <apex:datatable value="{!repeatpay}" var="pay" styleClass="table table-bordered table-striped" >
+                                  <apex:outputLabel ><b>Payment Description</b></apex:outputLabel>
+                                  <br/>
+                                    <apex:inputHidden value="{!pay.checkpay}"/>
+                                  <apex:column headerValue="Payment For" >
+                                    <apex:inputText value="{!pay.paymentfor}" maxlength="50" size="15" styleClass="payfor{!rowItemVt}" style="width: 140px;"/>
+                                  </apex:column>
+                                  <apex:column headerValue="SKU" >
+                                    <apex:inputText value="{!pay.skuvalue}" size="10" maxlength="100"  styleClass="skufor{!rowItemVt}"  style="width: 130px;"/>
+                                  </apex:column>
+                                  <apex:column headerValue="Quantity">
+                                    <apex:inputText value="{!pay.quantityValue}" size="6" maxlength="6" styleClass="quantityfor{!rowItemVt}"  style="width: 100px;"/>
+                                  </apex:column>
+                                  <apex:column headerValue="Unit Price({!currency_code})">
+                                    <apex:inputText value="{!pay.amountvalue}" styleClass="amtfor{!rowItemVt}" maxlength="11" size="9"  style="width: 100px;"/>
+                                  </apex:column>
+                                  <apex:column headerValue="Tax Deductible({!currency_code})">
+                                    <apex:inputtext value="{!pay.deductablevalue}" styleClass="deductfor{!rowItemVt}"   maxlength="11" size="9"  style="width: 100px;"/>
+                                  </apex:column>
+                                  <apex:column headerValue="Unit Discount({!currency_code})">
+                                    <apex:inputText value="{!pay.discountvalue}" styleClass="dcfor{!rowItemVt}" maxlength="11" size="9"  style="width: 100px;"/>
+                                  </apex:column>
+                                  <apex:column headerValue="Unit Tax({!currency_code})">
+                                    <apex:inputText value="{!pay.taxvalue}" styleClass="taxfor{!rowItemVt}" maxlength="11" size="9"  style="width: 100px;"/>
+                                  </apex:column>
+                                  <apex:column headerValue="Item Campaign*" rendered="{!IF(prodvalue==false && oppvalue == true,true,false)}">
+                                    <apex:inputtext value="{!pay.campValue}" styleclass="campaign1{!rowItemVt}"  style="width: 130px;"  maxlength="80">
+                                      <c:PaymentAutoCompleteSettings objecttype="campaign" autocomplete_textbox="campaign1{!rowItemVt}"  autocomplete_id="{!rowItemVt}" autocomplete_process="1"/>
+                                    </apex:inputtext>
+                                  </apex:column>
+                                    <apex:inputHidden value="{!pay.RecordId}"/>
+                                  <apex:column >
+                                    <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delVTTable('{!JSENCODE(rowItemVt)}','{!JSENCODE(pay.RecordId)}');"><i class="icon-trash"></i></a></div>
+                                    <!--   <apex:commandButton value="Delete" action="{!delItemvt}" reRender="RefreshPage" status="ItemDeletevalue" >
+                                                                <apex:param name="deletePayment" value="{!rowItemVt}" assignTo="{!DeleteIdvt}"/>             
+                                                                <apex:param name="deletePayment1" value="{!pay.RecordId}" assignTo="{!DeleteFromIdvt}"/>
+                                                           </apex:commandButton>-->
+                                    <apex:actionStatus id="ItemDeletevalue" startText="Deleting..."/>
+                                  </apex:column>
+                                  <apex:column >
+                                    <apex:variable var="rowItemVt" value="{!VALUE(rowItemVt) + 1}" />
+                                  </apex:column>
+                                </apex:datatable>
+                                
+                                <input type="Hidden" value="{!rowItemVt}" class="rowvaluesVt" name="rowvaluesVt"/>
+                                <div class="btn-block pagination-centered"> <a class="btn" href="javascript:void(0)" onclick="addItemvtprocess();" style="margin-left:50px;"><i class="icon-plus-sign"></i> Add New</a> </div>
+                                <!--  <apex:commandButton action="{!addItemvt}" value="Add New" reRender="RefreshPage" status="itemNextRow"  />-->
+                                <apex:actionstatus id="itemNextRow" startText="Please wait...."/>
+                              </apeX:outputPanel>
+                            </apex:facet>
+                            </apex:actionStatus>
+                          </apex:outputPanel>
+                          <apex:pageblocksectionItem rendered="{!IF(prodvalue==false && oppvalue == true,true,false)}" dataStyle="color:#328400;"> * Create NEW Campaigns first before using them in multiple items to avoid duplicate Campaign creation. </apex:pageblocksectionItem>
+                        </apex:pageblockSection>
+                        </div>
+                        <br/>
+                        
+                        <!--------Code for multi-products End -------------->
+                        
+                        <div class="overflow_x"> 
+                        <apex:pageblockSection >
+                          <apex:pageblockSectionItem >
+                            <apex:outputLabel ><b>Tracker and Campaign</b></apex:outputLabel>
+                          </apex:pageblockSectionItem>
+                          <br/>
+                          <apex:pageBlockSectionItem > Tracker :
+                            <apex:inputtext value="{!trackervalue}" maxlength="50"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem > Transaction Campaign:
+                            <apex:inputField value="{!xmlField.CnP_PaaS__Campaign_lp__c}" />
+                            <!--  Transaction Campaign:<apex:inputText value="{!Campaignlookup}" /> --> 
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem > 
+                            
+                            <!--###############Contacts Selection#################-->
+                            
+                            <apex:outputLabel ><b>Recurring Payment</b></apex:outputLabel>
+                          </apex:pageBlockSectionItem>
+                          <br/>
+                          <apex:pageblocksectionItem >
+                            <apex:outputLabel value="Is this a recurring payment :"></apex:outputLabel>
+                            <apex:inputCheckbox value="{!recurringselect}"  styleClass="checkrecur" >
+                              <apex:actionSupport event="onchange" reRender="DisplayRM" action="{!NullRecurring}"/>
+                            </apex:inputCheckbox>
+                          </apex:pageBlockSectionItem>
+                          <br/>
+                          <apex:outputPanel id="DisplayRM">
+                            <apex:pageBlockSection rendered="{!recurringselect==true}" >
+                              <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Recurring Type :"> </apex:outputLabel>
+                                <apex:selectList id="recurringtype" value="{!recurringtype}" size="1" required="false" styleClass="rectype">
+                                  <apex:selectOptions value="{!Comparison}" />
+                                </apex:selectList>
+                              </apex:pageBlockSectionItem>
+                              <br/>
+                              <apex:pageBlockSectionItem labelStyle="font-weight:normal;font-size:12px;width:35%;">
+                                <apex:outputLabel value="Periodicity :"> </apex:outputLabel>
+                                <apex:selectList id="period" value="{!period}" size="1" required="false" >
+                                  <apex:selectOptions value="{!Periodicity}" />
+                                </apex:selectList>
+                              </apex:pageBlockSectionItem>
+                              <br/>
+                              <apex:pageBlockSectionItem labelStyle="font-weight:normal;font-size:12px;width:35%;">
+                                <apex:outputLabel value=" # of Installments:"> </apex:outputLabel>
+                                <apex:inputText value="{!noofinstallments}" maxlength="3" styleClass="ins" size="6" />
+                              </apex:pageBlockSectionItem>
+                            </apex:pageBlockSection>
+                            
+                          </apex:outputPanel>
+                        </apex:pageBlockSection>
+                        </div>
+                        
+                </div><!-- widget-content -->
+                </div><!-- widget-box --> 
+                
+                                       
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Payment Methods</h5>
+                      </div>
+                      <div class="widget-content">     
+                        <apex:pageblockSection columns="2">
+                          <apex:pageblocksectionItem id="CreditCardItem" dataStyle="width:18%;" >
+                            <apex:outputLabel value="Payment Methods"/>
+                          </apex:pageblocksectionItem>  
+                          <apex:pageblocksectionItem dataStyle="width:82%;" >  
+                            <apex:outputpanel styleClass="vttable">
+                              <apex:inputCheckbox value="{!creditcardpayment}" id="Visa_card"  styleClass="visa"/>
+                              <apex:outputLabel value="Credit Card" />
+                              <br />
+                              <apex:inputCheckbox value="{!echeckpayment}" id="e_check" styleClass="eCheck"/>
+                              <apex:outputLabel value="eCheck" />
+                              <br />
+                              <apex:inputCheckbox value="{!invoicepayment}" id="InVoice" styleClass="invoice"/>
+                              <apex:outputLabel value="Invoice" />
+                              <br />
+                              <apex:inputCheckbox value="{!porderpayment}" id="PurchaseOrder" styleClass="po"/>
+                              <apex:outputLabel value="Purchase Order" />
+                              <br />
+                              <apex:inputCheckbox value="{!custompayment}" id="customtype" styleClass="ct">
+                                <apex:actionSupport event="onchange" reRender="custompay"/>
+                              </apex:inputCheckbox>
+                              <apex:outputLabel value="Custom Payment Type" />
+                            </apex:outputpanel>
+                          </apex:pageblocksectionItem>
+                          
+                          <!------- Custom Payment Options ---------->
+                            
+                              <apex:pageblockSectionitem dataStyle="width:18%;">
+                              <apex:outputLabel value=" "/>
+                              </apex:pageblocksectionItem>  
+                              <apex:pageblocksectionItem dataStyle="width:82%;">  
+                               <apex:outputpanel id="custompay" >
+                                <apex:outputPanel rendered="{!custompayment == true}">
+                                <apex:outputPanel id="thebtn" >
+                                  <apex:variable value="0" var="rowCustom"/>
+                                  <apex:repeat value="{!customValues}" var="cus" >
+                                    <apex:inputhidden value="{!cus.RecordId}"/>
+                                    <apex:outputLabel value="Name : " style="display:inline;"/>&nbsp;
+                                    <apex:inputText value="{!cus.strname}"  styleClass="cuspaymentname{!rowCustom}" maxlength="50" onblur="trimvalue(this.value,'cuspaymentname{!rowCustom}')"/>&nbsp;
+                                    <apex:commandbutton value="Delete" action="{!delcustompay}" rerender="thebtn">
+                                      <apex:param name="deleteCustom" value="{!rowCustom}" assignTo="{!DelCustomId}"/>
+                                    </apex:commandbutton>
+                                    <br/>
+                                    <apex:variable var="rowCustom" value="{!VALUE(rowCustom) + 1}" />
+                                  </apex:repeat>
+                                  <input type="hidden" value="{!rowCustom}" class="rowCustom" name="rowCustom"/>
+                                  
+                                  <div class="">
+                                  <apex:commandbutton value="Add" action="{!add}" rerender="thebtn"/>
+                                  </div>
+                                  
+                                </apex:outputPanel>
+                                </apex:outputPanel>
+                               </apex:outputpanel>
+                              </apex:pageblockSectionitem>
+                              
+                            
+                        </apex:pageBlockSection>
+                </div><!-- widget-content -->
+                </div><!-- widget-box --> 
+        
+        
+        
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Receipt Customization</h5>
+                      </div>
+                      <div class="widget-content">        
+                              <apex:pageBlockSection columns="1">
+                                <apex:pageBlockSectionItem >
+                                  <apex:outputLabel value="Send Receipt"/>
+                                  <apex:inputCheckbox value="{!sendreceipt}">
+                                    <apex:actionSupport event="onchange" reRender="Displaysr" action="{!nullsendmessages}"/>
+                                  </apex:inputCheckbox>
+                                </apex:pageBlockSectionItem>
+                              </apex:pageBlockSection>
+                              <apex:outputPanel id="Displaysr" style="margin-top:5px;">
+                                <apex:pageBlockSection columns="1">
+                                  <apex:pageBlockSectionItem >
+                                    <apex:outputPanel >
+                                      <apex:outputLabel value="Organization Information"/>
+                                      <apex:outputLabel value="(max=1500 chars)"/>
+                                    </apex:outputPanel>
+                                    <apex:inputTextarea value="{!organizationinfo}" rows="10" cols="75" styleClass="organizationinfo input-block-level" onkeypress="return imposeMaxLength(event, this, 1500);" onkeyup="return imposeMaxLength(event, this, 1500);"/>
+                                  </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem >
+                                    <apex:outputPanel >
+                                      <apex:outputLabel value="Thank you Message"/>
+                                      <apex:outputLabel value="(max=500 chars)"/>
+                                    </apex:outputPanel>
+                                    <apex:inputTextarea styleClass="input-block-level" value="{!thankyou}" rows="10" cols="75" onkeypress="return imposeMaxLength(event, this, 500);" onkeyup="return imposeMaxLength(event, this, 500);"/>
+                                  </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem >
+                                    <apex:outputPanel >
+                                      <apex:outputLabel value="Terms & Conditions (the following HTML tags are allowed: <P></P><BR /><OL></OL><LI></LI><UL></UL>)"/>
+                                      <apex:outputLabel value="(max=1500 chars)"/>
+                                    </apex:outputPanel>
+                                    <apex:inputTextarea styleClass="input-block-level" value="{!TermsCondition}" rows="10" cols="75" onkeypress="return imposeMaxLength(event, this, 1500);" onkeyup="return imposeMaxLength(event, this, 1500);"/>
+                                  </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem >
+                                    <apex:outputLabel value="Internal Notification (type email addresses separated by semicolon max=1000 chars)" onkeypress="return imposeMaxLength(event, this, 1000);" onkeyup="return imposeMaxLength(event, this, 1000);"></apex:outputLabel>
+                                    <apex:inputTextarea value="{!internalnotifications}" styleClass="internalemaillist  input-block-level" rows="6" cols="75" onkeypress="return imposeMaxLength(event, this, 1000);" onkeyup="return imposeMaxLength(event, this, 1500);"/>
+                                  </apex:pageBlockSectionItem>
+                                </apex:pageBlockSection>
+                              </Apex:outputPanel>
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->
+                
+                 
+ 
+           <!--- Custom Question Mapping  ------------>
+
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Additional Questions</h5>
+                      </div>
+                      <div class="widget-content">  
+                            <apex:outputPanel id="customquestion_refreshblock" >
+                                <apex:inputcheckbox value="{!addqnvt}" style="margin-top:0px;"/> &nbsp; 
+                                <apex:outputLabel value="Allow adding questions in VT" style="display:inline;"></apex:outputLabel>                                
+                                <br/><br/>
+                              <apex:variable value="0" var="rowNumCus"/>
+                              <apex:pageBlockTable value="{!customquestionlist1}" var="cusques" styleClass="table table-bordered table-striped">
+                                  <apex:inputHidden value="{!cusques.questionId}"/>
+                                <apex:column headerValue="Question (max 200 characters)">
+                                  <apex:inputTextarea value="{!cusques.question}" richText="false" onkeypress="return imposeMaxLength(event, this, 200);" onkeyup="return imposeMaxLength(event, this, 200);" rows="3" cols="85" styleClass="qn1{!rowNumCus} input-block-level" onblur="trimvalue(this.value,'qn1{!rowNumCus}');"/>
+                                </apex:column>
+                                <apex:column headerValue="Answer (max 500 characters)">
+                                  <apex:inputTextarea richText="false" cols="85" rows="3" value="{!cusques.answer}"  onkeypress="return imposeMaxLength(event, this, 500);" onkeyup="return imposeMaxLength(event, this, 500);" styleClass="required{!rowNumCus} input-block-level" onblur="trimvalue(this.value,'required{!rowNumCus}');"/>
+                                </apex:column>
+                                <apex:column headerValue="Mandatory" style="text-align:center;">
+                                  <apex:inputCheckbox value="{!cusques.required}"/>
+                                </apex:column>
+                                <apex:column style="text-align:center;">
+                                  <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="deletecustions('{!JSENCODE(rowNumCus)}','{!JSENCODE(cusques.questionId)}');"><i class="icon-trash"></i></a></div>
+                                </apex:column>
+                                <apex:column >
+                                  <apex:variable var="rowNumCus" value="{!VALUE(rowNumCus)+1}"/>
+                                </apex:column>
+                              </apex:pageBlockTable>
+                              
+                              <input type="hidden" value="{!rowNumCus}" class ="rowNumCus"/>
+                              <apex:outputLabel style="color:#328400;">*Separate answers with semicolon for picklist format</apex:outputLabel>
+                              <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0)" onclick="addqn();" style="margin-left:50px;"><i class="icon-plus-sign"></i>Add Question</a> </div>
+                            </apex:outputPanel>
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->
+ 
+
+           <!---- Custom Question Mapping End ------------>
+        </apex:pageBlock>
+        </apex:outputpanel>
+        
+</div>        
+        </apex:form>
+</apex:page>

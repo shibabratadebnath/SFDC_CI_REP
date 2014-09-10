@@ -1,0 +1,415 @@
+<apex:page standardController="CnP_PaaS__XML_Setting__c" extensions="CnP_PaaS.OverviewClass" >
+<apex:sectionHeader title="Overview" subtitle="C&P Settings" />
+    <apex:form >
+      <apex:pageblock >
+      <apex:pageblockButtons >
+            <apex:commandButton value="Switch to C&P Settings tab" action="{!move}"/>          
+        </apex:pageblockButtons>
+        
+       <apex:pageblockSection rendered="{!If(displayXml1.size=0,true,false)}">
+                <apex:outputlabel value="Their is No Record in C&P Settings.Please save a Record in C&P Settings" style="color:#328400;font-weight:bold;"/>
+           </apex:pageblockSection>
+           
+           <apex:outputpanel rendered="{!If(displayXml1.size=1,true,false)}"> 
+             <apex:pageBlockSection >
+                <apex:outputfield value="{!displayXml.Name}"/> 
+            </apex:pageBlockSection>
+            
+                <!--- C&P Account ----->
+            <apex:pageblocksection title="C&P Account">  <!-- rendered="{!IF(displaysetApi.size>0,true,false)}">   -->
+            <apex:outputpanel >
+                <apex:pageblocktable value="{!displaysetApi}"  var="dis" columns="4" style="margin-left:100px;"> 
+                      <apex:column headerValue="C&P Account Name"><apex:outputText value="{!dis.Name}"></apex:outputText></apex:column>
+                     <apex:column headerValue="C&P Account Name"><apex:outputText value="{!dis.CnP_PaaS__CnP_Account_Number__c}"></apex:outputText></apex:column>
+                     <Apex:column headervalue="C&P Account GUID" style="white-space:nowrap;"> <apex:outputText value="{!dis.CnP_PaaS__CnP_Account_GUID__c}"></apex:outputText> </apex:column>
+                     <Apex:column headervalue="C&P Account Status"> <apex:outputText value="{!dis.CnP_PaaS__CnP_Account_Status__c}"></apex:outputText> </apex:column>
+                </apex:pageblocktable>    
+                 </apex:outputpanel>
+            </apex:pageblocksection>
+            
+            
+            
+                    <!----- Contact & Account ------>
+            <apex:pageblockSection title="Contact & Account" columns="1">
+            <apex:outputlabel style="color:#328400;font-weight:bold" value="Account Settings"/>             
+                   <apex:outputField value="{!displayXml.CnP_PaaS__No_Account__c}" rendered="{!displayXml.CnP_PaaS__No_Account__c == true}"/>
+                    <apex:outputField value="{!displayXml.CnP_PaaS__Accounts__c}" rendered="{!displayXml.CnP_PaaS__Accounts__c == true}"/>
+                        <apex:outputtext label="Account Type" Value="Business Account"  rendered="{!IF((displayXml.CnP_PaaS__Account_Type__c == 'businessaccount' && displayXml.CnP_PaaS__Person_Accounts__c == true),true,false)}" />
+                        <apex:outputtext rendered="{!displayXml.CnP_PaaS__Account_Type__c == 'personaccount' && displayXml.CnP_PaaS__Person_Accounts__c == true}" Value="Person Account" label="Account Type" />                       
+                        <apex:outputField value="{!displayXml.CnP_PaaS__Account_Record_Type__c}" rendered="{!displayXml.CnP_PaaS__Person_Accounts__c == true}"/>                                     
+                    <apex:outputField value="{!displayXml.CnP_PaaS__Account_lp__c}" rendered="{!displayXml.CnP_PaaS__Account_lp__c != null}"/>
+                
+                <apex:outputlabel style="color:#328400;font-weight:bold" value="Record Types"/> 
+                            
+                   <apex:outputlabel style="color:#328400;" value="Contact Record Types" rendered="{!If(displayXml.CnP_PaaS__Person_Accounts__c==false || displayXml.CnP_PaaS__Account_Type__c != 'personaccount',true,false)}" /> 
+                <apex:pageblocktable value="{!conrectype}" var="con" style="width:50%;margin-left:100px;" columns="4" rendered="{!IF(displayXml.CnP_PaaS__Person_Accounts__c==false ||displayXml.CnP_PaaS__Account_Type__c != 'personaccount',true,false)}" >     
+                    <Apex:column value="{!con.CnP_PaaS__WID_Condition__c}" headervalue="Condition"/>
+                    <apex:column value="{!con.WID__c }" headerValue="WID"/>
+                    <apex:column value="{!con.CnP_PaaS__Record_Type__c}" headerValue="Record Type"/>
+                </apex:pageblocktable>
+                
+                  <apex:outputlabel style="color:#328400;" value="Account Record Types" rendered="{!displayXml.CnP_PaaS__Person_Accounts__c == false}"/>                         
+                  <apex:pageblocktable value="{!accrecType}" var="acc" style="width:50%;margin-left:100px;" columns="4" rendered="{!displayXml.CnP_PaaS__Person_Accounts__c == false}" >     
+                    <Apex:column value="{!acc.CnP_PaaS__Account_WID_Condition__c}" headervalue="Condition"/>
+                    <apex:column value="{!acc.Account_WID__c }" headerValue="WID"/>
+                    <apex:column value="{!acc.CnP_PaaS__Account_Record_type__c}" headerValue="Record Type"/>
+                </apex:pageblocktable> 
+                <apex:outputlabel style="color:#328400;font-weight:bold;" value="Match Mode"/>
+                    <apex:outputtext label="Conatct Settings" value="Fully Automatic Contact creation" rendered="{!IF(displayXml.CnP_PaaS__Contact_Option__c == 'automatic',true,false)}"/>  
+                    <apex:outputtext label="Conatct Settings" value="Semi Automatic Contact creation" rendered="{!IF(displayXml.CnP_PaaS__Contact_Option__c == 'semiautomatic',true,false)}"/>  
+                    <apex:outputtext label="Conatct Settings" value="Manual Contact creation" rendered="{!IF(displayXml.CnP_PaaS__Contact_Option__c == 'manual',true,false)}"/>  
+                               
+                <apex:outputlabel style="color:#328400;font-weight:bold;" value="Matching Fields for Contact"/>
+                        <apex:pageblocktable value="{!matchingfields_list}" var="match">
+                            <apex:column value="{!match.CnP_PaaS__Field_Type__c}" headerValue="Field Name"/>
+                            <apex:column value="{!match.CnP_PaaS__Field_Map_Values__c}" headerValue="Field Mapping"/>
+                        </apex:pageblocktable>
+               <apex:outputlabel style="color:#328400;font-weight:bold;" value="Mapping Fields for Contact/Account"/>
+                        <apex:pageblocktable value="{!mappingfields_list}" var="match">
+                            <apex:column value="{!match.CnP_PaaS__Field_Type__c}" headerValue="Field Name"/>
+                            <apex:column value="{!match.CnP_PaaS__Field_Map_Values__c}" headerValue="Contact Field Mapping"/>
+                            <apex:column value="{!match.CnP_PaaS__Account_Field_Type__c}" headerValue="Account Field Mapping"/>
+                        </apex:pageblocktable>
+                  <!-- <apex:repeat value="{!confield1}" var="con" rendered="{!IF(confield1.size>0,true,false)}" >     
+                     <Apex:outputtext label="First Name :" value="{!con.Field_Map_Values__c}" rendered="{!con.Field_Map_Values__c != null}"/>                   
+                </apex:repeat> 
+                <apex:repeat value="{!confieldlast}" var="con" rendered="{!IF(confieldlast.size>0,true,false)}" >
+                    <Apex:outputtext label="Last Name :" value="{!con.Field_Map_Values__c}" rendered="{!con.Field_Map_Values__c != null}"/>
+                </apex:repeat>
+                 <apex:repeat value="{!confieldEmail}" var="con" rendered="{!IF(confieldemail.size>0,true,false)}" >
+                     <Apex:outputtext label="Email :" value="{!con.Field_Map_Values__c}" rendered="{!con.Field_Map_Values__c != null}"/>
+                </apex:repeat>                                     
+                <apex:repeat value="{!conphone}" var="con" rendered="{!IF(conphone.size>0,true,false)}" >
+                      <Apex:outputtext label="Phone : " value="{!con.Field_Map_Values__c}" rendered="{!con.Field_Map_Values__c != null}"/>
+                </apex:repeat>
+                
+                <apex:repeat value="{!constreet}" var="con" rendered="{!IF(constreet.size>0,true,false)}" >
+                     <Apex:outputtext label="Street :" value="{!con.Field_Map_Values__c}" rendered="{!con.Field_Map_Values__c != null}"/>
+                </apex:repeat>
+                <apex:repeat value="{!concity}" var="con" rendered="{!IF(concity.size>0,true,false)}" >
+                      <Apex:outputtext label="City :" value="{!con.Field_Map_Values__c}" rendered="{!con.Field_Map_Values__c != null}"/>
+                </apex:repeat>
+                <apex:repeat value="{!constate}" var="con" rendered="{!IF(constate.size>0,true,false)}" >
+                     <Apex:outputtext label="State :" value="{!con.Field_Map_Values__c}" rendered="{!con.Field_Map_Values__c != null}"/> 
+                </apex:repeat>
+                <apex:repeat value="{!conpostal}" var="con" rendered="{!IF(conpostal.size>0,true,false)}" >
+                     <Apex:outputtext label="Postal :" value="{!con.Field_Map_Values__c}" rendered="{!con.Field_Map_Values__c != null}"/>
+                </apex:repeat>
+                <apex:repeat value="{!concountry}" var="con" rendered="{!IF(concountry.size>0,true,false)}" >
+                   <Apex:outputtext label="Country :" value="{!con.Field_Map_Values__c}" rendered="{!con.Field_Map_Values__c != null}"/>
+                </apex:repeat>-->
+            </apex:pageblockSection>
+            
+            
+                    <!---- Opportunity -------->
+       
+           <apex:pageblockSection title="Opportunity" rendered="{!displayXml.CnP_PaaS__Opportunities__c == true}" columns="2">
+                <Apex:outputField value="{!displayXml.CnP_PaaS__Opportunities__c}" />
+                <apex:outputpanel >
+                     <apex:outputField value="{!displayXml.CnP_PaaS__Authorized_Opportunity__c}" label="Authorized"/> Authorized <br/> 
+                     <apex:outputfield value="{!displayXml.CnP_PaaS__Declined_Opportunity__c}"/> Declined <br/> 
+                     <apex:outputfield value="{!displayXml.CnP_PaaS__Invoice_Opportunity__c}"/> Invoice <br/>
+                    <apex:outputfield value="{!displayXml.CnP_PaaS__Purchase_Order_Opportunity__c}"/> Purchase Order<br/>
+                    <apex:outputfield value="{!displayXml.CnP_PaaS__Custom_Payment_Type_Opportunity__c}"/> Custom Payment Type 
+                  </apex:outputpanel>
+                    <apex:outputlabel value="Create a separate opportunity for each of the following fees: "> </apex:outputlabel>
+                    <apex:outputPanel >
+                        <apex:outputfield value="{!displayXml.CnP_PaaS__Tax_Opportunity__c}"/> Tax <br/>
+                        <apex:outputfield value="{!displayXml.CnP_PaaS__Discount_Opportunity__c}"/> Discount<br/>
+                        <apex:outputfield value="{!displayXml.CnP_PaaS__Shipping_Opportunity__c}"/> Shipping <br/>
+                        <apex:outputfield value="{!displayXml.CnP_PaaS__Convenience_Opportunity__c}"/> Convenience Fee 
+                    </apex:outputPanel>
+               
+                <apex:outputField value="{!displayXml.CnP_PaaS__Products__c}"/> <br/>
+                 <apex:outputfield label="Opportunity Contact Role" style="color:#328400;" value="{!displayXml.CnP_PaaS__Contact_Role__c}"/> <br/>
+             <apex:pageblockSection >
+                             
+                 <apex:outputPanel rendered="{!displayXml.CnP_PaaS__Contact_Role__c == true}">                
+                 <apex:pageblocktable value="{!oppconrole}" var="opp"  columns="7" style="margin-left:100px;">
+                 <apex:column headerValue="Condition">
+                    <apex:outputtext value="{!opp.CnP_PaaS__Contact_role_condition__c}" /> </apex:column>
+                    <apex:column value="{!opp.CnP_PaaS__Role_SKU__c}" headervalue="SKU"/>
+                    <Apex:column value="{!opp.CnP_PaaS__Contact_Id__c}" headervalue="Conatct Id"/>
+                    <apex:column value="{!opp.CnP_PaaS__Contact_role_name__c}" headerValue="Contact Role"/>
+                    <apex:column value="{!opp.CnP_PaaS__Primary_Contact_Role__c}" headerValue="Primary Contact Role"/>
+                </apex:pageblocktable>                
+                </apex:outputPanel>
+              </apex:pageblockSection>      <br/>
+               
+                <apex:outputField value="{!displayXml.CnP_PaaS__Customize_Name__c}"/> <br/>
+                <apex:pageblocksectionItem rendered="{!displayXml.CnP_PaaS__Customize_Name__c == true}"> 
+                  
+                     <apex:pageblocktable value="{!customiseName}" var="cus" columns="10" style="margin-left:100px;">
+                         <apex:column headerValue="Condition" value="{!cus.CnP_PaaS__Opportunity_Conditions__c}"/>
+                         <apex:column headerValue="SKU" value="{!cus.CnP_PaaS__SKU_Text__c}"/>
+                         <apex:column headerValue="Text*" value="{!cus.CnP_PaaS__First_Name_Separator__c}"/>
+                         <apex:column headerValue="Field" value="{!cus.CnP_PaaS__Firstname_Prefix__c}"/>
+                         <apex:column headerValue="Text*" value="{!cus.CnP_PaaS__SecondName_Separator__c}"/>
+                         <apex:column headerValue="Field" value="{!cus.CnP_PaaS__SecondName_Prefix__c}"/>
+                         <apex:column headerValue="Text*" value="{!cus.CnP_PaaS__ThirdName_Separator__c}"/>
+                         <apex:column headerValue="Field" value="{!cus.CnP_PaaS__ThirdName_Prefix__c}"/>
+                         <apex:column headerValue="Text*" value="{!cus.CnP_PaaS__Custom_Text__c}"/>
+                     </apex:pageblocktable>               
+                </apex:pageblocksectionItem> <br/>
+               </apex:pageblockSection> 
+                
+        
+              <apex:pageblocksection columns="2" rendered="{!displayXml.CnP_PaaS__Opportunities__c == true}" >
+                  <apex:outputlabel value="Opportunity Stages:" style="color:#328400;font-weight:bold;"></apex:outputlabel> <br/>
+                    <apex:outputtext value="{!displayXml.CnP_PaaS__Oppor_Stage_Name__c}" label="Authorized Transactions"/>                
+                    <apex:outputtext value="{!displayXml.CnP_PaaS__Stage_Declined__c}" label="Declined Transactions"/>                 
+                   <apex:outputtext value="{!displayXml.CnP_PaaS__Stage_Custom_Payment__c}" label="Custom Type Transactions"/>  
+                   <apex:outputtext value="{!displayXml.CnP_PaaS__Stage_Invoice__c}" label="Invoice Transactions"/>                      
+                   <apex:outputtext value="{!displayXml.CnP_PaaS__Stage_Free__c}" label="Free Invoice Transactions"/> 
+                   <apex:outputtext value="{!displayXml.CnP_PaaS__Stage_PO__c}" label="Purchase Order Transactions"/>  
+                     <apex:outputtext value="{!displayXml.CnP_PaaS__Stage_Future__c}" label="Future Transactions"/>                    
+                  </apex:pageblocksection>  <br/>
+               
+             <apex:pageblocksection rendered="{!displayXml.CnP_PaaS__Opportunities__c == true}"> 
+               <apex:outputtext value="{!displayXml.CnP_PaaS__Manual_Opportunities__c}" label="Opportunity Settlements"/> <br/>
+                   <apex:outputtext value="{!displayXml.CnP_PaaS__Lead_source__c}" label="Default Lead Source"/> <br/> 
+              
+              
+                  <apex:pageblocksection rendered="{!IF(displayXml.CnP_PaaS__Products__c == false,true,false)}" >
+                  <apex:outputlabel style="color:#328400;font-weight:bold;" value="Record Types"/> <br/> 
+                      <apex:pageblocktable value="{!recordTypes}" var="type" columns="5" style="margin-left:50px;" >
+                          <apex:column >  </apex:column>
+                           <apex:column headerValue="Opportunity" value="{!type.CnP_PaaS__Condition__c}" />
+                            <apex:column headerValue="SKU" value="{!type.CnP_PaaS__Sku__c}" />
+                            <apex:column headerValue="Record Type" value="{!type.CnP_PaaS__Opportunity_Record_type__c}" />                         
+                      </apex:pageblocktable>
+                  </apex:pageblocksection>    
+                  
+               <apex:pageBlockSection rendered="{!IF( displayXml.CnP_PaaS__Products__c == false,true,false )}">   
+                <apex:outputlabel style="color:#328400;font-weight:bold;" value="Primary Campaign Source"/> <br/> 
+                  <apex:pageblocktable value="{!campSource}" var="camp" style="margin-left:50px;" >                
+                       <apex:column headerValue="Condition" value="{!camp.CnP_PaaS__Campaign_Condition__c}"/>
+                       <apex:column headerValue="SKU" value="{!camp.CnP_PaaS__Campaign_Sku__c}"/>
+                       <apex:column headerValue="Campaign Id" value="{!camp.CnP_PaaS__Campaign__c}"/>
+                  </apex:pageblocktable>    
+                  </apex:pageBlockSection> 
+                   
+                  <apex:pageBlockSection rendered="{!IF((displayXml.CnP_PaaS__Products__c == true),true,false)}" >
+                   <apex:outputlabel value="Product Opportunities :" style="color:#328400;font-weight:bold;"/>  <br/>
+                  <apex:pageblocktable value="{!opppro}" var="pro" columns="5" style="margin-left:50px;" >
+                       <apex:column headerValue="Condition" value="{!pro.CnP_PaaS__Condition__c}" />
+                            <apex:column headerValue="WID" value="{!pro.CnP_PaaS__Sku__c}" />
+                            <apex:column headerValue="Record Type" value="{!pro.CnP_PaaS__Opportunity_Record_type__c}" />    
+                  </apex:pageblocktable>
+                 </apex:pageBlockSection>
+                  
+                   <apex:pageBlockSection rendered="{!IF((displayXml.CnP_PaaS__Products__c == true ),true,false)}" > 
+                  <apex:outputlabel value="New Products :" style="color:#328400;font-weight:bold;"/>   <br/>
+                  <apex:pageblocktable value="{!newproducts}" var="pro" columns="5" style="margin-left:50px;" >
+                       <apex:column headerValue="Condition" value="{!pro.CnP_PaaS__Product_Condition__c}" />
+                            <apex:column headerValue="WID" value="{!pro.Product_Sku__c }" />
+                            <apex:column headerValue="Record Type" value="{!pro.CnP_PaaS__Product_Record_Type__c}" />    
+                  </apex:pageblocktable>
+                  </apex:pageBlockSection>
+           </apex:pageblocksection> 
+            
+                    <!-------- Virtual Terminal ------>
+           <apex:pageblockSection title="Virtual Terminal">
+           <apex:outputField value="{!displayXml.CnP_PaaS__Account_Number__c}"/><br/>
+            <apex:outputLabel style="color:#328400;font-weight:bold;" Value="Payment Description" /> <br/>   
+                 <apex:outputField value="{!displayXml.CnP_PaaS__Payment_For__c}"/>
+                 <apex:outputField value="{!displayXml.CnP_PaaS__SKU__c}"/>
+                 <apex:outputField value="{!displayXml.CnP_PaaS__Amount__c}"/>
+                  <apex:outputField value="{!displayXml.CnP_PaaS__Deductible_Charge__c}"/>
+                   <apex:outputField value="{!displayXml.CnP_PaaS__Discount__c}"/>
+                    <apex:outputField value="{!displayXml.CnP_PaaS__Shipping__c}"/>
+                     <apex:outputField value="{!displayXml.CnP_PaaS__Tax__c}"/>
+                    <!-- <apex:outputField value="{!displayXml.Convenience_Fee__c}"/> -->
+                       <apex:pageblocksectionItem >
+                         <apex:outputtext value="Convenience Fee" label="Convenience Fee" /> 
+                             <apex:outputpanel rendered="{!displayXml.CnP_PaaS__Convenience_Fee__c != null || displayXml.CnP_PaaS__Convenience_Amount__c!=null}" >
+                             {!displayXml.CnP_PaaS__Convenience_Fee__c}% + ${!displayXml.CnP_PaaS__Convenience_Amount__c}  </apex:outputpanel>
+                        </apex:pageblocksectionItem>
+                <apex:pageblocktable value="{!recordSet}" var="rec" columns="9" style="margin-left:100Px;" >
+                    <apex:column value="{!rec.CnP_PaaS__Donation_Pay__c}" headerValue="Payment For" />
+                    <apex:column value="{!rec.CnP_PaaS__Donation_SKU__c}" headerValue="SKU" />
+                    <apex:column value="{!rec.CnP_PaaS__Donation_Quantity__c}" headerValue="Quantity" />
+                    <apex:column value="{!rec.CnP_PaaS__Unit_Item__c}" headerValue="Unit price" />
+                    <apex:column value="{!rec.CnP_PaaS__Unit_Tax__c}" headerValue="Unit Tax" />
+                    <apex:column value="{!rec.CnP_PaaS__Unit_Discount__c}" headerValue="Unit Discount" />
+                    <apex:column value="{!rec.CnP_PaaS__Tax_Deductible__c}" headerValue="Tax Deductible" /> 
+                    <apex:column value="{!rec.CnP_PaaS__Donation_Campaign__c}" headerValue="Item Campaign" />
+                </apex:pageblocktable><br/>
+              
+                  <apex:outputLabel style="color:#328400;font-weight:bold;" Value="Tracker & Campaign" /> <br/>          
+                     <apex:outputfield value="{!displayXml.CnP_PaaS__Tracker__c}"/>
+                     <apex:outputfield value="{!displayXml.CnP_PaaS__Campaign_lp__c}"/>
+                     
+               <apex:outputLabel style="color:#328400;font-weight:bold;" Value="Payment Methods : " /> <br/>                      
+                       <apex:outputField value="{!displayXml.CnP_PaaS__Payment_Credit_Card__c}" style="padding-left:40Px;" /> 
+                       <apex:outputField value="{!displayXml.CnP_PaaS__Payment_eCheck__c}"  style="padding-left:40Px;"/>
+                       <apex:outputField value="{!displayXml.CnP_PaaS__Payment_Invoice__c}" style="padding-left:40Px;" /> 
+                       <apex:outputField value="{!displayXml.CnP_PaaS__Payment_Purchase_Order__c}" style="padding-left:40Px;" />
+                       <apex:outputField value="{!displayXml.CnP_PaaS__Payment_Custom_Payment_Type__c}" style="padding-left:40Px;" /> 
+                        <apex:outputField value="{!displayXml.CnP_PaaS__Custom_Payment_Options__c}" rendered="{!displayXml.CnP_PaaS__Custom_Payment_Options__c != null}"/> <br/>
+                </apex:pageblockSection>  
+                                              
+               <apex:pageblocksection >
+                 <apex:outputLabel style="color:#328400;font-weight:bold;" Value="Recurring Payment" /> <br/> 
+                 <apex:outputfield value="{!displayXml.CnP_PaaS__Recurring__c}" label="Is this a Recurring Payment:"></apex:outputfield> 
+                    <apex:outputPanel rendered="{!displayXml.CnP_PaaS__Recurring__c == true}">
+                        <apex:outputlabel value="Recurring Type:  " style="font-weight:bold;"/>
+                          <apex:outputLabel value="Subscription" rendered="{!displayXml.CnP_PaaS__Recurring_Type__c=='2'}"> </apex:outputlabel>
+                          <apex:outputLabel value="Installment" rendered="{!displayXml.CnP_PaaS__Recurring_Type__c=='1'}">  </apex:outputlabel> <br/>
+                        <apex:outputlabel value="Periodicity:  " style="font-weight:bold;"/> 
+                            <apex:outputLabel value="Week"  rendered="{!displayXml.CnP_PaaS__Periodicity__c=='7'}">  </apex:outputLabel>
+                            <apex:outputLabel value="2 Weeks"  rendered="{!displayXml.CnP_PaaS__Periodicity__c=='1'}">  </apex:outputLabel>
+                            <apex:outputLabel value="Month"  rendered="{!displayXml.CnP_PaaS__Periodicity__c=='2'}"> </apex:outputLabel>
+                            <apex:outputLabel value="2 Months"  rendered="{!displayXml.CnP_PaaS__Periodicity__c=='3'}">  </apex:outputLabel>
+                            <apex:outputLabel value="Quarter"  rendered="{!displayXml.CnP_PaaS__Periodicity__c=='4'}">  </apex:outputLabel>
+                            <apex:outputLabel value="Half Year"  rendered="{!displayXml.CnP_PaaS__Periodicity__c=='5'}">  </apex:outputLabel>
+                            <apex:outputLabel value="Yearly"  rendered="{!displayXml.CnP_PaaS__Periodicity__c=='6'}">  </apex:outputLabel> <br/>
+                        <apex:outputlabel value="# of Installments:  " style="font-weight:bold;"/>{!displayXml.CnP_PaaS__Number_Of_Installments__c}
+                    </apex:outputPanel>
+                 </apex:pageblocksection>      
+                         
+            <apex:pageblocksection columns="1">            
+                <apex:outputField value="{!displayXml.CnP_PaaS__Send_Receipt__c}"/>                
+                     <apex:pageblockSectionItem >
+                        <apex:outputlabel value="Organization Information:  " style="font-weight:bold;white-space:nowrap;"/> {!displayXml.CnP_PaaS__Organization_Information__c} </apex:pageblockSectionItem>
+                        <apex:pageblockSectionItem ><apex:outputlabel value="Thank you Message:  " style="font-weight:bold;white-space:nowrap;"/> {!displayXml.CnP_PaaS__Thank_you__c} </apex:pageblockSectionItem>
+                        <apex:pageblockSectionItem ><apex:outputlabel value="Terms & Conditions:  " style="font-weight:bold;white-space:nowrap;"/> {!displayXml.CnP_PaaS__Terms_Conditions__c}</apex:pageblockSectionItem>
+                        <apex:pageblockSectionItem ><apex:outputlabel value="Internal Notification:  " style="font-weight:bold;white-space:nowrap;"/> {!displayXml.CnP_PaaS__Internal_Notifications__c}</apex:pageblockSectionItem>
+                        
+                        <!-- <apex:pageblockSectionItem rendered="{!displayXml.Send_Receipt__c == true}">
+                        <apex:outputlabel value="Thank You Message:  " style="font-weight:bold;"/> {!displayXml.CnP_PaaS__Thank_you__c}  </apex:pageblockSectionItem>
+                        <apex:pageblockSectionItem rendered="{!displayXml.Send_Receipt__c == true}">
+                        <apex:outputlabel value="Terms & Conditions:  " style="font-weight:bold;"/> {!displayXml.CnP_PaaS__Terms_Conditions__c} </apex:pageblockSectionItem>-->                  
+                 
+             </apex:pageblocksection>     <br/>
+
+                
+              <apex:pageblocksection columns="1">
+                <apex:outputField value="{!displayXml.CnP_PaaS__Add_Questions__c}"/> 
+                     <apex:pageblocktable value="{!addqstnVt}" var="vt" rendered="{!displayXml.CnP_PaaS__Add_Questions__c == true}" style="margin-left:100px;width:50%" >
+                           <apex:column headerValue="Custom Question" value="{!vt.CnP_PaaS__Question__c}" />
+                            <apex:column headerValue="Custom Answer" value="{!vt.CnP_PaaS__Custom_Answer__c}" />
+                            <apex:column headerValue="Mandatory Question" value="{!vt.CnP_PaaS__Mandatory_question__c}" />    
+                     </apex:pageblocktable>
+                </apex:pageblocksection>           
+                      <!--  <apex:outputlabel value="Custom Question " /> {!addqstnVt[0].Question__c} <br/>
+                        <apex:outputlabel value="Custom Answer  " /> {!addqstnVt[0].Custom_Answer__c} <br/>
+                        <apex:outputlabel value="Mandatory Question  " /> {!addqstnVt[0].Mandatory_question__c}-->
+                    
+           
+            
+                <!---- Custom Question Mapping ------>
+          <apex:pageblockSection title="Custom Question Mapping">
+            <apex:outputlabel style="color:#328400;font-weight:bold;" value="Custom Answer Map Field Settings"/> <br/>
+                  <apex:pageblocktable value="{!cusAnswermap}" var="cus" columns="9" style="margin-left:100Px;">
+                     <apex:column value="{!cus.CnP_PaaS__Object_Map__c}" headerValue="Object Map" />
+                    <apex:column value="{!cus.CnP_PaaS__Field_Map__c}" headerValue="Field Map" />
+                    <apex:column value="{!cus.CnP_PaaS__Condition__c}" headerValue="Condition" />
+                    <apex:column value="{!cus.CnP_PaaS__Sku__c}" headerValue="SKU" />
+                    <apex:column value="{!cus.Name}" headerValue="Custom Text" />
+                  </apex:pageblocktable>   <br/>
+               <apex:outputlabel style="color:#328400;font-weight:bold;" value="Custom Question Map Field Settings"/> <br/>   
+             <apex:pageblocktable value="{!cusqstnmap}" var="cus" columns="9" style="margin-left:100Px;"  >
+                    <apex:column value="{!cus.CnP_PaaS__Object_Map__c}" headerValue="Object Map" />
+                    <apex:column value="{!cus.CnP_PaaS__Field_Map__c}" headerValue="Field Map" />
+                    <apex:column value="{!cus.Name}" headerValue="Question" />
+                     <apex:column value="{!cus.CnP_PaaS__Original_Answer__c}" headerValue="Answer*" />
+                      <apex:column value="{!cus.CnP_PaaS__Replaced_Answer__c}" headerValue="then Replace text with*" />
+                  </apex:pageblocktable>                      
+            </apex:pageblockSection>
+            
+            <apex:pageblocksection title="Swiper1">
+                <apex:outputField value="{!displayXml.CnP_PaaS__Activate_Swiper1__c}"/>
+            </apex:pageblocksection>
+            
+            <apex:pageblocksection title="SMTP Settings">
+                <apex:pageblocktable value="{!smtpset}" var="smtp" >
+                        <apex:column headerValue="Display Name" value="{!smtp.name}" />
+                            <apex:column headerValue="Server Port Number(SMTP)" value="{!smtp.Server_Port_Number_SMTP__c }" />
+                            <apex:column headerValue="Outgoing Mail Server(SMTP)" value="{!smtp.CnP_PaaS__Outgoing_Mail_Server_SMTP__c}" />  
+                            <apex:column headerValue="Enable SSL" value="{!smtp.CnP_PaaS__Enable_SSL__c}" />
+                            <apex:column headerValue="API User" value="{!smtp.CnP_PaaS__API_User__c}" />  
+                            <apex:column headerValue="Sender Email" value="{!smtp.CnP_PaaS__Sender_Email__c}" />   
+                            <apex:column headerValue="Sender Name" value="{!smtp.CnP_PaaS__Sender_Name__c}" />                         
+             <!--   <apex:outputField value="{!smtpSet.Name}" label="Display Name"/>
+                <apex:outputField value="{!smtpset.Outgoing_Mail_Server_SMTP__c}"/>
+                <apex:outputField value="{!smtpset.Server_Port_Number_SMTP__c }"/>
+                <apex:outputField value="{!smtpset.Enable_SSL__c}"/>
+                <apex:outputField value="{!smtpset.API_User__c}"/>-->
+                </apex:pageblocktable>
+            </apex:pageblocksection>
+            
+          <!--  <apex:pageblocksection title="Autoresponder Defaults">
+                <apex:outputfield value="{!autodefaults.TagsNew__c}"/>
+                <apex:outputfield value="{!autodefaults.Mail_From_Name__c}"/>
+                <apex:outputfield value="{!autodefaults.Mail_From_Address__c}"/>
+                <apex:outputfield value="{!autodefaults.Replay_To_Address__c}"/>
+                <apex:outputfield value="{!autodefaults.Subject__c}"/>
+                <apex:outputfield value="{!autodefaults.BCC_Email_Address__c}"/>
+            </apex:pageblocksection>           
+            <Apex:pageblocksection title="AutoResponder">
+                <apex:outputfield value="{!responder.Name}"/>                
+            </Apex:pageblocksection>  -->
+
+
+         <!--   <Apex:pageblockSection title="Countries & States" columns="2" rendered="{!IF(countriesboolean == true && statesboolean == true, false,true)}">-->
+         <Apex:pageblockSection title="Countries & States" columns="2" rendered="{!IF(displayXml.CnP_PaaS__Country_Format__c != '' && displayXml.CnP_PaaS__State_Format__c != '', true,false)}">
+                <apex:outputtext value="Using Full Country Name" label="Country Address Format"   rendered="{!displayXml.CnP_PaaS__Country_Format__c == 'full'}"/>
+                <apex:outputtext value="Using Country Code Abbrevation" label="Country Address Format"   rendered="{!displayXml.CnP_PaaS__Country_Format__c == '2'}"/>
+                <apex:outputtext value="Using Full State/Province Name" label="State Address Format" rendered="{!displayXml.CnP_PaaS__State_Format__c == 'full'}"/>
+                <apex:outputtext value="Using State/Province Abbrevation" label="State Address Format"   rendered="{!displayXml.CnP_PaaS__State_Format__c == '2'}"/>
+            </Apex:pageblockSection>
+            <apex:pageBlockSection title="Notification">
+               <apex:pageBlockTable value="{!NotificationList}" var="notif">
+                    <apex:column value="{!notif.CnP_PaaS__Notifier_Task__c}"/>
+               </apex:pageBlockTable>
+            </apex:pageBlockSection>
+            <apex:pageblocksection title="Connections" columns="1">
+            <apex:outputText value="{!relationships}" label="Relationships defined"/>
+            </apex:pageblocksection>
+             <apex:pageblocksection title="Contribution Statistics" columns="1">
+              <apex:outputLabel value="Opportunity Match" style="color:#328400;font-weight:bold;"/>
+            
+          
+            <apex:pageblocktable value="{!connectstat}" var="connect" columns="3" style="width:50%">
+                     <apex:column value="{!connect.CnP_PaaS__SKU_Condition_Connect__c}" headerValue="Condition" />
+                    <apex:column value="{!connect.CnP_PaaS__SKU_value__c}" headerValue="SKU" />
+                   
+                  </apex:pageblocktable>
+                   </apex:pageblocksection>
+                    <apex:outputLabel value="Rank Factors" style="color:#328400;font-weight:bold;"/>
+            <table class="list table table-bordered" >
+                          <tr class="headerRow">
+                             <td class="headerRow" colspan="1">My Donations</td>
+                             <td class="headerRow" colspan="1">Donor’s Donations</td>
+                          </tr> 
+                          <tr class="dataRow">
+                              <td class="dataCell" colspan="1"><i><apex:outputLabel value="Personal Contributions ::">  </apex:outputLabel></i></td>
+                              <td class="dataCell" colspan="1"><i><apex:outputLabel value="Personal Contributions ::">   </apex:outputLabel></i></td>
+                          </tr>
+                          <tr class="dataRow">
+                             <td class="dataCell" colspan="1"> <apex:outputLabel value="Total:   " style="margin-left:20px;margin-top:10px;">   &nbsp;&nbsp;{!displayXml.Personal_Donations_Rank_Factor__c}%</apex:outputLabel></td>
+                             <td class="dataCell" colspan="1"> <apex:outputLabel value="Total:   " style="margin-left:20px;margin-top:10px;">   &nbsp;&nbsp;{!displayXML.Donor_s_Donations_Rank_Factor__c}%</apex:outputLabel></td>
+                          </tr>
+                          <tr class="dataRow">
+                             <td class="dataCell" colspan="1"> <apex:outputLabel value="Count:  " style="margin-left:20px;margin-top:10px;">   {!displayXML.CnP_PaaS__Personal_Donations_Count_Factor__c}%</apex:outputLabel></td>
+                             <td class="dataCell" colspan="1"> <apex:outputLabel value="Count:   " style="margin-left:20px;margin-top:10px;">{!displayXML.Raised_Donations_Count_Factor__c }%</apex:outputLabel></td>
+                          </tr>
+                          <tr class="dataRow">
+                              <td class="dataCell" colspan="1"><i><apex:outputLabel value="Raised Contributions ::">  </apex:outputLabel></i></td>
+                              <td class="dataCell" colspan="1"><i><apex:outputLabel value="Raised Contributions ::">   </apex:outputLabel></i></td>
+                          </tr>
+                           <tr class="dataRow">
+                             <td class="dataCell" colspan="1"> <apex:outputLabel value="Total:   " style="margin-left:20px;margin-top:10px;">   &nbsp;&nbsp;{!displayXML.Raised_Donations_Rank_Factor__c}%</apex:outputLabel></td>
+                             <td class="dataCell" colspan="1"> <apex:outputLabel value="Total:   " style="margin-left:20px;margin-top:10px;">   &nbsp;&nbsp;{!displayXML.Donor_s_Raised_Donations_Rank_Factor__c}%</apex:outputLabel></td>
+                          </tr>
+                          <tr class="dataRow">
+                             <td class="dataCell" colspan="1"> <apex:outputLabel value="Count:   " style="margin-left:20px;margin-top:10px;">  {!displayXML.CnP_PaaS__Raised_Donations_Count_factor__c}%</apex:outputLabel></td>
+                             <td class="dataCell" colspan="1"> <apex:outputLabel value="Count:   " style="margin-left:20px;margin-top:10px;">   {!displayXML.CnP_PaaS__Donors_Raised_Donations_Count_factor__c}%</apex:outputLabel></td>
+                          </tr>
+                      </table>   
+           
+            </apex:outputpanel>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,315 @@
+<apex:page controller="CnP_PaaS.SettingsController" extensions="CnP_PaaS.ContactMapController" action="{!loadhelpContent}">
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__DataTables,'js/jquery.dataTables.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+ <style>
+.helpLink {
+       position:relative;       
+    }
+   /* .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    }*/
+.sample th{
+    font-weight:normal;
+}
+.skualg div {
+    margin-left:20px;
+}
+    .radio input[type="radio"]
+    {
+    margin-left:40px;
+    }
+
+    #RecurringSec{
+    position: absolute;
+    width: 100%;
+    }
+    .reclabel{
+        width: 111px;
+        display: block;
+        float: left;
+    }
+    body .bPageBlock .pbBody .labelCol {
+    
+    font-weight:normal;
+    font-size:12px;
+    
+    }
+.btn1{
+    color:#333;
+    margin: 1px;
+    padding: 4px 3px;
+    border: 1px solid #B5B5B5;
+    border-bottom-color: #7F7F7F;
+    background: #E8E8E9 url('/img/alohaSkin/btn_sprite.png') repeat-x right top;
+    font-weight: bold;
+    font-size: .9em;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    text-decoration:none;
+}
+.btn1 a hover{
+   text-decoration:none;
+}
+.black_overlay{
+    display: none;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index:1001;
+    -moz-opacity: 0.8;
+    opacity:.40;
+    filter: alpha(opacity=80);
+}
+.items {
+    font-size:13px;https://cnp-paas.na9.visual.force.com/s.gif
+    color:#000;
+    width: 60%;
+    text-align: left;
+    border-collapse: collapse;
+    box-shadow: 0 0 5px #CCC;
+    border: 1px solid #666;
+  }
+.items thead {
+     background:#999;
+}
+.items th {
+        font-size: 12px;
+        background:#999;        
+        background-repeat:repeat-x;
+        padding:6px 6px 0px 6px;
+        font-weight:600;
+        color:#FFF;
+}
+.items td {
+    padding:10px 10px 0px 10px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #CCC;
+    color:#666;
+}
+.items tbody td {
+  height:20px;
+  padding-bottom:2px;  
+}
+.items .requiredInput .requiredBlock{
+  bottom:1px;
+}
+.items .btn {
+ padding:0px;
+}
+.dataTables_wrapper{
+   width:100% !important;
+} 
+.dataTables_filter{
+   //width:-1% !important;
+}
+
+</style>
+
+
+<script>
+//jQuery=$.noConflict();
+   jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+          
+    function countryprocess(){
+           jQuery("#light").attr('style','display:block');
+           jQuery("#fade").attr('style','display:block');
+           return true;
+    }
+    function processcomplete(){
+            jQuery("#light").attr('style','display:none');
+           jQuery("#fade").attr('style','display:none');
+    }  
+    
+      function reladdfunction(value){
+    var t=0;
+    var rowNumrel= jQuery(".rowNumrel").val();
+    var reg_rel = /^([A-Za-z\_\-\ ])+$/;
+    var relname = jQuery.trim(jQuery('.relname'+value).val());
+    if(relname.length <2){
+             t++;
+             alert("Relationship Name should have atleast 2 characters");
+            jQuery(".relname"+value).focus();
+            return false;
+      }
+      if(relname!="" && !reg_rel.test(relname)){
+            t++;
+            alert("Please enter only Alphabetic _ -  and space for Relationship Name");
+            jQuery(".relname"+value).focus();
+            return false;
+       }    
+        for(var j=1;j<rowNumrel;j++){
+             var relname_dup = jQuery(".relname"+j).text();
+           
+             if(relname.toLowerCase() == relname_dup.toLowerCase())
+             {
+                                 t=t+1;
+                                 alert("Error: Duplicate Name found! " + relname+ ',' + relname_dup ); 
+                                 jQuery(".relname"+j).focus();
+                                 return false;
+             } 
+               
+         
+
+        }
+       if(t==0)
+       {
+          return true;
+       }else{
+          return false;
+       }
+       
+    }
+ /* function reladdfunction1(){
+    var t=0;
+    var rowNumrel= jQuery(".rowNumrel").val();
+    var reg_rel = /^([A-Za-z\_\-\ ])+$/;
+   
+    for(var j=0;j<rowNumrel;j++){
+             var relname = jQuery.trim(jQuery('.relname'+j).val() ? jQuery('.relname'+j).val() : jQuery('.relname'+j).text());
+            
+              if(relname.length <2){
+                     t++;
+                     alert("Relationship Name should have atleast 2 characters");
+                    jQuery(".relname"+j).focus();
+                    return false;
+              }
+              if(relname!="" && !reg_rel.test(relname)){
+                    t++;
+                    alert("Please enter only Alphabetic _ -  and space for Relationship Name");
+                    jQuery(".relname"+j).focus();
+                    return false;
+               }
+     }
+       if(t==0)
+       {
+          return true;
+       }else{
+          return false;
+       }
+       
+    }*/
+    
+    
+  </script>
+   <!-- <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/ConstantContact/html-admin/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/ConstantContact/html-admin/css/main.css"/> -->
+<apex:form >
+                  <div id="light" class="white_content">   
+                       <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="We are processing your request. Please wait..." style="height: 15px;width: 20px;"  /><br/>
+                       <apex:outputlabel value="We are processing your request. Please wait..."  />
+                   </div>
+                   <div id="fade" class="black_overlay"></div>
+                   
+                <div class="padding_5" style="float:right;">
+                   <apex:outputLink styleClass="helpLink align_right"  rendered="{!subTab['Settings']['Relationships'].display=='true'}" >
+                      <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo_10]').css('display','block');" />
+                      <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo_10]').css('display','block');" style="display:inline;"/>
+                    </apex:outputLink>
+                    <apex:outputPanel id="Foo_10" styleClass="video"  >
+                      <ul style="padding-left:5px;" >
+                        {!subTab['Settings']['Relationships'].description} <br/>
+                        <br/>
+                        <apex:outputpanel rendered="{!subTab['Settings']['Relationships'].ActiveLink=='true'}">
+                          <li><a href="{!subTab['Settings']['Relationships'].link}" target="_blank" >{!subTab['Settings']['Relationships'].strlink}</a> <br/>
+                          </li>
+                        </apex:outputpanel>
+                        <apex:outputpanel rendered="{!subTab['Settings']['Relationships'].ActiveVideo=='true'}">
+                          <li> <a href="{!subTab['Settings']['Relationships'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['Relationships'].strvideo}</a></li>
+                        </apex:outputpanel>
+                      </ul>
+                    </apex:outputPanel>
+                    </div>
+
+<div id="content-header">
+    <h1><img alt="Connect" title="Connect" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/social_icon.png" style="display:inline;vertical-align:top;" width="25" /> Connections</h1>                                    
+</div>
+<div class="container-fluid"> 
+                      
+ <apex:pageblock mode="maindetail">
+ 
+                     
+ 
+                   <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Connections</h5>
+                      </div>
+                      <div class="widget-content"> 
+
+                           <div class="btn-block pagination-centered">
+                             <apex:commandButton styleClass="btn btn-primary" action="{!addnewReltable}" value="Add New" reRender="relpanel" status="NextRowStatus"  onclick="if(!countryprocess()){return false;}" oncomplete="processcomplete();"/>
+                           </div>
+                              
+                           <apex:outputPanel id="relpanel">
+                              <script>
+                                 $(document).ready(function(){
+                                   $('.datatables').dataTable({
+                                            "bJQueryUI": true,
+                                            "sScrollY": "500px",
+                                            "bPaginate": false,
+                                            "bScrollCollapse": true,
+                                            aoColumnDefs: [
+                                              { aTargets: [0], bSortable: true}] 
+                                     });
+                                 })
+                               </script>    
+                            
+                             <apex:variable value="0" var="rowNumrel"/>
+                             <apex:pageblocktable value="{!reltable}" var="rel" id="reltable" styleclass="datatables table table-bordered table-striped" >
+                                <apex:column headerValue="Connection Type">
+                                   <apex:outputtext value="{!rel.Name}" rendered="{!IF(rel.Id == editrelid,false,true)}" styleClass="relname{!rowNumrel}" />
+                                    <apex:inputField value="{!rel.Name}" rendered="{!IF(rel.Id == editrelid,true,false)}" styleClass="relname{!rowNumrel}" />
+                                </apex:column>
+                                <apex:column headerValue="" style="text-align:right;" styleClass="nowrap">
+                                  <apex:commandbutton action="{!editrel}" value="Edit" rerender="relpanel" rendered="{!IF(rel.Id == editrelid,false,true)}"  style="display:{!IF(relationshipcheck[rel.Name]==rel.Name,'none !important','')};"  >
+                                   <apex:param name="editrelid" value="{!rel.Id}" assignTo="{!editrelid}"/>
+                                  </apex:commandbutton>
+                                  <apex:commandbutton action="{!updaterel}" value="Update" rerender="relpanel" rendered="{!IF(rel.Id == editrelid,true,false)}"  onclick="if(!reladdfunction('{!rowNumrel}')) return false;" />
+                                   <apex:commandbutton action="{!cancelrel}" value="Cancel" rerender="relpanel" rendered="{!IF(rel.Id == editrelid,true,false)}"/>
+                                  <apex:commandbutton action="{!deleterel}" value="Delete" rerender="relpanel" rendered="{!IF(rel.Id == editrelid,false,true)}" status="statusIdForDeleteRel" onclick="if(!countryprocess()){return false;}" oncomplete="processcomplete();" style="display:{!IF(relationshipcheck[rel.Name]==rel.Name,'none !important','')};"  >
+                                  <!-- style="display:{!IF(relationshipcheck[rel.Name]==rel.Name,'none','')};" -->
+                        
+                                    <apex:param name="delrelid" value="{!rel.Id}" assignTo="{!delrelid}"/>
+                                  </apex:commandbutton>
+                                <apex:actionstatus id="statusIdForEditRel" startText="Please wait....">                                
+                                     <apex:facet name="stop"/>                                                    
+                                </apex:actionstatus>
+                                  <apex:actionstatus id="statusIdForDeleteRel" startText="Please wait....">                                
+                                     <apex:facet name="stop"/>                                                    
+                                </apex:actionstatus>
+                                  <apex:variable var="rowNumrel" value="{!VALUE(rowNumrel) + 1}"/>
+                                </apex:column>
+                               
+                            </apex:pageblocktable>
+                             <input type="hidden" value="{!rowNumrel}" class="rowNumrel" name="rowNumrel"/>                                                                                      
+                                 
+                             <apex:actionstatus id="NextRowStatus" startText="Please wait...."/>  
+                                     
+                           </apex:outputPanel>   
+
+
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                         
+ 
+  </apex:pageblock>
+</div>  
+  
+</apex:form>
+</apex:page>

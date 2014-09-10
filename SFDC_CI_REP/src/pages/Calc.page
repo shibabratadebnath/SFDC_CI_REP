@@ -1,0 +1,12 @@
+<apex:page controller="calc">
+  <apex:form >
+  <apex:pagemessages ></apex:pagemessages>
+  Enter 1st num:<apex:inputtext value="{!num1}"/>
+  Enter 2nd num:<apex:inputtext value="{!num2}"/><br/>
+  <apex:commandButton value="add" action="{!add}"/>
+  <apex:commandButton value="sub" action="{!sub}"/>
+  <apex:commandButton value="mul" action="{!mul}"/>
+  <apex:commandButton value="div" action="{!div}"/><br/>
+   Your Name is : <apex:outputtext value="{!op}"/>
+</apex:form>
+</apex:page>

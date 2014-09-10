@@ -1,0 +1,149 @@
+<apex:page controller="CnP_PaaS.SettingsController" extensions="CnP_PaaS.ContactMapController" action="{!loadhelpContent}">
+<style>
+.Stages td input{
+    margin-top:0px;
+} 
+.Stages td label{
+    display:inline;
+}
+</style>
+<apex:form >
+<script type="text/javascript">
+/*function processcomplete(){   
+           jQuery("#light").attr('style','display:none');
+           jQuery("#fade").attr('style','display:none');           
+    }
+     function countryprocess(){
+     alert('hi');
+           jQuery("#light").attr('style','display:block');
+           jQuery("#fade").attr('style','display:block');
+            return true;
+    }  */
+   function countriesstates(){
+   
+    loaddatabase();
+    processstart();
+   }
+   function savecountry(){
+    savecountrystate();
+    processstart();
+   }
+   function deletecountry(){
+    deletecountrystates();
+   processstart();
+  }
+
+ </script>
+                 <div class="padding_5" style="float:right;">
+                     <apex:outputLink styleClass="helpLink align_right" rendered="{!subTab['Settings']['Countries'].display=='true'}">
+                          <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo8]').css('display','block');" />
+                          <apex:image value="/s.gif" styleClass="helpIcon"  onmouseover="jQuery('[id$=Foo8]').css('display','block');" style="display:inline;"/>
+                        </apex:outputLink>
+                        <apex:outputPanel id="Foo8" styleClass="video"  >
+                          <ul style="padding-left:5px;" >
+                            {!subTab['Settings']['Countries'].description} <br/>
+                            <br/>
+                            <apex:outputpanel rendered="{!subTab['Settings']['Countries'].ActiveLink=='true'}" >
+                              <li> <a href="{!subTab['Settings']['Countries'].link}" target="_blank" >{!subTab['Settings']['Countries'].strlink}</a> <br/>
+                              </li>
+                            </apex:outputpanel>
+                            <apex:outputpanel rendered="{!subTab['Settings']['Countries'].ActiveVideo=='true'}" >
+                              <li> <a href="{!subTab['Settings']['Countries'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['Countries'].strvideo}</a> </li>
+                            </apex:outputpanel>
+                          </ul>
+                        </apex:outputPanel>
+                      </div>
+                      
+<div id="content-header">
+    <h1><img alt="Countries &amp; States" title="Countries &amp; States" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/countries_states_icon.png" style="display:inline;vertical-align:top;" width="25" /> Countries &amp; States</h1>                                    
+</div>
+<div class="container-fluid"> 
+                      
+<apex:pageBlock mode="maindetail">
+
+              <div id="light" class="white_content">
+                   <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="height: 15px;width: 20px;"  /><br/>
+                   <apex:outputlabel value="We are processing your request. Please wait..."  />
+               </div>
+               <div id="fade" class="black_overlay"></div>               
+               
+                      <apex:actionFunction action="{!loaddatabase}" name="loaddatabase" id="loaddatabase" reRender="complete,savemessage"  oncomplete="processcomplete();" status="SaveCountryStatus1"/>
+                      <apex:actionFunction action="{!save}" name="savecountrystate" id="savecountrystate" status="SaveCountryStatus" rerender="complete,SaveCountryStatus" oncomplete="processcomplete();"/>
+                      <apex:actionFunction action="{!deletecountrystates}" name="deletecountrystates" oncomplete="processcomplete();" rerender="complete"/>
+             
+
+
+                       <div class="btn-block pagination-centered">
+                       <a class="btn btn-primary" href="javascript:void(0)" onclick="countriesstates();" ><i class="icon-refresh icon-white"></i> Synchronize Country and State/Province Database</a>    
+                    <!--   <apex:commandButton value="Synchronize Country & State/Province Database" action="{!loaddatabase}" reRender="complete,savemessage" onclick="if(!countryprocess()){return false;}" oncomplete="processcomplete();" status="SaveCountryStatus1"/>-->
+                       [Requires ~8MB of data storage]
+                       </div>
+                       
+                       
+                       <apex:outputPanel id="savemessage">
+                         <apex:actionstatus id="SaveCountryStatus1" startText="Processing...">
+
+                               <apex:facet name="stop">
+                                   <apex:outputPanel rendered="{!databasesave  == true}">
+                                        <apex:outputPanel >
+                                        <div class="alert alert-success">Country and State/Province data updated Successfully.</div>
+                                        </apex:outputPanel> 
+                                    </apex:outputPanel>
+                                </apex:facet>
+
+                          </apex:actionstatus> 
+                       </apex:outputpanel>
+                       
+                       
+                       <apex:outputPanel id="complete">
+                               <apex:outputPanel rendered="{!processdone}" >
+                               
+                          <div class="widget-box">
+                          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                            <h5>Address Format</h5>
+                          </div>
+                          <div class="widget-content">
+                      
+                                   <apex:pageBlockSection columns="1"> 
+                                       <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="Country Address Format"></apex:outputLabel>
+                                            <apex:selectRadio layout="pageDirection" value="{!country_format}" styleClass="Stages noborder">
+                                                   <apex:selectOption itemLabel="Use full Country name" itemValue="full"></apex:selectOption>
+                                                   <apex:selectOption itemLabel="Use Country code abbreviation (e.g. United States = US)" itemValue="2"></apex:selectOption>
+                                            </apex:selectRadio>
+                                       </apex:pageBlockSectionItem>
+                                        <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="State/Province Address Format"></apex:outputLabel>
+                                            <apex:selectRadio layout="pageDirection" value="{!state_format}"  styleClass="Stages noborder">
+                                                   <apex:selectOption itemLabel="Use full State/Province name" itemValue="full"></apex:selectOption>
+                                                   <apex:selectOption itemLabel="Use State/Province abbreviation (e.g. California = CA)" itemValue="2"></apex:selectOption>
+                                            </apex:selectRadio>
+                                       </apex:pageBlockSectionItem>
+                                       </apex:pageBlockSection>
+                                       
+                                       <br/>
+                                       <div class="btn-block pagination-centered">
+                                           <a class="btn btn-primary" href="javascript:void(0)" onclick="savecountry();" ><i class="icon-ok icon-white"></i> Save</a>
+                                           <!-- <apex:commandButton value="Save" action="{!save}" status="SaveCountryStatus" rerender="complete,SaveCountryStatus"/>-->
+                                           <a class="btn btn-primary" href="javascript:void(0)" onclick="deletecountry();" ><i class="icon-trash icon-white"></i> Delete and Reset</a>
+                                              <!--<apex:commandbutton value="Delete and Reset" action="{!deletecountrystates}"  rerender="complete" onclick="if(!countryprocess()){return false;}" oncomplete="processcomplete();"/>-->
+                                       </div>
+                                       
+                                       <apex:actionstatus id="SaveCountryStatus" startText="Processing...">                                   
+                                       <apex:facet name="stop">
+                                          <apex:outputPanel rendered="{!savecountrystatus==true}">
+                                            <apex:outputPanel ><div class="alert alert-success">Country and State/Province Settings Saved Successfully.</div></apex:outputPanel> 
+                                          </apex:outputPanel>                            
+                                        </apex:facet>
+                                        </apex:actionstatus> 
+                                        
+                                </div>
+                                </div>    
+                               </apex:outputpanel>
+                              </apex:outputPanel> 
+
+                       
+</apex:pageBlock> 
+</div>      
+</apex:form>
+</apex:page>

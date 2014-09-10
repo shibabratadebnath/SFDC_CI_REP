@@ -1,0 +1,1894 @@
+<apex:page title="C&P General Ledgers" controller="CnP_PaaS.ledgercontroller" extensions="CnP_PaaS.classcontroller,CnP_PaaS.autoCompleteController" sidebar="false" action="{!loadhelpContent}">
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__DataTables,'js/jquery.dataTables.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+
+<style>
+.btn {
+display: inline-block!important;
+padding: 4px 12px!important;
+margin-bottom: 0!important;
+font-size: 14px!important;
+line-height: 20px!important;
+color: #333!important;
+text-align: center!important;
+text-shadow: 0 1px 1px rgba(255,255,255,0.75)!important;
+vertical-align: middle!important;
+cursor: pointer!important;
+background-color: #f5f5f5!important;
+background-image: -moz-linear-gradient(top,#fff,#e6e6e6)!important;
+background-image: -webkit-gradient(linear,0 0,0 100%,from(#fff),to(#e6e6e6))!important;
+background-image: -webkit-linear-gradient(top,#fff,#e6e6e6)!important;
+background-image: -o-linear-gradient(top,#fff,#e6e6e6)!important;
+background-image: linear-gradient(to bottom,#fff,#e6e6e6)!important;
+background-repeat: repeat-x!important;
+border: 1px solid #bbb!important;
+border-color: #e6e6e6 #e6e6e6 #bfbfbf!important;
+border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25)!important;
+border-bottom-color: #a2a2a2!important;
+-webkit-border-radius: 4px!important;
+-moz-border-radius: 4px!important;
+border-radius: 4px!important;
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff',endColorstr='#ffe6e6e6',GradientType=0)!important;
+filter: progid:DXImageTransform.Microsoft.gradient(enabled=false)!important;
+-webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05)!important;
+-moz-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05)!important;
+box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05)!important;
+}
+.btn-primary {
+color: #fff!important;
+text-shadow: 0 -1px 0 rgba(0,0,0,0.25)!important;
+background-color: #006dcc!important;
+background-image: -moz-linear-gradient(top,#08c,#04c)!important;
+background-image: -webkit-gradient(linear,0 0,0 100%,from(#08c),to(#04c))!important;
+background-image: -webkit-linear-gradient(top,#08c,#04c)!important;
+background-image: -o-linear-gradient(top,#08c,#04c)!important;
+background-image: linear-gradient(to bottom,#08c,#04c)!important;
+background-repeat: repeat-x!important;
+border-color: #04c #04c #002a80!important;
+border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25)!important;
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0044cc',GradientType=0)!important;
+filter: progid:DXImageTransform.Microsoft.gradient(enabled=false)!important;
+}
+.apexp .bPageBlock.apexDefaultPageBlock .pbBody {
+margin: 0px;
+}
+.helpLink {
+position:relative;
+}
+.video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+     /* margin-left:920Px;*/
+    }
+    a.filelink {
+
+         display:block;
+         text-decoration:none;
+         color:#333333;
+         padding:5px;
+         background-color:#FAFAFA;
+         border:solid 1px #666666;
+         margin-top:15px;
+         float:left;
+         margin-left:20px;
+    }
+a.filelink:hover {
+         background-color:#333333;
+         color:#FFFFFF;
+    }
+.items {
+    font-size:13px;https://cnp-paas.na9.visual.force.com/s.gif
+    color:#000;
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+    box-shadow: 0 0 5px #CCC;
+    border: 1px solid #666;
+  }
+.items thead {
+     background:#999;
+}
+.items th {
+        font-size: 12px;
+        background:#999;        
+        background-repeat:repeat-x;
+        padding:6px 6px 0px 6px;
+        font-weight:600;
+        color:#FFF;
+         
+}
+.items td {
+    padding:10px 10px 0px 10px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #CCC;
+    color:#666;
+}
+
+.items tbody td {
+  height:20px;
+  padding-bottom:2px;  
+
+}
+.downbtn {
+    text-decoration:none;
+    border-radius: 3px 3px 3px 3px;
+    border-style: solid;
+    border-width: 1px;
+    color: #666666;
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-left: 5px;
+    padding: 4px 4px;background-color:#FFFFFF;
+
+    }
+.items .requiredInput .requiredBlock{
+  bottom:1px;
+
+}
+.items .btn {
+ padding:0px;
+}
+
+/********************Sub items table *****************/
+
+.subitems {
+    font-size:13px;https://cnp-paas.na9.visual.force.com/s.gif
+    color:#000;
+    margin-left:205px;
+    width: 50%;
+    text-align: left;
+    border-collapse: collapse;
+    box-shadow: 0 0 5px #CCC;
+    border: 1px solid #666;
+  }
+.subitems thead {
+     background:##98B;
+}
+.subitems th {
+        font-size: 12px;
+        background:#98B;        
+        background-repeat:repeat-x;
+        padding:6px 6px 0px 6px;
+        font-weight:600;
+        color:#FFF;
+         
+}
+.subitems td {
+    padding:10px 10px 0px 10px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #CCC;
+    color:#666;
+}
+
+.subitems tbody td {
+  height:20px;
+  padding-bottom:2px;
+}
+.downbtn {
+    text-decoration:none;
+    border-radius: 3px 3px 3px 3px;
+    border-style: solid;
+    border-width: 1px;
+    color: #666666;
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-left: 5px;
+    padding: 4px 4px;background-color:#FFFFFF;
+    }
+.subitems .requiredInput .requiredBlock{
+  bottom:1px;
+}
+.subitems .btn {
+ padding:0px;
+}
+/******************Sub items table end ***************/
+.black_overlay{
+    display: none;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index:1001;
+    -moz-opacity: 0.8;
+    opacity:.40;
+    filter: alpha(opacity=80);
+}
+.white_content {
+    display: none;
+    position: absolute;
+    text-align: center;
+    top: 40%;
+    left: 49%;
+    background-color: #000;
+    border-radius:5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border:1px solid #000;
+    padding: 16px;
+    z-index:1002;
+    overflow: auto;
+} 
+</style>
+<script type="text/javascript">
+   jQuery=$.noConflict();
+   
+    jQuery(function(){
+          jQuery(".video").mouseout(function(){             
+              jQuery(this).fadeOut(8000);             
+          })
+     });
+   
+   jQuery(document).ready(function() {
+               jQuery(".leftnav").accordion({
+                   accordion:false,
+                   speed: 500,
+                   closedSign: '+',
+                   openedSign: '-'
+                   
+               });
+               jQuery('.startdate').prop('readonly', true);
+               jQuery('.enddate').prop('readonly', true);
+    });
+   
+    function ChangeClassDisplay(id_value){
+         var class_value = jQuery("#"+id_value).attr('class');
+         if(class_value=='displayclassdata'){
+           jQuery('.childrowclassdata_hide'+id_value).show();
+           jQuery("#"+id_value).removeClass('displayclassdata').addClass('childrowclassdata_hide');
+         }
+         if(class_value=='childrowclassdata_hide'){
+           jQuery('.childrowclassdata_hide'+id_value).hide();
+           jQuery("#"+id_value).removeClass('childrowclassdata_hide').addClass('displayclassdata');
+         }
+    }
+    
+    function DynamicDatePicker(d_id){
+        DatePicker.pickDate(false,d_id.id,false);
+    }
+    
+    function ChangeDisplay(id_value, classvalue){
+         var class_value = jQuery("#"+id_value).attr('class');
+         if(class_value=='displaydata'){
+           jQuery('.childrowdata_hide'+classvalue).show();
+           jQuery("#"+id_value).removeClass('displaydata').addClass('childrowdata_hide');
+         }
+         if(class_value=='childrowdata_hide'){
+            jQuery('.childrowdata_hide'+classvalue).hide();
+            jQuery("#"+id_value).removeClass('childrowdata_hide').addClass('displaydata');
+         }
+    } 
+     
+    function processcomplete(type){          
+               jQuery("#light").attr('style','display:none');
+               jQuery("#fade").attr('style','display:none'); 
+    }
+    
+    function countryprocess(type){          
+               jQuery("#light").attr('style','display:block');
+               jQuery("#fade").attr('style','display:block');          
+               //return true;
+    }   
+       
+   
+    function saveupdateledger(value){
+       var rowNumlgr = jQuery(".rowNumlgr").val();      
+       var t=0;
+       for(var i=0;i<=rowNumlgr;i++){
+           var accounttype= jQuery(".accounttype"+i).val();
+           var accountname= jQuery(".accountname"+i).val();
+           var subaccountof= jQuery(".subaccountof"+i).val();
+           var accountnumber= jQuery.trim(jQuery(".accountnumber"+i).val()) ? jQuery.trim(jQuery(".accountnumber"+i).val()) :  jQuery.trim(jQuery(".accountnumber"+i).text());
+           var description=jQuery(".description"+i).val();  
+           var notes = jQuery(".notes"+i).val();        
+             
+           if(accountnumber == ''){
+               t=1;
+               alert('Please enter Account Number');               
+               jQuery(".accountnumber"+i).focus();
+               return false;
+           }
+          /* if(accountnumber.length <3){
+               t=1;
+               alert('Please enter atleast two characters in Account Number');
+               jQuery(".accountnumber"+i).focus();
+               return false;
+          }*/
+       }
+      // editid(value);       
+        if(t == 0){
+            countryprocess();
+            updateid(value);
+            return true;
+        }else{
+            return false;
+        }
+    }    
+    
+   
+  function saveledger(){
+       var rowNumlgr = jQuery(".rowNumlgr").val();
+      // alert(rowNumlgr);
+       var t=0;
+       for(var i=0;i<rowNumlgr;i++){
+           var accounttype= jQuery(".accounttype"+i).val();
+           var accountname= jQuery(".accountname"+i).val();
+           var subaccountof= jQuery(".subaccountof"+i).val();
+           var accountnumber= jQuery.trim(jQuery(".accountnumber"+i).val()) ? jQuery.trim(jQuery(".accountnumber"+i).val()) : jQuery.trim(jQuery(".accountnumber"+i).text());
+           var description=jQuery(".description"+i).val();  
+           var notes = jQuery(".notes"+i).val();
+        
+           if(accountnumber == ''){
+                  t=1;
+                  alert('Please enter Account Number');
+                  jQuery(".accountnumber"+i).focus();
+                  return false;
+           }
+          /* if(accountnumber.length <3){
+               t=1;
+               alert('Please enter atleast two characters in Account Number');
+               jQuery(".accountnumber"+i).focus();
+               return false;
+          }*/
+       }   
+       
+        if(t == 0){
+          updateid();
+          countryprocess();
+          return true;
+        }else{
+            return false;
+        }
+    } 
+    
+    function saveopporallocationdatavalidation(){
+    var t= 0;
+    var rowNumopporallocation = jQuery(".rowNumopporallocation").val();
+   
+      var reg_sku=/^([a-zA-Z0-9\_\:\-\ ])+$/;
+      for(var i=0;i<rowNumopporallocation;i++){
+       var conditionallocationsku=jQuery(".conditionallocationsku"+i).val();
+            var sku_camp_conditions = jQuery.trim(jQuery(".sku_camp_conditions"+i).val());
+            var camp_sku_conditions = jQuery.trim(jQuery(".camp_sku_conditions"+i).val());
+            var allocationcampaignid= jQuery.trim(jQuery(".allocationcampaignid"+i).val());
+            
+            var opporclassid =   jQuery(".opporclassid"+i).val();
+            var classnamevalue = jQuery(".classnamevalue"+i).val();
+            var ledgernumberopp= jQuery(".ledgernumberopp"+i).val();
+            var ledgeridopp= jQuery(".ledgeridopp"+i).val();
+           
+            var subclassnameopp_value = jQuery.trim(jQuery(".subclassnameopp_value"+i).val());
+            var subclassnameopp = jQuery.trim(jQuery(".subclassnameopp"+i).val());
+            
+         if(sku_camp_conditions != '' && !reg_sku.test(sku_camp_conditions)){
+             t= t+1;
+             alert("Please enter only Alphanumeric _ - : and space for SKU");
+             jQuery(".sku_camp_conditions"+i).focus();
+             return false;
+         }
+         if(sku_camp_conditions == "" && conditionallocationsku!= 'IS' && conditionallocationsku!= 'Is' && conditionallocationsku!="Is Recurring" && conditionallocationsku!="WID Is" && conditionallocationsku!="Any WID" && conditionallocationsku!= "any SKU" && conditionallocationsku!= "Campaign" && conditionallocationsku!="Convenience" && conditionallocationsku!="Tax" && conditionallocationsku!="Discount" && conditionallocationsku!="Shipping"){
+              t=1;
+              alert("Please enter valid SKU when condition is 'Starts With' or 'Ends With' or 'Includes' ");
+              jQuery(".sku_camp_conditions"+i).focus();
+              return false;
+         }   
+        /* if(sku_camp_conditions == "" && (conditionallocationsku=="WID Is" || conditionallocationsku=="Any WID")){
+              t=1;
+              alert("Please enter valid SKU when condition is 'Starts With' or 'Ends With' or 'Includes' ");
+              jQuery(".sku_camp_conditions"+i).focus();
+              return false;    
+         }*/
+   
+    if(conditionallocationsku== 'Campaign' && camp_sku_conditions  == ''){
+            t=1;
+            alert("Please enter Campaign");
+            jQuery(".camp_sku_conditions"+i).focus();
+            return false;
+    }
+    
+    if(conditionallocationsku == 'Campaign' && camp_sku_conditions  == '' && allocationcampaignid == ''){
+        t=1;
+        alert("Please select proper campaign from list");
+        jQuery(".camp_sku_conditions"+i).focus();
+        return false;
+    }
+    
+    if(conditionallocationsku == 'Campaign' && camp_sku_conditions  != '' && allocationcampaignid == ''){
+        t=1;
+        alert("Please select proper campaign from list");
+        jQuery(".camp_sku_conditions"+i).focus();
+        return false;
+    }   
+    
+      if(classnamevalue == '' || opporclassid == '' ){
+                t=t+1;
+                alert('Please enter Proper Class Name');
+                jQuery(".classnamevalue"+i).focus();
+                return false;
+       }
+             
+       if(classnamevalue== '' && subclassnameopp != ''){
+                t=t+1;
+                alert('Please enter Class Name');
+                jQuery(".classnamevalue"+i).focus();
+                return false;
+        }
+
+             if(subclassnameopp == ''  || subclassnameopp_value== ''){
+                 t=t+1;
+                 alert('Please enter Proper Subclass name');
+                 jQuery(".subclassnameopp"+i).focus();
+                 return false;
+             }
+             
+            if(ledgernumberopp == ''|| ledgeridopp == '') {
+                 t=t+1;
+                 alert("Please enter Proper Account Number");
+                 jQuery(".ledgernumberopp"+i).focus();
+                 return false;
+             }
+      }
+      
+      
+      if(t==0){     
+          countryprocess();
+          saveopporallocationdata();
+          return true;
+      }else{
+          return false;
+      }
+}    
+    
+    function saveskuallcation(){
+   
+        var t=0;
+        
+        /****************** top row ******************/
+        
+      var rowNumledger = jQuery(".rowvaluesledgerName").val();
+      var reg_sku=/^([a-zA-Z0-9\_\:\-\ ])+$/;
+      for(var i=0;i<=rowNumledger;i++){
+        var conditionsku= jQuery.trim(jQuery(".conditionsku"+i).val());
+        var conditionsallocation = jQuery.trim(jQuery(".conditionsallocation"+i).val());
+        var campaignledger = jQuery.trim(jQuery(".campaignledger"+i).val());
+        var ledgercampaignid = jQuery.trim(jQuery(".ledgercampaignid"+i).val());
+         if(conditionsku != '' && !reg_sku.test(conditionsku)){
+             t= t+1;
+             alert("Please enter only Alphanumeric _ - : and space for SKU");
+             jQuery(".conditionsku"+i).focus();
+             return false;
+         }
+         if(conditionsku == "" && conditionsallocation!= 'IS' && conditionsallocation!= 'Is' && conditionsallocation!="Is Recurring" && conditionsallocation!= "any SKU" && conditionsallocation != "Campaign" && conditionsallocation!="Convenience" && conditionsallocation!="Tax" && conditionsallocation!="Discount" && conditionsallocation!="Shipping" ){
+                      t=1;
+                      alert("Please enter valid SKU when condition is 'Starts With' or 'Ends With' or 'Includes' ");
+                      jQuery(".conditionsku"+i).focus();
+                      return false;
+         }   
+     }     
+   
+    if(conditionsallocation == 'Campaign' && campaignledger  == ''){
+            t=1;
+            alert("Please enter Campaign");
+            jQuery(".campaignledger"+i).focus();
+            return false;
+    }
+    
+   
+    if(conditionsallocation == 'Campaign' && campaignledger != '' && ledgercampaignid == ''){
+        t=1;
+        alert("Please select proper campaign from list");
+        jQuery(".campaignledger"+i).focus();
+        return false;
+    }
+    
+    
+    
+        /**************** top row end ****************/
+        var rowNumSubAllocation = jQuery(".rowNumSubAllocation").val();
+     
+        var percentamount=0;
+        for(var i=0;i<rowNumSubAllocation;i++){
+     var  amount=jQuery(".percentamount"+i).val();
+          percentamount+=parseFloat(jQuery(".percentamount"+i).val());
+           var ledgernumber= jQuery(".ledgernumber"+i).val();
+           var ledgerid= jQuery(".ledgerid"+i).val();
+           var classname= jQuery(".classname"+i).val();
+           var classid= jQuery(".classid"+i).val();
+           var subclassname= jQuery(".subclassname"+i).val();
+           var subclassid= jQuery(".subclassid"+i).val();
+           var reg_percent = /^([0-9])+$/;
+         
+             if(classname == '' || classid == ''){
+                t=t+1;
+                alert('Please enter Proper Class Name');
+                jQuery(".classname"+i).focus();
+                return false;
+             }
+             
+             if(classname == '' && subclassname != ''){
+                t=t+1;
+                alert('Please enter Class Name');
+                jQuery(".classname"+i).focus();
+                return false;
+             }
+             
+             if(subclassname == ''|| subclassid == ''){
+                 t=t+1;
+                 alert('Please enter Proper Subclass name');
+                 jQuery(".subclassname"+i).focus();
+                 return false;
+             }
+             if(ledgerid == ''){
+               t = t+1;
+               alert('Please Enter Proper Ledger Number');
+               jQuery(".ledgernumber"+i).focus();
+               return false;
+             }
+             
+             if(ledgerid == '' && ledgernumber == ''){
+               t = t+1;
+               alert('Please Enter Proper Ledger Number');
+               jQuery(".ledgernumber"+i).focus();
+               return false;
+             }
+         
+           if(amount== ''){
+               t=t+1;
+               alert('Please enter allocation %');
+               jQuery(".amount"+i).focus();
+               return false;
+           }
+         else  if(amount!= '')
+           {
+               if(isNaN(amount))
+                {
+                   t = 1;
+                   alert("Please enter a number or decimal value in Auto Allocation");
+                   jQuery(".percentamount"+i).focus();
+                   return false;
+                }
+            /* else if(amount < 0 || amount < 0.0 ){
+                t = 1;
+                alert("Please enter amount greater than 0");
+                jQuery(".percentamount"+i).focus();
+                return false;
+              }*/
+            else if(amount > 100 || amount < -100){
+                t = 1;
+                alert("Please enter percentage less than 100");
+                jQuery(".percentamount"+i).focus();
+                return false;
+              }
+          }
+         
+        }
+     if(percentamount>100)
+      {
+       t = 1;
+                alert("Please enter percentage less than 100");
+                jQuery(".percentamount"+i).focus();
+                return false;
+      }
+       if(t == 0){
+            countryprocess();
+            saveskuallcationid();
+            return true;
+        }else{
+            return false;
+        }
+        
+    }  
+  function calculateprice()
+  {
+   var rowNumSubAllocation = jQuery(".rowNumSubAllocation").val();
+     
+        for(var i=0;i<rowNumSubAllocation;i++){
+        var amount=jQuery(".percentamount"+i).val();
+          jQuery(".percentamount"+i).val(parseFloat(amount).toFixed(2));
+          }
+        
+  } 
+ 
+ function addopporallocationdata1(){
+     countryprocess();
+     addopporallocationdata();
+     
+ }
+ 
+ function addallocation(){
+     countryprocess();
+     addallocation1();
+    
+ }
+ function editallocation(value){
+     countryprocess();
+     editallocation1(value);
+    
+ }
+ function addsubAllocation(value){
+     countryprocess();
+     addsubAllocation1(value);    
+ }
+ function DeleteOpportunityAllocation(value1,value2){
+     if(confirm("Are you sure you want to permanently delete this record?")==true){ 
+         countryprocess();
+         DeleteOpportunityAllocation1(value1,value2);
+     }
+ }
+ 
+ function DeleteMainAllocation(value1,value2){
+     if(confirm("Are you sure you want to permanently delete this record?")==true){ 
+          countryprocess();
+          DeleteMainAllocation1(value1,value2);
+     }
+    
+ }
+ 
+ function ledgeredit(value){
+     countryprocess();
+     editid(value); 
+ }
+ 
+ function ledgertable(){
+     countryprocess();
+     ledgertable1();    
+ }
+ 
+ function deleteclass(value1,value2){
+     if(confirm("Are you sure you want to permanently delete this record?")==true){ 
+         countryprocess();
+         deleteclass1(value1,value2);
+      }  
+ }
+ function ledgercancelid(value){
+     countryprocess();
+     cancelid(value);    
+ }
+ 
+    function deletefunction(value){
+        if(confirm("Are you sure you want to permanently delete this record?")==true){ 
+                countryprocess();
+                delid(value);
+          }     
+    } 
+        
+  function editmainclass(value){
+      countryprocess();
+      editclass(value);
+      
+  }      
+        
+  function addclassmain(){
+      countryprocess();
+      addclass();
+  }  
+  
+  function cancelclass(){
+      countryprocess();
+      cancelclass1();
+ 
+  }
+  function cancelallocation(){
+      countryprocess();
+      cancelallocation1();
+  }
+  function addsubclass(){
+      countryprocess();
+      addsubclass1();
+  }    
+  
+  function deletesubclass(value1,value2,value3){
+      if(confirm("Are you sure you want to permanently delete this record?")==true){ 
+          countryprocess();
+          deletesubclass1(value1,value2,value3);
+       }   
+  }
+        
+    function DeleteAllocation(value1, value2,value3){
+        countryprocess();
+        DeleteAllocation1(value1,value2,value3);
+    }
+     
+   function hidesubclass(value){
+            var classname = jQuery(".classname"+value).val();
+            var subclassname=jQuery(".subclassname"+value).val();
+            var classid = jQuery(".classid"+value).val();
+   }
+   
+   function otheropportunitiescheckallocation(classvalue){
+     
+        var conditionallocationsku=jQuery(".conditionallocationsku"+classvalue).val();
+         if(conditionallocationsku == 'Campaign'){
+              jQuery('.sku_camp_conditions'+classvalue).hide();
+              jQuery('.camp_sku_conditions'+classvalue).show();
+         }else  if(conditionallocationsku == 'Is Recurring' || conditionallocationsku == 'any SKU' || conditionallocationsku == 'Any WID' || conditionallocationsku== 'Tax' || conditionallocationsku== 'Discount' || conditionallocationsku== 'Convenience' || conditionallocationsku== 'Shipping'){
+              jQuery(".sku_camp_conditions"+classvalue).attr('disabled',true); 
+              jQuery(".sku_camp_conditions"+classvalue).val(''); 
+              jQuery(".camp_sku_conditions"+classvalue).val(''); 
+              jQuery('.sku_camp_conditions'+classvalue).show();
+              jQuery('.camp_sku_conditions'+classvalue).hide();          
+        }else{
+              jQuery(".sku_camp_conditions"+classvalue).attr('disabled',false); 
+              jQuery(".camp_sku_conditions"+classvalue).val(''); 
+              jQuery('.sku_camp_conditions'+classvalue).show();
+              jQuery('.camp_sku_conditions'+classvalue).hide();
+        }
+    }      
+    
+    function checkallocation(classvalue){
+     
+          var conditionsallocation=jQuery(".conditionsallocation"+classvalue).val();
+          if(conditionsallocation == 'Campaign'){
+              jQuery('.conditionsku'+classvalue).hide();
+              jQuery('.campaignledger'+classvalue).show();
+          }else if(conditionsallocation == 'Is Recurring' || conditionsallocation == 'any SKU' || conditionsallocation == 'Tax' || conditionsallocation == 'Discount' || conditionsallocation == 'Convenience' || conditionsallocation == 'Shipping'){
+                  jQuery(".conditionsku"+classvalue).attr('disabled',true); 
+                  jQuery(".conditionsku"+classvalue).val('');
+                  jQuery('.conditionsku'+classvalue).show();
+                  jQuery('.campaignledger'+classvalue).hide(); 
+          }else{
+                jQuery(".conditionsku"+classvalue).attr('disabled',false); 
+                jQuery(".campaignledger"+classvalue).val(''); 
+                jQuery('.conditionsku'+classvalue).show();
+                jQuery('.campaignledger'+classvalue).hide();
+          }
+    }  
+   
+    function hidesubclassopp(value){
+            var classnamevalue = jQuery(".classnamevalue"+value).val();
+            var subclassnameopp =jQuery(".subclassnameopp"+value).val();
+            var opporclassid= jQuery(".opporclassid"+value).val();
+            if(classnamevalue != ''){
+                  if(opporclassid != ''){
+                       vemp.ledgercontroller.Subclassdetails(opporclassid,function(result,event){
+                              if(event.status){
+                                 // var str ='<option value="">Select</option>';
+                                 var str='';
+                                  jQuery.each(result,function(val,item){                           
+                                          str +='<option value="'+item.Id+'">'+item.Name+'</option>';
+                                  })                                 
+                                  jQuery(".subclassnameopp"+value).append(str);
+                              }
+                       }); 
+                  }
+            }
+         /* if(classnamevalue != ''){
+              if(opporclassid!= ''){
+                   subclasseslist(opporclassid);
+               }
+                  jQuery(".subclassnameopp"+value).attr('disabled',false);  
+            
+          }else{   
+              jQuery(".subclassnameopp"+value).attr('disabled',true); 
+          } */
+   }
+   function subclasschange(classvalue,value){       
+         jQuery(".subclassnameopp_value"+classvalue).val(value);
+         jQuery(".subclassnameopp"+classvalue).val(value);
+   }
+   
+   
+    function hidesubclasstotal(){ 
+        var rowNumSubAllocation= jQuery(".rowNumSubAllocation").val();      
+        for(var i=0;i<=rowNumSubAllocation;i++){
+            var classname = jQuery(".classname"+i).val();
+            var subclassname=jQuery(".subclassname"+i).val();
+         /* if(classname != ''){
+              jQuery(".subclassname"+i).attr('disabled',false);  
+          }else{   
+              jQuery(".subclassname"+i).attr('disabled',true); 
+            }*/
+        }
+   }
+   
+   
+   function ReadFile_validation(){
+       var t=0;
+       var contentFile= jQuery(".contentFile").val();
+     
+      /* if(contentFile == ''){
+           t=1;
+           alert("Please enter ledger file");
+            jQuery(".contentFile"+i).focus();
+            return false;
+       }*/
+      
+        if(contentFile  ==""){
+      
+                   t=t+1;
+                   alert(" Please select a Valid CSV File");
+                  return false;
+              }else if(contentFile.match(/\.(csv||CSV)$/) ){
+                    
+                   t=0;               
+                 
+              }else{ 
+                   
+                   t=t+1;
+                   alert("Please Choose Only CSV file Format!");
+                   jQuery(".contentFile").val("");
+                   jQuery(".contentFile").focus();
+                   return false;
+               } 
+      
+      
+       if(t==0){
+      
+           ReadFilecontent();
+           return true;
+       }else{
+           return false;
+       }
+   }
+    
+    function goallocationreport(){
+        var s_date = jQuery('.startdate').val();
+        var e_date = jQuery('.enddate').val();
+        var limit = jQuery('.limitvalue').val();  
+        var validformat= /^\d{1,2}\/\d{1,2}\/\d{4}$/;  
+      // var today = jQuery('.today').val();
+
+       if(s_date != ''){
+         if (!validformat.test(s_date)){
+           alert('Invalid Start Date Format. Please correct and submit again.');
+           jQuery(".startdate").focus();
+           return false;
+         }
+       }     
+        if(e_date != ''){
+         if (!validformat.test(e_date)){
+           alert('Invalid End Date Format. Please correct and submit again.');
+           jQuery(".enddate").focus();
+           return false;
+         }
+       }   
+     /*  if(e_date > today){
+           alert("End Date should be less than today");
+           jQuery(".e_date").focus();
+           return false;
+       }*/
+      /*  if(s_date > e_date){
+            alert('End Date should be less than Start Date');
+            jQuery(".e_date").focus();
+            return false;
+        } */  
+       
+        allocationreport(s_date,e_date,limit);
+    } 
+    
+    function downloadallocationreport(){
+        var s_date = jQuery('.startdate').val();
+        var e_date = jQuery('.enddate').val();
+        var limit = jQuery('.limitvalue').val();
+       // downallocationreport(s_date,e_date);
+       var url_link = 'startdate='+s_date+'&enddate='+e_date;
+       if(limit!='' && typeof jQuery('.limitvalue').val()!='undefined'){
+          url_link +='&offsetvalue='+limit;
+       }
+       window.open('/apex/downloadallocation?'+url_link);
+       //window.open("/apex/downloadallocation?startdate="+s_date+"&enddate="+e_date+"&offsetvalue="+limit);
+      // window.location = "/apex/downloadallocation?startdate="+s_date+"&enddate="+e_date; 
+    }   
+  
+  function saveclass(){
+      var t=0;
+     
+        /****************** top row ******************/
+        
+      var rowNumclass= jQuery(".rowNumclass").val();
+    
+      var reg_sku=/^([a-zA-Z0-9\_\:\-\ ])+$/;
+       for(var i=0;i<=rowNumclass;i++){
+   
+            var inputclassname = jQuery(".inputclassname"+i).val();
+           
+            if(inputclassname == ""){
+                t=1;
+                alert("Please enter Class Name");
+                jQuery(".inputclassname"+i).focus();
+                return false;
+            }
+              if(inputclassname != "" && inputclassname.length <2){
+                 t=1;
+                alert("Please enter atleast two characters in Class Name");
+                jQuery(".inputclassname"+i).focus();
+                return false;
+            }
+        }
+        
+        var rowNumSubClass = jQuery(".rowNumSubClass").val();
+
+        for(var i=0;i<rowNumSubClass;i++){
+            var subclassname = jQuery(".subclassname"+i).val();
+            if(subclassname == ""){
+                 t=1;
+                alert("Please enter Subclass Name");
+                jQuery(".subclassname"+i).focus();
+                return false;
+            }
+             if(subclassname != "" && subclassname.length <2){
+                 t=1;
+                alert("Please enter atleast two characters in Subclass Name");
+                jQuery(".subclassname"+i).focus();
+                return false;
+            }
+        }       
+        
+  
+      if(t==0){
+          countryprocess();
+          saveclass1();
+          return true;
+      }else{
+          return false;
+      }
+  }  
+    
+  function searchclass(value){
+      countryprocess();
+      searchclasstext(value);
+  } 
+  
+   function searchallocation(value){
+       countryprocess();
+      searchallocationtext(value); 
+  } 
+  
+  
+  function showledger(){     
+      jQuery("#ledgertable").addClass('active');
+      jQuery("#classsubclass").removeClass('active');
+      jQuery("#allocationtable").removeClass('active');
+      jQuery("#allocationtablereport").removeClass('active');       
+  } 
+ 
+        jQuery(document).ready(function(){
+              jQuery('.datatables').dataTable({
+                    "bJQueryUI": true,                
+                    aoColumnDefs: [
+                      { aTargets: [0], bSortable: true}] 
+                });
+         })
+       
+ </script>     
+ <apex:composition template="CnP_PaaS__Broadcast_Template">
+   <apex:define name="css">
+           <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/bootstrap.min.css" />
+           <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/bootstrap-responsive.min.css" />
+           <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/main.css" />
+           <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/grey.css" />
+         <!--  <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/bootstrap.min.css"/>
+           <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/bootstrap-responsive.min.css"/>
+           <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/main.css"/>
+           <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/grey.css"/> -->
+     </apex:define>
+      <apex:define name="javascript">
+          
+           <!-- <script src="http://click-pledge.v-empower.com/web/GRAPHICS/ConstantContact/html-admin/js/jquery.js"></script> -->
+          
+            <script src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+           <script src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/js/scriptbreaker-multiple-accordion-1.js" type="text/javascript"></script>
+           
+       </apex:define>
+         
+  <div class="tabbable tabs-left">
+       <div id="leftnav">
+         <apex:define name="sidebar">
+              <div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-home"></i> Show Navigation</a>
+             
+            <ul style="display: block;" class="leftnav nav ">
+             <!--  <li class="submenu1 active" ><a href="#ledgertable" data-toggle="tab" ><!-- onclick="showledger();" <img alt="General Ledgers" src="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/img/ledgers_icon.png" width="30px"/> &nbsp;<span>General Ledgers</span></a> -->
+                 
+                          <li class="submenu1 active"><a href="#ledgertable" data-toggle="tab" ><i class="icon icon-home"></i> <span>General Ledgers</span></a></li>
+                          <li><a href="#classsubclass" data-toggle="tab"><i class="icon icon-tasks"></i> <span>Classes and Subclasses</span> </a></li>
+                          <li><a href="#allocationtable" data-toggle="tab"><i class="icon icon-list-alt"></i> <span>Allocations</span></a></li>
+                          <li><a href="#allocationtablereport" data-toggle="tab"><i class="icon icon-list"></i> <span>Allocations Reports</span></a></li>
+                                    
+                                
+           </ul>
+              </div>
+         </apex:define>
+       </div>  
+   <apex:define name="content">
+<apex:form >
+
+<!--<apex:tabPanel >
+  <apeX:tab label="GL and SKU" name="GL and SKU" id="skugl">-->
+   <div class="header-curve"></div>
+   <div class="tab-content"> 
+    <div id="light" class="white_content">   
+            <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="width: 32px;"  /><br/>
+            <!--<apex:outputlabel value="we are processing your request. please wait...                  "  />-->
+    </div>
+    <div id="fade" class="black_overlay"></div>
+   <div class="tab-pane active" id="ledgertable" >
+   
+   <div class="container-fluid">
+     <!-------------help text content ------->
+ <div width="100%">
+    <div style="float:right">
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['General Ledgers']['General Ledgers'].display=='true'}">  
+            <Apex:outputLabel value="C&P Help for this Page" style="margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo]').css('display','block');"/>      
+            <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo]').css('display','block');" />                    
+      </apex:outputLink>
+      <apex:outputPanel id="Foo" styleClass="video"  >   
+        <ul style="padding-left:4px;" > {!subTab['General Ledgers']['General Ledgers'].description} <br/> <br/>
+             <Apex:outputPanel rendered="{!subTab['General Ledgers']['General Ledgers'].ActiveLink=='true'}">
+               <li><a href="{!subTab['General Ledgers']['General Ledgers'].link}" target="_blank" >{!subTab['General Ledgers']['General Ledgers'].strlink}</a> <br/></li></Apex:outputPanel>
+             <Apex:outputPanel rendered="{!subTab['General Ledgers']['General Ledgers'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['General Ledgers']['General Ledgers'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['General Ledgers']['General Ledgers'].strVideo}</a></li></Apex:outputPanel>
+        </ul>
+      </apex:outputPanel>
+     </div>
+    </div>
+    <!-------------help text content ------->
+    <apex:pageBlock mode="maindetail">
+      
+       <!--------------------Import Ledger ----------------->
+     
+    <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Upload Ledger&#39;s data from CSV file</h5>
+              </div>
+              <div class="widget-content">
+                 
+                 <apex:actionRegion >  
+                      <apex:actionFunction action="{!ReadFile}" id="theButton" name="ReadFilecontent" />
+                                  <apex:outputPanel >
+                      <apex:inputFile value="{!contentFile}" filename="{!nameFile}" styleclass="contentFile" />
+                      </apex:outputPanel>
+                      <a class="btn" href="#" onclick="ReadFile_validation();" ><i class="icon-file"></i> Upload File </a>                                          
+                    <br/><br/>
+                    <div class="alert alert-info">
+                   <!-- <strong>Note: Please use the standard template to upload Accounts. <a href="{!URLFOR($Resource.AccountUploadTemplate,'AccountUploadTemplate.csv')}" target="_blank"> Click here </a> to download the template. </strong>-->
+                    <strong>Note: Please use the standard template to upload Accounts. <a href=" https://s3.amazonaws.com/ClickandPledge-Dev/Salesforce/Ledger+Import+File/AccountUploadTemplate.csv" target="_blank"> Click here </a> to download the template. </strong>
+                    </div>                    
+                    <div class="btn-block pagination-centered">
+                    <apex:commandButton action="{!InsertGL}" value="Insert File" rendered="{!insertdone}" styleClass="btn btn-primary" />
+                     </div>                    
+                    <apex:outputpanel id="uploadaccounts" >  
+                    <apex:pageMessages rendered="{!if(insertdone=true || recsvalid=true,true,false)}"></apex:pageMessages>  
+                      <apex:pageblocktable value="{!uploadedAccounts}" var="acc" rendered="{!NOT(ISNULL(uploadedAccounts))}" styleClass="detailList">
+                          <apex:column headerValue="Account Type">
+                              <apex:outputField value="{!acc.CnP_PaaS__Account_Type__c}"/>
+                          </apex:column>
+                          <apex:column headerValue="Account Name">
+                              <apex:outputField value="{!acc.CnP_PaaS__Account_Name__c}"/>
+                          </apex:column>
+                          <apex:column headerValue="Subaccount Of">
+                              <apex:outputField value="{!acc.CnP_PaaS__Sub_Account__c}"/>
+                          </apex:column>
+                          <apex:column headerValue="Account Number">
+                              <apex:outputField value="{!acc.CnP_PaaS__Account_Number__c}"/>
+                          </apex:column>
+                          <apex:column headerValue="Description">
+                              <apex:outputField value="{!acc.CnP_PaaS__Description__c}"/>
+                          </apex:column>
+                          <apex:column headerValue="Notes">
+                              <apex:outputField value="{!acc.CnP_PaaS__Notes__c}"/>
+                          </apex:column>
+                      </apex:pageblocktable> 
+                      </apex:outputPanel>                      
+              </apex:actionRegion>
+           </div><!-- widget-content -->
+           </div><!-- widget-box -->       
+  
+       
+       <!--------------------Import Ledger End -------------->
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>General Ledgers</h5>
+              </div>
+              <div class="widget-content">
+               <apex:actionRegion id="ledgerlist">
+               <apex:outputPanel id="glgr">
+               <apex:pagemessages rendered="{!if(insertdone=false &&  recsvalid=false,true,false)}" ></apex:pagemessages>
+                  <apex:actionFunction action="{!editLedger}" name="editid" rerender="glgr"  oncomplete="processcomplete();">
+                  <apex:param name="editid" assignTo="{!editid}" value=""/>
+                  </apex:actionFunction>
+                  <apex:actionFunction action="{!deleteLedger}" name="delid" rerender="glgr" oncomplete="processcomplete();">
+                    <apex:param name="delid" assignTo="{!delid}" value=""/>
+                  </apex:actionFunction>
+                  <apex:actionFunction action="{!updateLedger}" name="updateid" rerender="glgr" oncomplete="processcomplete();"/>
+                  <apex:actionFunction action="{!cancelLedger}" name="cancelid" rerender="glgr" oncomplete="processcomplete();">
+                     <apex:param name="cancelidvalue" assignTo="{!cancelidvalue}" value="" />
+                  </apex:actionFunction>
+                  <apex:actionFunction action="{!ledgerNewTable}" name="ledgertable1" rerender="glgr" oncomplete="processcomplete();"/>
+                   <apex:variable value="0" var="rowNumlgr"/>
+                    <apex:pageblocktable value="{!ledgertable}" var="lgredit" id="lgrtable" styleclass="datatables detailList">
+                    <apex:column headerValue="Account Type" style="width:150px;">
+                        <apex:outputField value="{!lgredit.CnP_PaaS__Account_Type__c}" rendered="{!IF(lgredit.Id == editid,false,true)}" styleClass="accounttype{!rowNumlgr}"/>
+                        <apex:inputtext value="{!lgredit.CnP_PaaS__Account_Type__c}" rendered="{!IF(lgredit.Id == editid || lgredit.Id == null,true,false)}" style="width:120px;" maxlength="255"  styleClass="accounttype{!rowNumlgr}" />
+                    </apex:column>
+                    <apex:column headerValue="Account Name" style="width:150px;">
+                       <apex:outputField value="{!lgredit.CnP_PaaS__Account_Name__c}" rendered="{!IF(lgredit.Id == editid ,false,true)}" styleClass="accountname{!rowNumlgr}"/>
+                       <apex:inputtext value="{!lgredit.CnP_PaaS__Account_Name__c}" rendered="{!IF(lgredit.Id == editid || lgredit.Id == null,true,false)}" maxlength="255" styleClass="accountname{!rowNumlgr}" style="width:120px;" />
+                    </apex:column>            
+                    <apex:column headerValue="Subaccount Of" style="width:150px;">
+                       <apex:outputField value="{!lgredit.CnP_PaaS__Sub_Account__c}" rendered="{!IF(lgredit.Id == editid ,false,true)}" styleClass="subaccountof{!rowNumlgr}"/>
+                       <apex:inputtext value="{!lgredit.CnP_PaaS__Sub_Account__c}" rendered="{!IF(lgredit.Id == editid || lgredit.Id == null,true,false)}" maxlength="255" styleClass="subaccountof{!rowNumlgr}" style="width:120px;" />
+                    </apex:column>
+                    <apex:column headerValue="Account Number" style="width:120px;">
+                       <apex:outputtext value="{!lgredit.CnP_PaaS__Account_Number__c}" rendered="{!IF(lgredit.Id == editid,false,true)}" styleClass="accountnumber{!rowNumlgr}"/>
+                       <apex:inputtext value="{!lgredit.CnP_PaaS__Account_Number__c}" rendered="{!IF(lgredit.Id == editid || lgredit.Id == null,true,false)}" style="width:120px;" maxlength="80" styleClass="accountnumber{!rowNumlgr}"/>
+                      
+                    </apex:column>
+                    <apex:column headerValue="Description" style="width:150px;">
+                       <apex:outputField value="{!lgredit.CnP_PaaS__Description__c}" rendered="{!IF(lgredit.Id == editid,false,true)}" styleClass="description{!rowNumlgr}"/>
+                       <apex:inputText value="{!lgredit.CnP_PaaS__Description__c}" rendered="{!IF(lgredit.Id == editid || lgredit.Id == null,true,false)}" style="width:120px;" maxlength="32000" styleClass="description{!rowNumlgr}"/>
+                    </apex:column>
+                    <apex:column headerValue="Notes"  style="width:150px;">
+                        <apex:outputField value="{!lgredit.CnP_PaaS__Notes__c}" rendered="{!IF(lgredit.Id == editid,false,true)}" styleClass="notes{!rowNumlgr}"/>
+                        <apex:inputText value="{!lgredit.CnP_PaaS__Notes__c}" rendered="{!IF(lgredit.Id == editid || lgredit.Id == null,true,false)}" style="width:120px;" maxlength="32000" styleClass="notes{!rowNumlgr}"/>
+                    </apex:column>
+                    <apex:column style="width:50px;"  headerValue="Action">
+                                  <div class="btn-group"> 
+                                  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+                                     <i class="icon-cog"></i>
+                                     <span class="caret"></span>
+                                  </a>                                                                            
+                                  <ul class="dropdown-menu" style="min-width: 84px!important;">                                                                              
+                                    <li style="display:{!IF(lgredit.Id == editid || lgredit.Id == null,'none','block')}" onclick="ledgeredit('{!lgredit.Id}');"><a href="javascript:void(0);" ><i class="icon-edit" ></i>  Edit</a></li>
+                                    <li style="display:{!IF(lgredit.Id == editid || lgredit.Id == null,'none','block')}" onclick="deletefunction('{!lgredit.Id}');"><a href="javascript:void(0);" ><i class="icon-trash" ></i>  Delete</a></li>
+                                   <!-- <li style="display:{!IF(lgredit.Id == editid && ledgeradd==false ,'block','none')}" onclick="saveupdateledger('{!lgredit.Id}');"><a href="javascript:void(0);" ><i class="icon-ok" ></i>Update</a></li> -->
+                                    <li style="display:{!IF(lgredit.Id == editid || lgredit.Id == null,'block','none')}" onclick="ledgercancelid('{!rowNumlgr}');"><a href="javascript:void(0);" ><i class="icon-remove" ></i> Cancel</a></li>                                                                                                      
+                                  </ul>
+                                  </div>
+                      <apex:variable var="rowNumlgr" value="{!VALUE(rowNumlgr)+1}"/>
+                    </apex:column>
+                </apex:pageblocktable>
+                    <input type="hidden" value="{!rowNumlgr}" class="rowNumlgr" name="rowNumlgr"/>
+                </apex:outputPanel>       
+                </apex:actionRegion>
+                
+                <br/>
+                <div class="btn-block pagination-centered">
+                  <a class="btn btn-primary" href="javascript:void(0);" onclick="ledgertable();" ><i class="icon-plus-sign icon-white"></i> Add GL Account</a>        
+                  <a class="btn btn-primary" href="javascript:void(0);" onclick="saveledger();" style="display:{!IF(ledgeradd==true,'block','none')}" ><i class="icon-edit icon-white" ></i>  Save</a>                                                
+                </div>        
+       
+            </div><!-- widget-content -->
+           </div><!-- widget-box --> 
+
+</apex:pageblock>
+</div>
+</div>
+
+
+
+
+
+<!----------------------Classes -------------------------->
+<div class="tab-pane" id="classsubclass" >
+<div class="container-fluid">
+     <!-------------help text content ------->
+ <div width="100%">
+    <div style="float:right">
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['General Ledgers']['Classes and Subclasses'].display=='true'}">  
+            <Apex:outputLabel value="C&P Help for this Page" style="margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo1]').css('display','block');"/>      
+            <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo1]').css('display','block');" />                    
+      </apex:outputLink>
+      <apex:outputPanel id="Foo1" styleClass="video"  >   
+        <ul style="padding-left:4px;" > {!subTab['General Ledgers']['Classes and Subclasses'].description} <br/> <br/>
+             <Apex:outputPanel rendered="{!subTab['General Ledgers']['Classes and Subclasses'].ActiveLink=='true'}">
+               <li><a href="{!subTab['General Ledgers']['Classes and Subclasses'].link}" target="_blank" >{!subTab['General Ledgers']['Classes and Subclasses'].strlink}</a> <br/></li></Apex:outputPanel>
+             <Apex:outputPanel rendered="{!subTab['General Ledgers']['Classes and Subclasses'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['General Ledgers']['Classes and Subclasses'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['General Ledgers']['Classes and Subclasses'].strVideo}</a></li></Apex:outputPanel>
+        </ul>
+      </apex:outputPanel>
+     </div>
+    </div>
+    <!-------------help text content ------->
+<apex:pageblock mode="maindetail">
+
+<apex:actionRegion >
+
+<apex:actionFunction action="{!Previous1}" name="Previous1" rerender="myPanel,myButtons" oncomplete="processcomplete();" />
+<apex:actionFunction action="{!Next1}" name="next1" rerender="myPanel,myButtons" oncomplete="processcomplete();"/>
+<apex:actionFunction action="{!addclass}" name="addclass" rerender="newclass" oncomplete="processcomplete();"/>
+<apex:actionFunction action="{!getClassesdata}" name="editclass" rerender="newclass" oncomplete="processcomplete();">
+    <apex:param value="" assignTo="{!classid}" name="classid"/>
+</apex:actionFunction>
+
+<apex:actionFunction action="{!searchclasstext}"  rerender="myPanel,myButtons" name="searchclasstext" oncomplete="processcomplete();">
+    <apex:param value="" assignTo="{!searchtext}" name="searchtext"/>
+</apex:actionFunction>
+             <apex:outputPanel id="showmesg">
+                 <apex:pagemessages ></apex:pagemessages>  
+             </apex:outputPanel> 
+             <div class="widget-box">
+               
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Classes</h5>
+              </div>
+              <div class="widget-content"> 
+                      <apex:outputPanel style="float:left;width:100%">
+                       <apex:outputPanel style="float:left;width:72%">
+                         <apex:outputLabel value="Show" style="float:left;padding-right:5px;"></apex:outputLabel>
+                         <apex:selectList value="{!list_size1}" size="1" style="float:left;padding-right:5px;width:60px;" >
+                           <Apex:actionSupport event="onchange" rerender="myPanel,myButtons" />  
+                             <apex:selectoptions value="{!listsizeclass}"/>
+                          </apex:selectList>
+                           <apex:outputLabel value="entries" />
+                        </apex:outputPanel> 
+                          <apex:outputPanel >
+                           <apex:outputLabel value="Search:  " style="float:left"></apex:outputLabel>
+                           
+                     <!--      <input type="text" value="{!searchText}" class="search-query"  placeholder="Search"><apex:actionSupport event="onmouseout" rerender="myPanel,myButtons" /></input>-->
+                          <apex:inputText value="{!searchtext}" styleclass="search-query" onblur="searchclass(this.value);"><!--<apex:actionSupport event="onmouseout" rerender="myPanel,myButtons" />--> </apex:inputText>
+                         </apex:outputPanel> 
+                        </apex:outputPanel>
+                        <apeX:outputpanel id="myPanel">
+                        
+                         <apex:variable value="0" var="rowNumClass"/>
+                            <br/><br/>
+                            <table class="table table-bordered table-hover" style="margin:10px 0px">
+                                <thead>
+                                  <th width="10%">Action</th>
+                                  <th width="10%">Edit</th>
+                                  <th width="30%">Name</th>
+                                  <th width="50%">Description</th>
+                                 </thead>
+                              <apex:repeat value="{!Classeslistdisplay}" var="class1" >    
+                                <tr>
+                                  <td>
+                                   <a href="javascript:void(0);" id="{!rowNumClass}" class="displayclassdata"  onclick="ChangeClassDisplay(this.id);"><i class="icon-plus"></i></a>     
+                                   <apex:inputHidden value="{!class1.Id}"/>   
+                                  </td>
+                                  <td><a href="javascript:void(0);" onclick="editmainclass('{!class1.id}');"><i class="icon-edit" ></i></a></td>
+                                  <td><apex:outputtext value="{!class1.Name}"/></td>
+                                  <td><apex:outputtext value="{!class1.CnP_PaaS__Description__c}"/></td>
+                                </tr>
+                                <tr style="display:none" class="childrowclassdata_hide{!rowNumClass}">
+                                  <td colspan="4" style="padding-left:40px;">
+                                   <table class="table table-bordered table-hover">
+                                     <thead>
+                                       <th width="30%">Name</th>
+                                       <th>Description</th>
+                                     </thead>
+                                     <apex:repeat value="{!subrecordsclass_map[class1.id]}" var="subclass">
+                                      <tr>                          
+                                        <td><apex:outputText value="{!subclass.Name}"/></td>
+                                        <td><apex:outputText value="{!subclass.Description__c}"/></td>
+                                      </tr>
+                                     </apex:repeat>
+                                     <apex:variable var="rowNumClass" value="{!VALUE(rowNumClass) + 1}"/>
+                                   </table>
+                                  </td>
+                                 </tr>        
+                               </apex:repeat>
+                              </table>
+
+                             <apex:outputPanel id="myButtons">
+                               Total {!list_size1} records..Showing Page # {!pageNumber1} of {!totalPages1}
+                              <a class="btn {!IF(DisableNext1==true,'disabled','')}" alt="Next" title="Next" href="javascript:void(0);" onclick="next1();" style="float:right;padding-right:5px;"><i class="icon-circle-arrow-right"></i></a>
+                               <a class="btn {!IF(DisablePrevious1==true,'disabled','')}" alt="Previous" title="Previous"  href="javascript:void(0);" onclick="Previous1();" style="float:right;padding-right:5px;"><i class="icon-circle-arrow-left"></i></a>
+                             </apex:outputPanel>
+                             
+                         </apex:outputPanel>
+                         
+                         <div class="btn-block pagination-centered">
+                         <a class="btn btn-primary" href="javascript:void(0);" onclick="addclassmain();" ><i class="icon-plus-sign icon-white"></i> Add Class</a>
+                         </div>
+                   </div><!-- widget-content -->
+               </div><!-- widget-box --> 
+                                  
+ <!-----------------------Classes New ----------------------------->
+ 
+     <apex:actionFunction action="{!addclass}" name="addclass" rerender="newclass" oncomplete="processcomplete();"/>
+      <apex:actionFunction action="{!saveskuclass}" name="saveclass1" rerender="newclass,myPanel,myButtons,showmesg" oncomplete="processcomplete();"/>
+      <apex:actionFunction action="{!addsubclass}" name="addsubclass1" rerender="newclass" oncomplete="processcomplete();">
+          <apex:param name="submaprowid" value="" assignTo="{!submaprowid}"/>
+      </apex:actionFunction>
+      <apex:actionFunction action="{!DeleteMainClass}" name="deleteclass1" rerender="newclass,myPanel,myButtons" oncomplete="processcomplete();">
+          <apex:param value="" assignTo="{!DeleteIdMainClass}" name="DeleteIdMainClass"/>
+          <apex:param value="" assignTo="{!DeleteFromMainClassId}" name="DeleteFromMainClassId"/>
+      </apex:actionFunction>
+      <apex:actionFunction action="{!DeleteClass}" name="deletesubclass1" rerender="newclass" oncomplete="processcomplete();">
+          <apex:param value="" assignTo="{!DeleteIdsubclass}" name="DeleteIdsubclass"/>
+          <apex:param value="" assignTo="{!DeleteFromsubclassId}" name="DeleteFromsubclassId"/>
+           <apex:param value="" assignTo="{!DeletesubrowId}" name="DeletesubrowId"/>
+      </apex:actionFunction>
+      <apex:actionFunction action="{!cancelclass}" name="cancelclass1" rerender="newclass,myPanel" oncomplete="processcomplete();" />
+    <apex:outputpanel id="newclass">
+     
+        <apex:outputPanel rendered="{!IF(FieldValueslistClasses.size>0 && addcls == true, true, false)}" > 
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Classes and Subclasses</h5>
+              </div>
+              <div class="widget-content">
+                             
+               <apex:actionstatus id="statusIdclass" startText="Please wait....">
+                <apex:facet name="stop"> 
+                   
+                 <apex:outputPanel id="ShowBlockItemclass">      
+                 <apex:outputPanel id="RefreshBlockclass_1"> 
+                   <apex:variable value="0" var="rowNumclass"/>
+                    <apex:datatable value="{!FieldValueslistClasses}" var="item" columns="3" styleClass="table table-bordered table-hover" >
+                        <apex:inputhidden value="{!item.classid}" />
+                         <apex:column headerValue="Class Name" style="width:30%;"><apex:inputText value="{!item.classname}" styleclass="inputclassname{!rowNumclass}" maxlength="80"/></apex:column>
+                         <apex:column headerValue="Description" ><apex:inputText value="{!item.classdescription}" style="width: 300px;" maxlength="32768"/></apex:column>
+                         <apex:column breakBefore="true" colspan="3" rendered="{!IF(VALUE(rowNumclass) < FieldValueslistClasses.size && VALUE(rowNumclass) != FieldValueslistClasses.size,true,false)}" style="padding-left:40px;"> 
+                          <apex:variable value="0" var="rowNumSubClass" />
+                            <apex:datatable columns="8" value="{!item.subclasslist}" var="subclass" style="margin:5px 0px; " styleClass="table table-bordered table-hover">
+                              <apex:column headerValue="Subclass Name" style="width:30%;"><apex:inputText value="{!subclass.subclassname}" styleclass="subclassname{!rowNumSubClass}" maxlength="80"/></apex:column>
+                              <apex:column headerValue="Subclass Description"><apex:inputText value="{!subclass.subclassdescription}"  style="width: 300px;" styleClass="subclassdescription{!rowNumSubClass}" maxlength="32768"/></apex:column>
+                              <apex:column style="width:30px">                   
+                                     <div class="btn-group" style="display:{!IF(VALUE(rowNumSubClass)>0,'block','none')}"><a class="btn" href="javascript:void(0);" onclick="deletesubclass('{!rowNumSubClass}','{!subclass.subclassid}','{!rowNumclass}');" ><i class="icon-trash"></i></a></div>
+                                     <apex:variable var="rowNumSubClass" value="{!VALUE(rowNumSubClass)+1}"/>
+                              </apex:column>
+                             
+                          </apex:datatable> 
+                           <input type="hidden" value="{!rowNumSubClass}" class="rowNumSubClass" name="rowNumSubClass"/> 
+                           <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0);" onclick="addsubclass('{!rowNumclass}');" ><i class="icon-plus-sign"></i> Add Subclass</a></div>
+                       </apex:column>
+                      </apex:datatable>
+                        <input type="hidden" value="{!rowNumclass}" class="rowNumclass" name="rowNumclass"/> 
+                        
+                         <div class="btn-block pagination-centered">
+                         <a class="btn btn-primary" href="javascript:void(0);" onclick="saveclass();" ><i class="icon-ok icon-white"></i> Save</a>
+                         <a class="btn btn-primary" href="javascript:void(0);" onclick="cancelclass();" ><i class="icon-remove icon-white"></i> Cancel</a>
+                         <a class="btn btn-primary" href="javascript:void(0);" onclick="deleteclass('{!JSENCODE(rowNumclass)}','{!JSENCODE(Classid)}');" ><i class="icon-trash icon-white"></i> Delete</a>
+                         </div>
+                    </apex:outputPanel> 
+                  </apex:outputPanel>
+                  
+                 </apex:facet>
+                </apex:actionstatus>
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->       
+      </apex:outputPanel> 
+      
+      </apex:outputpanel>
+      </apex:actionRegion>
+     <!-------------------------Classes End ----------------------------->
+  </apex:pageblock>
+</div>
+</div>
+<!---------------------- Classes End -------------------->
+ <div class="tab-pane" id="allocationtable">
+ <div class="container-fluid">
+     <!-------------help text content ------->
+ <div width="100%">
+    <div style="float:right">
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['General Ledgers']['Allocations'].display=='true'}">  
+            <Apex:outputLabel value="C&P Help for this Page" style="margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo2]').css('display','block');"/>      
+            <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo2]').css('display','block');" />                    
+      </apex:outputLink>
+      <apex:outputPanel id="Foo2" styleClass="video"  >   
+        <ul style="padding-left:4px;" > {!subTab['General Ledgers']['Allocations'].description} <br/> <br/>
+             <Apex:outputPanel rendered="{!subTab['General Ledgers']['Allocations'].ActiveLink=='true'}">
+               <li><a href="{!subTab['General Ledgers']['Allocations'].link}" target="_blank" >{!subTab['General Ledgers']['Allocations'].strlink}</a> <br/></li></Apex:outputPanel>
+             <Apex:outputPanel rendered="{!subTab['General Ledgers']['Allocations'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['General Ledgers']['Allocations'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['General Ledgers']['Allocations'].strVideo}</a></li></Apex:outputPanel>
+        </ul>
+      </apex:outputPanel>
+     </div>
+    </div>
+    <!-------------help text content ------->
+ <apex:pageblock mode="maindetail">
+ 
+ <apex:actionRegion >
+      <apex:actionFunction action="{!Previous}" name="Previous" rerender="myPanelallocation,myButtonsallocation" oncomplete="processcomplete();"/>
+      <apex:actionFunction action="{!Next}" name="next" rerender="myPanelallocation,myButtonsallocation" oncomplete="processcomplete();"/>
+      <apex:actionFunction action="{!addallocation}" name="addallocation1" rerender="newallocation" oncomplete="processcomplete();"/>
+      <apex:actionFunction action="{!getAllocationsdata}" name="editallocation1" rerender="newallocation" oncomplete="processcomplete();">
+                <apex:param value="" assignTo="{!allocationid}" name="allocationid"/>
+      </apex:actionFunction>
+      <apex:actionFunction action="{!searchallocationtext}"  rerender="myPanelallocation,myButtonsallocation" name="searchallocationtext" oncomplete="processcomplete();">
+                <apex:param value="" assignTo="{!searchtextallocation}" name="searchtextallocation"/>
+      </apex:actionFunction>
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Allocations</h5>
+              </div>
+              <div class="widget-content">
+                  <apex:outputPanel style="float:left;width:100%">
+                   <apex:outputPanel style="float:left;width:72%">
+                     <apex:outputLabel value="Show" style="float:left;padding-right:5px;"></apex:outputLabel>
+                     <apex:selectList value="{!list_size}" size="1" style="float:left;padding-right:5px;width:60px;" >
+                       <Apex:actionSupport event="onchange" rerender="myPanelallocation,myButtonsallocation" />  
+                         <apex:selectoptions value="{!listsizeclass}"/>
+                      </apex:selectList>
+                       <apex:outputLabel value="entries" ></apex:outputLabel>
+                    </apex:outputPanel> 
+                      <apex:outputPanel >
+                       <apex:outputLabel value="Search:" style="float:left"></apex:outputLabel>
+                       <apex:inputText value="{!searchtextallocation}" onblur="searchallocation(this.value);">
+                        <!-- <apex:actionSupport event="onmouseout" rerender="myPanelallocation,myButtonsallocation" /> -->
+                       </apex:inputText>
+                       <!--<apex:commandButton action="{!search}" value="Search" id="searchBtn" reRender="myPanel"  />-->
+                      </apex:outputPanel> 
+                    </apex:outputPanel>                 
+                   <apex:outputPanel id="myPanelallocation">
+                     <apex:variable value="0" var="rowNumledger"/>
+                       <br/><br/>
+                       <table class="table table-bordered table-hover" style="margin:10px 0px; ">
+                            <thead>
+                                <th width="10%">Action</th>
+                                <th width="10%">Edit</th>
+                               <!-- <th>Name</th>-->
+                                <th>Condition</th>
+                                <th>SKU / Campaign </th>                
+                            </thead>
+                        <apex:repeat value="{!Allocationslistdisplay}" var="item" >
+                                <tr>
+                                   <td>
+                                      <a href="javascript:void(0);" id="displaydata{!rowNumledger}" class="displaydata" onclick="ChangeDisplay(this.id,'{!rowNumledger}');"><i class=" icon-plus"></i></a>     
+                                      <apex:inputHidden value="{!item.Id}"/> 
+                                   </td>
+                                   <td><a href="javascript:void(0);" onclick="editallocation('{!item.id}');"><i class="icon-edit" ></i></a></td>
+                                   
+                                   <!--<td><apex:outputtext value="{!item.Name}"/></td>-->
+                                   <td><apex:outputtext value="{!IF(item.CnP_PaaS__Ledger_Condition__c=='IS' || item.CnP_PaaS__Ledger_Condition__c=='Start With' || item.CnP_PaaS__Ledger_Condition__c=='Ends With' || item.CnP_PaaS__Ledger_Condition__c=='Includes','SKU '+item.CnP_PaaS__Ledger_Condition__c,item.CnP_PaaS__Ledger_Condition__c)}" rendered="{!IF(item.CnP_PaaS__Ledger_Condition__c != 'Campaign',true,false)}"/>
+                                   <apex:outputtext value="{!IF(item.CnP_PaaS__Ledger_Condition__c=='Campaign',item.CnP_PaaS__Ledger_Condition__c +' IS',item.CnP_PaaS__Ledger_Condition__c)}" rendered="{!IF(item.CnP_PaaS__Ledger_Condition__c == 'Campaign',true,false)}"/></td>
+                                   <td><apex:outputText value="{!item.CnP_PaaS__ledger_sku_text__c}" rendered="{!IF(item.CnP_PaaS__Ledger_Condition__c != 'Campaign',true,false)}"/>
+                                <!--   <apex:outputLink value="{!item.Campaign_lp__r.Name}" rendered="{!IF(Ledger_Condition__c == 'Campaign',false,true)}"/>-->
+                                    <apex:outputLink value="/{!item.CnP_PaaS__Campaign_lp__c}" rendered="{!IF(item.CnP_PaaS__Ledger_Condition__c == 'Campaign',true,false)}">{!item.Campaign_lp__r.Name}</apex:outputLink> 
+                                   </td>
+                                  </tr>
+                                  <tr style="display:none" class="childrowdata_hide{!rowNumledger}">
+                                   <td colspan="4" style="padding-left:40px;">
+                                       <table class="table table-bordered table-hover">
+                                          <thead>
+                                             <th width="20%">Class</th>
+                                             <th width="20%">Subclass</th>
+                                             <th width="50%">Account Number</th>
+                                             <th width="20%">Account Name</th>
+                                             <th width="20%">Amount(%)</th>                                             
+                                          </thead>
+                                       <apex:repeat value="{!subrecords_map[item.id]}" var="suballocation">
+                                          <tr> 
+                                              <td><apex:outputLink value="/{!suballocation.Class__c}">{!suballocation.Class__r.Name}</apex:outputLink></td> 
+                                              <td><apex:outputLink value="/{!suballocation.Sub_Class__c}">{!suballocation.Sub_Class__r.Name}</apex:outputLink></td>                         
+                                              <td><apex:outputLink value="/{!suballocation.GL_Account__c}">{!suballocation.GL_Account__r.Account_Number__c}</apex:outputLink></td>                        
+                                              <td><apex:outputText value="{!suballocation.Ledger_Name__c}"/></td>
+                                              <td><apex:outputText value="{!suballocation.Percentage_amount__c}"/></td>                                           
+                                          </tr>
+                                       </apex:repeat>
+                                       </table>
+                                      <apex:variable var="rowNumledger" value="{!VALUE(rowNumledger) + 1}"/>
+                                   </td>                                                    
+                                </tr>                                        
+                        </apex:repeat>
+                        </table>                       
+                    <apex:outputPanel id="myButtonsallocation" >
+                       Total {!list_size} records. Showing Page # {!pageNumber} of {!totalPages}
+                       <a class="btn {!IF(DisableNext==true,'disabled','')}" href="javascript:void(0);"  alt="Next" title="Next" onclick="next();" style="float:right;padding-right:5px;"><i class="icon-circle-arrow-right"></i></a>
+                       <a class="btn {!IF(DisablePrevious==true,'disabled','')}" href="javascript:void(0);"  alt="Previous" title="Previous" onclick="Previous();" style="float:right;padding-right:5px;"><i class="icon-circle-arrow-left"></i></a>
+                    </apex:outputPanel>
+                  </apex:outputPanel>                  
+                   <div class="btn-block pagination-centered">                   
+                        <a class="btn btn-primary" href="javascript:void(0);" onclick="addallocation();" ><i class="icon-plus-sign icon-white"></i> Add Allocation</a>                                                     
+                   </div>                    
+            </div><!-- widget-content -->
+           </div><!-- widget-box --> 
+           <apex:outputPanel id="all_showmesg">
+                <apex:pagemessages ></apex:pagemessages> 
+           </apex:outputPanel>
+    
+     <!-------------------------Allocations New ------------------------>
+     
+     <apex:actionFunction action="{!subclasseslist}" name="subclasseslist" rerender="subclasslistid">
+          <apex:param name="classallocationid" value="" assignTo="{!classallocationid}"/>
+     </apex:actionfunction>  
+     
+     <apex:actionFunction action="{!addsubAllocation}" name="addsubAllocation1" rerender="newallocation" oncomplete="processcomplete();">
+          <apex:param name="submaprowallocationid" value="" assignTo="{!submaprowallocationid}"/>
+      </apex:actionFunction>
+       <apex:actionFunction action="{!saveskuallcation}" name="saveskuallcationid" rerender="newallocation,myPanelallocation,all_showmesg" oncomplete="processcomplete();"/>
+       <apex:actionFunction action="{!DeleteMainAllocation}" name="DeleteMainAllocation1" rerender="newallocation,myPanelallocation"  oncomplete="processcomplete();">
+          <apex:param value="" assignTo="{!DeleteIdMainAllocation}" name="DeleteIdMainClass"/>
+          <apex:param value="" assignTo="{!DeleteFromMainAllocationId}" name="DeleteFromMainClassId"/>
+      </apex:actionFunction>
+      <apex:actionFunction action="{!DeleteAllocation}" name="DeleteAllocation1" rerender="newallocation" oncomplete="processcomplete();">
+          <apex:param value="" assignTo="{!DeleteIdsubAllocation}" name="DeleteIdsubAllocation"/>
+          <apex:param value="" assignTo="{!DeleteFromsubAllocationId}" name="DeleteFromsubAllocationId"/>
+           <apex:param value="" assignTo="{!DeletesubrowallocationId}" name="DeletesubrowallocationId"/>
+      </apex:actionFunction>
+    <apex:actionFunction action="{!cancelallocation}" name="cancelallocation1" rerender="newallocation,myPanelallocation" oncomplete="processcomplete();"/>
+     <apex:outputpanel id="newallocation">     
+      
+
+       <apex:outputPanel rendered="{!IF(FieldValueslistAllocations.size>0 && addall == true, true, false)}"> 
+           <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Add Allocation</h5>
+              </div>
+              <div class="widget-content">
+              
+               <apex:actionstatus id="statusIdledger" startText="Please wait....">
+                <apex:facet name="stop">    
+                <apex:outputPanel id="ShowBlockItemledger">      
+                 <apex:outputPanel id="RefreshBlockledger_1"> 
+                   <apex:variable value="0" var="rowNumledgerallocation"/>
+                   
+                    <apex:datatable value="{!FieldValueslistAllocations}" var="item" columns="3" styleClass="table table-bordered table-hover" >
+                        <apex:inputhidden value="{!item.allocationid}" />
+                        <apex:column style="width:40px;"><apex:outputLabel value="If"/></apex:column>
+                        <apex:column headerValue="Condition" style="width:20%;">
+                          <apex:selectlist value="{!item.conditionallocation}" size="1" styleclass="conditionsallocation{!rowNumledgerallocation}" onchange="checkallocation('{!rowNumledgerallocation}');" style="width:150px;">     
+                         <!--  <apex:actionsupport event="onchange" rerender="checkfield"/>     -->   
+                             <apex:selectOptions value="{!showConditionsallocation}" />
+                          </apex:selectlist>
+                        </apex:column>
+                       
+                        <apex:column headerValue="SKU / Campaign" >
+                        <apex:outputPanel id="checkfield">
+                            <apex:inputText value="{!item.conditionsku}" size="15" style="width:200px;display:{!IF(item.conditionallocation != 'Campaign', 'Block', 'None')}"  styleClass="conditionsku{!rowNumledgerallocation}" maxlength="100"  /><!-- rendered="{!IF(item.conditionallocation != 'Campaign', true, false)}" -->
+                            <apex:inputText value="{!item.ledgercampaign}" size="15" style="width:200px;display:{!IF(item.conditionallocation == 'Campaign', 'Block', 'None')}"  styleClass="campaignledger{!rowNumledgerallocation} input-block-level" maxlength="100"  ><!-- rendered="{!IF(item.conditionallocation == 'Campaign', true, false)}" -->
+                                 <c:PaymentAutoCompleteSettings objecttype="campaign" autocomplete_textbox="campaignledger{!rowNumledgerallocation}" autocomplete_id="ledgercampaignid{!rowNumledgerallocation}" autocomplete_process="2" /> 
+                             </apex:inputText>
+                            <script> checkallocation('{!rowNumledgerallocation}');</script>
+                         </apex:outputPanel>
+                            <apex:inputText value="{!item.ledgercampaignid}" styleClass="ledgercampaignid{!rowNumledgerallocation}" style="display:none" />  
+                        </apex:column>     
+                       <apex:column breakBefore="true" colspan="3" style="padding-left:40px;" rendered="{!IF(VALUE(rowNumledgerallocation) < FieldValueslistAllocations.size && VALUE(rowNumledgerallocation) != FieldValueslistAllocations.size,true,false)}"> 
+                       
+                        <apex:variable value="0" var="rowNumSubAllocation" />
+                        
+                                  <apex:datatable columns="6" value="{!item.subreelist}" var="suballocation" style="margin:5px 0px;" styleClass="table table-bordered table-hover">
+                                   <apex:column headerValue="Class Name">
+                                      <apex:inputText value="{!suballocation.classname}" styleclass="classname{!rowNumSubAllocation} input-block-level"><!-- onblur="hidesubclass('{!rowNumSubAllocation}');">-->
+                                            <c:PaymentAutoCompleteSettings objecttype="class" autocomplete_textbox="classname{!rowNumSubAllocation}" autocomplete_id="classid{!rowNumSubAllocation}" autocomplete_process="0" /> 
+                                      </apex:inputText>
+                                   </apex:column>
+                
+                                   <apex:column headerValue="Subclass Name"  >
+                                   <apex:outputPanel id="subclasslistid">
+                                    <!--<apex:selectList value="{!suballocation.subclassid}" styleclass="subclassname{!rowNumSubAllocation}" size="1" >
+                                           <apex:selectoptions value="{!Subclasses}"/>
+                                       </apex:selectList>-->                               
+                                      <apex:inputText value="{!suballocation.subclassname}" styleclass="subclassname{!rowNumSubAllocation} input-block-level">
+                                            <c:PaymentAutoCompleteSettings objecttype="subclass" autocomplete_textbox="subclassname{!rowNumSubAllocation}" autocomplete_id="subclassid{!rowNumSubAllocation}" autocomplete_process="classid{!rowNumSubAllocation}" /> 
+                                      </apex:inputText>
+                                      </apex:outputPanel>
+                                   </apex:column>
+                                   <apex:column headerValue="Account Number" >
+                                    <apex:inputText value="{!suballocation.ledgernumber}" styleclass="ledgernumber{!rowNumSubAllocation} input-block-level">
+                                     <c:PaymentAutoCompleteSettings objecttype="ledger" autocomplete_textbox="ledgernumber{!rowNumSubAllocation}" autocomplete_id="{!rowNumSubAllocation}" autocomplete_process="0" /> 
+                                    </apex:inputText>
+                                   </apex:column>
+                                   <apex:column headerValue="Account Name">
+                                             <apex:outputLabel styleClass="ledgername{!rowNumSubAllocation}" value="{!suballocation.ledgername}"></apex:outputLabel>
+                                             <apex:inputtext value="{!suballocation.ledgername}" styleClass="ledgername{!rowNumSubAllocation} input-block-level" style="display:none"/>
+                                   </apex:column>
+                                  
+                                   <!-- <apex:column headerValue=""><apex:inputtext value="{!suballocation.ledgername}" styleClass="ledgername{!rowNumSubAllocation} input-block-level"  /></apex:column> -->
+                                   <apex:column headerValue="Auto Allocation(%)">
+                                   <apex:inputText value="{!suballocation.percentageamount}" size="4" styleClass="percentamount{!rowNumSubAllocation} input-block-level" style="width:80px;" onblur="calculateprice();" />
+                                   <apex:inputText value="{!suballocation.classid}" styleClass="classid{!rowNumSubAllocation}" style="display:none;"/>
+                                   <apex:inputText value="{!suballocation.subclassid}" styleClass="subclassid{!rowNumSubAllocation}"  style="display:none;"/>
+                                    <apex:inputtext value="{!suballocation.ledgerid}" styleClass="ledgerid{!rowNumSubAllocation}"  style="display:none;"/></apex:column>
+                                   <apex:column style="width:3%;">
+                                    <div class="btn-group" style="display:{!IF(VALUE(rowNumSubAllocation)>0,'block','none')}"><a class="btn" href="javascript:void(0);" onclick="DeleteAllocation('{!rowNumSubAllocation}','{!suballocation.suballocationid}','{!rowNumledgerallocation}');" style="display:{!IF(VALUE(rowNumSubAllocation) > 0,'block','none')}"><i class="icon-trash"></i></a></div>
+                                     <apex:variable var="rowNumSubAllocation" value="{!VALUE(rowNumSubAllocation) + 1}"/>    
+                                   </apex:column>                           
+                                                                 
+                                </apex:datatable>
+                                 
+                              <input type="hidden" value="{!rowNumSubAllocation}" class="rowNumSubAllocation" name="rowNumSubAllocation"/>
+                              <input type="hidden" value="{!rowNumledgerallocation}" class="rowvaluesledgerName" name="rowvaluesledgerName"/> 
+                              
+                               <div class="btn-block pagination-centered">
+                               <a class="btn" href="javascript:void(0);" onclick="addsubAllocation('{!rowNumledgerallocation}');" ><i class="icon-plus-sign"></i> Add Suballocation</a>
+                               </div>
+                               <!-- <apex:commandButton action="{!addsubAllocation}" value="Add New" style="margin-top:20px;" reRender="RefreshBlockledger_1">
+                                     <apex:param name="" value="{!rowNumledgerallocation}" assignTo="{!submaprowallocationid}"/>
+                               </apex:commandbutton> -->
+                                
+                             </apex:column>
+                        </apex:datatable>
+                        
+                          <div class="btn-block pagination-centered">
+                          <a class="btn btn-primary" href="javascript:void(0);" onclick="saveskuallcation();" ><i class="icon-ok icon-white"></i> Save</a>
+                          <a class="btn btn-primary" href="javascript:void(0);" onclick="cancelallocation();" ><i class="icon-remove icon-white"></i> Cancel</a>
+                          <a class="btn btn-primary" href="javascript:void(0);" onclick="DeleteMainAllocation('{!JSENCODE(rowNumledgerallocation)}','{!JSENCODE(allocationid)}');" ><i class="icon-trash icon-white"></i> Delete</a>
+                          </div>
+                         
+                     </apex:outputPanel> 
+                   </apex:outputPanel> 
+                 </apex:facet>
+                </apex:actionstatus>
+                 <script>hidesubclasstotal();</script>       
+            </div><!-- widget-content -->
+           </div><!-- widget-box --> 
+        </apex:outputPanel>      
+     </apex:outputpanel>
+     
+     
+<!-------------------------Allocations New ------------------------>
+       <apex:actionFunction action="{!addopporallocation}" reRender="opportunityallocation" name="addopporallocationdata" oncomplete="processcomplete();"/>   
+           <apex:actionFunction action="{!DeleteOpportunityAllocation}" name="DeleteOpportunityAllocation1" rerender="opportunityallocation" oncomplete="processcomplete();">
+           <apex:param value="" assignTo="{!deleteopportunityallocationid}" name="deleteopportunityallocationid"/>
+           <apex:param value="" assignTo="{!deleteopportunityrowid}" name="deleteopportunityrowid"/>
+       </apex:actionFunction>
+     
+     <apex:actionFunction action="{!saveopporallocation}" name="saveopporallocationdata" rerender="opportunityallocation" oncomplete="processcomplete();"/>
+
+     <apex:outputPanel id="opportunityallocation"> 
+        <apex:outputPanel >
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5 style="display:{!If(productexist==false,'display','none')}">Opportunity Allocation</h5>
+                <h5 style="display:{!If(productexist==true,'display','none')}">Opportunity Product Allocation</h5>
+              </div>
+              <div class="widget-content">                               
+                 
+               
+                <apex:pagemessages /> 
+             <!--  <div class="alert alert-info">
+               *Allocations should not work for Tax, Discount, Convenience, Shipping Opportunities when products are selected at settings
+               </div> -->
+                     <apex:outputPanel rendered="{!IF(productexist==true,true,false)}">
+                         <apex:variable value="0" var="rowNumopporallocation"/>                        
+                               
+                               <apex:dataTable value="{!opportunity_gl_allocationdata}" var="o_g_a" rendered="{!IF(opportunity_gl_allocationdata.size>0,true,false)}" styleClass="table table-bordered table-hover">
+                                     <apex:column style="width:2%;"><apex:outputLabel value="If "/></apex:column>
+                                     <apex:column headerValue="Condition">
+                                     <apex:selectlist value="{!o_g_a.skucondition}" size="1" style="width:138px;" onchange="otheropportunitiescheckallocation('{!rowNumopporallocation}');" styleclass="conditionallocationsku{!rowNumopporallocation}">     
+                                         <!-- <apex:actionsupport event="onchange" rerender="checkfieldvalue"/>  -->       
+                                         <apex:selectOptions value="{!showConditionsOpportunityProductallocation}" />
+                                      </apex:selectlist>
+                                     
+                                    </apex:column>
+                                    <apex:column headerValue="WID / Campaign" >
+                                        <apex:outputPanel id="checkfieldvalue">
+                                            <apex:inputText value="{!o_g_a.sku_camp_value}" size="15" styleClass="sku_camp_conditions{!rowNumopporallocation}" maxlength="80" style="width:80px;display:{!IF(o_g_a.skucondition != 'Campaign', 'Block', 'None')}"/><!--rendered="{!IF(o_g_a.skucondition!= 'Campaign', true, false)}" />-->
+                                             <apex:inputText value="{!o_g_a.campaignname}" size="15"  styleClass="camp_sku_conditions{!rowNumopporallocation}" maxlength="100"  style="width:80px;display:{!IF(o_g_a.skucondition == 'Campaign', 'Block', 'None')}" ><!--rendered="{!IF(o_g_a.skucondition== 'Campaign', true, false)}"-->
+                                                   <c:PaymentAutoCompleteSettings objecttype="campaign" autocomplete_textbox="camp_sku_conditions{!rowNumopporallocation}" autocomplete_id="allocationcampaignid{!rowNumopporallocation}" autocomplete_process="2" /> 
+                                             </apex:inputText>
+                                         </apex:outputPanel>
+                                          <apex:inputText value="{!o_g_a.campaign_value}" styleClass="allocationcampaignid{!rowNumopporallocation}"  style="display:none;"/>
+                                       <script>
+                                           otheropportunitiescheckallocation('{!rowNumopporallocation}');
+                                      </script>
+                                   </apex:column> 
+                                   
+                                        
+                                   
+                                   <apex:column headerValue="Class Name">
+                                      <apex:inputText value="{!o_g_a.class_name}" styleclass="classnamevalue{!rowNumopporallocation}" style="width:110px;" >
+                                            <c:PaymentAutoCompleteSettings objecttype="class" autocomplete_textbox="classnamevalue{!rowNumopporallocation}" autocomplete_id="opporclassid{!rowNumopporallocation}" autocomplete_process="0" /> 
+                                      </apex:inputText>                                   
+                                   </apex:column>
+                                    
+                                    <apex:inputHidden value="{!o_g_a.RecordIdOpporallocation}"/>
+                                    
+                                    <apex:column headerValue="Subclass Name"  >
+                             
+                            
+                                   <apex:inputText value="{!o_g_a.sub_class_name}" styleClass="subclassnameopp{!rowNumopporallocation}" style="width:110px;">
+                                       <c:PaymentAutoCompleteSettings objecttype="subclass" autocomplete_textbox="subclassnameopp{!rowNumopporallocation}" autocomplete_id="subclassnameopp_value{!rowNumopporallocation}" autocomplete_process="opporclassid{!rowNumopporallocation}" />
+                                   </apex:inputText>
+                                   <apex:inputText value="{!o_g_a.sub_class_value}" styleClass="subclassnameopp_value{!rowNumopporallocation}" style="display:none;"/>             
+                                   </apex:column>
+                                   
+                                   <apex:column headerValue="Account Number" >
+                                    <apex:inputText value="{!o_g_a.gl_account_num}" styleclass="ledgernumberopp{!rowNumopporallocation}" style="width:110px;">
+                                    <c:PaymentAutoCompleteSettings objecttype="ledger" autocomplete_textbox="ledgernumberopp{!rowNumopporallocation}" autocomplete_id="{!rowNumopporallocation}" autocomplete_process="2" /> 
+                                    </apex:inputText>
+                                   </apex:column>
+                                   
+                                   <apex:column headerValue="Account Name">
+                                   <apex:outputLabel styleClass="ledgernameopp{!rowNumopporallocation}" value="{!o_g_a.gl_account_name}"></apex:outputLabel>
+                                   <apex:inputtext value="{!o_g_a.gl_account_name}" styleClass="ledgernameopp{!rowNumopporallocation}" style="display:none;" />                                 
+
+                                   <apex:inputtext value="{!o_g_a.gl_account_value}" styleClass="ledgeridopp{!rowNumopporallocation}" style="display:none;"/>
+                                   <apex:inputText value="{!o_g_a.class_value}" styleClass="opporclassid{!rowNumopporallocation}" style="display:none;"/>
+                                   </apex:column>
+                                   <apex:column >
+                                    <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="DeleteOpportunityAllocation('{!JSENCODE(rowNumopporallocation)}','{!JSENCODE(o_g_a.RecordIdOpporallocation)}');" ><i class="icon-trash"></i></a></div>
+                                         <apex:variable var="rowNumopporallocation" value="{!VALUE(rowNumopporallocation) + 1}"/>
+                                   </apex:column>
+                               
+                               </apex:dataTable>                                
+                                <input type="hidden" value="{!rowNumopporallocation}" class="rowNumopporallocation" name="rowNumopporallocation"/> 
+                            
+                     </apex:outputPanel>      
+                     <apex:outputPanel rendered="{!IF(productexist==false,true,false)}"><!-- rendered="{!productexist}"  -->
+                               <apex:variable value="0" var="rowNumopporallocation"/>
+                               
+                               <apex:dataTable value="{!opportunity_gl_allocationdata}" var="o_g_a" rendered="{!IF(opportunity_gl_allocationdata.size>0,true,false)}" styleClass="table table-bordered table-hover">
+                                     <apex:column style="width:2%;"><apex:outputLabel value="If "/></apex:column>
+                                     <apex:column headerValue="Condition">
+                                     <apex:selectlist value="{!o_g_a.skucondition}" size="1" style="width:138px;" onchange="otheropportunitiescheckallocation('{!rowNumopporallocation}');" styleclass="conditionallocationsku{!rowNumopporallocation}">     
+                                         <!-- <apex:actionsupport event="onchange" rerender="checkfieldvalue"/>  -->       
+                                         <apex:selectOptions value="{!showConditionsOpportunityallocation}" />
+                                      </apex:selectlist>
+                                     
+                                    </apex:column>
+                                    <apex:column headerValue="SKU / Campaign" >
+                                        <apex:outputPanel id="checkfieldvalue">
+                                            <apex:inputText value="{!o_g_a.sku_camp_value}" size="15" styleClass="sku_camp_conditions{!rowNumopporallocation}" maxlength="80" style="width:80px;display:{!IF(o_g_a.skucondition != 'Campaign', 'Block', 'None')}"/><!--rendered="{!IF(o_g_a.skucondition!= 'Campaign', true, false)}" />-->
+                                             <apex:inputText value="{!o_g_a.campaignname}" size="15"  styleClass="camp_sku_conditions{!rowNumopporallocation}" maxlength="100"  style="width:80px;display:{!IF(o_g_a.skucondition == 'Campaign', 'Block', 'None')}" ><!--rendered="{!IF(o_g_a.skucondition== 'Campaign', true, false)}"-->
+                                                   <c:PaymentAutoCompleteSettings objecttype="campaign" autocomplete_textbox="camp_sku_conditions{!rowNumopporallocation}" autocomplete_id="allocationcampaignid{!rowNumopporallocation}" autocomplete_process="2" /> 
+                                             </apex:inputText>
+                                         </apex:outputPanel>
+                                          <apex:inputText value="{!o_g_a.campaign_value}" styleClass="allocationcampaignid{!rowNumopporallocation}"  style="display:none;"/>
+                                    <script>
+                                           otheropportunitiescheckallocation('{!rowNumopporallocation}');
+                                      </script>
+                                   </apex:column> 
+                                   
+                                        
+                                   
+                                   <apex:column headerValue="Class Name">
+                                      <apex:inputText value="{!o_g_a.class_name}" styleclass="classnamevalue{!rowNumopporallocation}" style="width:110px;" >
+                                            <c:PaymentAutoCompleteSettings objecttype="class" autocomplete_textbox="classnamevalue{!rowNumopporallocation}" autocomplete_id="opporclassid{!rowNumopporallocation}" autocomplete_process="0" /> 
+                                      </apex:inputText>                                   
+                                   </apex:column>
+                                    
+                                    <apex:inputHidden value="{!o_g_a.RecordIdOpporallocation}"/>
+                                    
+                                    <apex:column headerValue="Subclass Name"  >
+                             
+           
+                                   <apex:inputText value="{!o_g_a.sub_class_name}" styleClass="subclassnameopp{!rowNumopporallocation}" style="width:110px;">
+                                       <c:PaymentAutoCompleteSettings objecttype="subclass" autocomplete_textbox="subclassnameopp{!rowNumopporallocation}" autocomplete_id="subclassnameopp_value{!rowNumopporallocation}" autocomplete_process="opporclassid{!rowNumopporallocation}" />
+                                   </apex:inputText>
+                                   <apex:inputText value="{!o_g_a.sub_class_value}" styleClass="subclassnameopp_value{!rowNumopporallocation}" style="display:none;"/>             
+                                   </apex:column>
+                                   
+                                   <apex:column headerValue="Account Number" >
+                                    <apex:inputText value="{!o_g_a.gl_account_num}" styleclass="ledgernumberopp{!rowNumopporallocation}" style="width:110px;">
+                                    <c:PaymentAutoCompleteSettings objecttype="ledger" autocomplete_textbox="ledgernumberopp{!rowNumopporallocation}" autocomplete_id="{!rowNumopporallocation}" autocomplete_process="2" /> 
+                                    </apex:inputText>
+                                   </apex:column>
+                                   
+                                   <apex:column headerValue="Account Name">
+                                   <apex:outputLabel styleClass="ledgernameopp{!rowNumopporallocation}" value="{!o_g_a.gl_account_name}"></apex:outputLabel>
+                                   <apex:inputtext value="{!o_g_a.gl_account_name}" styleClass="ledgernameopp{!rowNumopporallocation}" style="display:none;" />                                 
+
+                                   <apex:inputtext value="{!o_g_a.gl_account_value}" styleClass="ledgeridopp{!rowNumopporallocation}" style="display:none;"/>
+                                   <apex:inputText value="{!o_g_a.class_value}" styleClass="opporclassid{!rowNumopporallocation}" style="display:none;"/>
+                                   </apex:column>
+                                   <apex:column >
+                                    <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="DeleteOpportunityAllocation('{!JSENCODE(rowNumopporallocation)}','{!JSENCODE(o_g_a.RecordIdOpporallocation)}');" ><i class="icon-trash"></i></a></div>
+                                         <apex:variable var="rowNumopporallocation" value="{!VALUE(rowNumopporallocation) + 1}"/>
+                                   </apex:column>
+                               
+                               </apex:dataTable>                                
+                                <input type="hidden" value="{!rowNumopporallocation}" class="rowNumopporallocation" name="rowNumopporallocation"/> 
+                            
+                          </apex:outputPanel>
+                      <div class="btn-block pagination-centered">                    
+                         <a class="btn btn-primary" href="javascript:void(0);" onclick="saveopporallocationdatavalidation();"><i class="icon-ok icon-white"></i> Save</a>
+                         <a class="btn btn-primary" href="javascript:void(0);" onclick="addopporallocationdata1();" ><i class="icon-plus-sign icon-white"></i> Add Opportunity Allocation</a>            
+                     </div>
+
+            </div><!-- widget-content -->
+           </div><!-- widget-box --> 
+           
+               </apex:outputPanel>
+    </apex:outputPanel>     
+    </apex:actionRegion>
+                  
+    </apex:pageblock>
+   
+    </div>
+    </div>
+    <!--------------------- End of the Allocation ------------------>
+    <!--------------------- Start the Allocation Reports ----------->
+     <div class="tab-pane" id="allocationtablereport">
+    
+         <div class="container-fluid">         
+  
+  
+    <!-------------help text content ------->
+ <div width="100%">
+    <div style="float:right">
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['General Ledgers']['Allocations Report'].display=='true'}">  
+            <Apex:outputLabel value="C&P Help for this Page" style="margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo3]').css('display','block');"/>      
+            <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo3]').css('display','block');" />                    
+      </apex:outputLink>
+      <apex:outputPanel id="Foo3" styleClass="video"  >   
+        <ul style="padding-left:4px;" > {!subTab['General Ledgers']['Allocations Report'].description} <br/> <br/>
+             <Apex:outputPanel rendered="{!subTab['General Ledgers']['Allocations Report'].ActiveLink=='true'}">
+               <li><a href="{!subTab['General Ledgers']['Allocations Report'].link}" target="_blank" >{!subTab['General Ledgers']['Allocations Report'].strlink}</a> <br/></li></Apex:outputPanel>
+             <Apex:outputPanel rendered="{!subTab['General Ledgers']['Allocations Report'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['General Ledgers']['Allocations Report'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['General Ledgers']['Allocations Report'].strVideo}</a></li></Apex:outputPanel>
+        </ul>
+      </apex:outputPanel>
+     </div>
+    </div>
+    <!-------------help text content ------->
+              <apex:pageBlock mode="maindetail" id="allocationreportblock">
+              
+                
+               <apex:actionRegion >  
+             
+                    <apex:actionFunction name="allocationreport" action="{!goreport}" reRender="allocationreport,allocationreportblock" >
+                       <apex:param assignTo="{!startdate}" name="startdate" value=""/>
+                        <apex:param assignTo="{!enddate}" name="enddate" value=""/>
+                        <apex:param assignTo="{!offsetvalue}" name="offsetvalue" value="" />
+                    </apex:actionFunction>
+                    
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Allocation Reports</h5>
+              </div>
+              <div class="widget-content">                    
+                                
+                                <div class="btn-block pagination-centered" style="display:{!IF(OpportunityReportdata.size>0,'block','none')}">
+                                <a class="btn btn-primary" href="javascript:void(0);" onclick="downloadallocationreport();"> Download(xls)</a>
+                                </div> 
+                                
+        
+                                <table class="table table-bordered table-hover">
+                                <tr>
+                                <th style="white-space:nowrap;">
+                                   <apex:outputLabel value="Start Date: " style="display:inline"></apex:outputLabel>
+                                   <apex:inputText value="{!startdate}" onclick="DynamicDatePicker(this);" styleClass="startdate" id="startdate" size="25" style="width:85px;"/>
+                                </th>
+                                <th style="white-space:nowrap;">
+                                    <apex:outputLabel value="End Date: " style="display:inline"></apex:outputLabel>
+                                    <apex:inputText value="{!enddate}" onclick="DynamicDatePicker(this);" styleClass="enddate" id="enddate" size="25" style="width:85px;"/>
+                                </th> 
+                                <th style="white-space:nowrap;">      
+                                    <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="goallocationreport();" ><i class="icon-ok"></i> Go</a></div>                                      
+                                </th> 
+                                <th style="width:100%">&nbsp;</th>
+                                <th style="white-space:nowrap;" class="align_right">
+                                <apex:outputPanel id="allocationreport" rendered="{!IF(limits!=null && limits.size>0,true,false)}">                               
+                                   <apex:outputLabel value="Limit: " style="display:inline;"></apex:outputLabel>
+                                   <apex:selectList size="1" value="{!offsetvalue}" styleClass="limitvalue" onchange="goallocationreport();">
+                                       <apex:selectOptions value="{!limits}"></apex:selectOptions>
+                                   </apex:selectList>
+                                </apex:outputPanel> 
+                                </th> 
+                                </tr>
+                                </table>  
+                              <!-- <apex:inputtext value="{!todaydate}" styleclass="today" style="display:none"/> -->                                            
+                              <apex:pageMessages rendered="{!reportstatus}"></apex:pageMessages> 
+                                                
+                               <apex:pageblocktable value="{!OpportunityReportdata}" var="opr" styleclass="table table-bordered table-hover">
+                                    <apex:column value="{!opr.ordernumber}" headerValue="Order Number"/>
+                                    <apex:column value="{!opr.orderdate}" headerValue="Date"/>
+                                    <apex:column value="{!opr.contactname}" headerValue="Contact Name"/>
+                                    <apex:column value="{!opr.itemname}" headerValue="Item Name"/>
+                                    <apex:column value="{!opr.classname}" headerValue="Class Name"/>
+                                    <apex:column value="{!opr.subclass}" headerValue="Subclass Name"/>
+                                    <apex:column value="{!opr.glaccount}" headerValue="GL Account Number"/>
+                                    <apex:column value="{!opr.accountname}" headerValue="Account Name"/>
+                                    <apex:column value="{!opr.amount}" headerValue="Amount"/>
+                                    <apex:column breakBefore="true" rendered="{!IF(opr.alreport!=null && opr.alreport.size > 0,true,false)}">
+                                        <apex:repeat value="{!opr.alreport}" var="alr">
+                                              <tr>
+                                                <td>&nbsp;</td>
+                                                <td><Apex:outputLabel value="{!alr.orderdate}"></Apex:outputLabel></td>
+                                                <td>&nbsp;</td>
+                                                <td>&nbsp;</td>
+                                                <td><Apex:outputLabel value="{!alr.classname}"></Apex:outputLabel></td>
+                                                <td><Apex:outputLabel value="{!alr.subclass}"></Apex:outputLabel></td>
+                                                <td><Apex:outputLabel value="{!alr.glaccount}"></Apex:outputLabel></td>
+                                                <td><Apex:outputLabel value="{!alr.accountname}"></Apex:outputLabel></td>
+                                                <td><Apex:outputLabel value="{!alr.amount}"></Apex:outputLabel></td>
+                                              </tr>
+                                        </apex:repeat>
+                                    </apex:column>                                    
+                              </apex:pageblocktable>                    
+            </div><!-- widget-content -->
+           </div><!-- widget-box -->
+                   </apex:actionRegion>  
+              </apex:pageBlock>
+         </div>
+     </div>
+    <!--------------------- End of the Reports -------------------->
+ <!-- </apex:tab>  
+</apex:tabPanel>-->
+</div>
+</apex:form>
+  </apex:define>
+  </div>
+</apex:composition>    
+</apex:page>

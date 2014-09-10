@@ -1,0 +1,1056 @@
+<apex:page sidebar="false" standardStylesheets="true" title="C&P Broadcaster" controller="CnP_PaaS.Broadcaster" action="{!loadhelpContent}" tabStyle="Broadcaster__tab">
+      <apex:composition template="CnP_PaaS__Broadcast_Template">
+               <apex:define name="css">
+                     <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/bootstrap.min.css" />
+                     <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/bootstrap-responsive.min.css" />
+                     <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/main.css" />
+                     <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/grey.css" />
+                     <link rel="stylesheet" href="{!URLFOR($Resource.DataTables,'css/demo_table_jui.css')}" />
+                     <link rel="stylesheet" href="{!URLFOR($Resource.DataTables,'jquery-ui-1.8.4.custom.css')}" />
+                     <style>
+                     .helpLink {
+                       position:relative;       
+                    }
+                
+                    .video{
+                      display:none;
+                      width:15%;
+                      height:auto; 
+                      background:#EEE;
+                      border:1px solid #CCC;
+                      position:absolute;     
+                      z-index:10;
+                     /* margin-left:920Px; */
+                    }
+                        #content-header h1 label{
+                            color: #555555;
+                            float: left;
+                            font-size: 28px;
+                            font-weight: normal;
+                            margin-left: 20px;
+                           /* position: absolute; */
+                            text-shadow: 0 1px 0 #FFFFFF;
+                        }                     
+                        .btn {
+                        display: inline-block!important;
+                        padding: 4px 12px!important;
+                        margin-bottom: 0!important;
+                        font-size: 14px!important;
+                        line-height: 20px!important;
+                        color: #333!important;
+                        text-align: center!important;
+                        text-shadow: 0 1px 1px rgba(255,255,255,0.75)!important;
+                        vertical-align: middle!important;
+                        cursor: pointer!important;
+                        background-color: #f5f5f5!important;
+                        background-image: -moz-linear-gradient(top,#fff,#e6e6e6)!important;
+                        background-image: -webkit-gradient(linear,0 0,0 100%,from(#fff),to(#e6e6e6))!important;
+                        background-image: -webkit-linear-gradient(top,#fff,#e6e6e6)!important;
+                        background-image: -o-linear-gradient(top,#fff,#e6e6e6)!important;
+                        background-image: linear-gradient(to bottom,#fff,#e6e6e6)!important;
+                        background-repeat: repeat-x!important;
+                        border: 1px solid #bbb!important;
+                        border-color: #e6e6e6 #e6e6e6 #bfbfbf!important;
+                        border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25)!important;
+                        border-bottom-color: #a2a2a2!important;
+                        -webkit-border-radius: 4px!important;
+                        -moz-border-radius: 4px!important;
+                        border-radius: 4px!important;
+                        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff',endColorstr='#ffe6e6e6',GradientType=0)!important;
+                        filter: progid:DXImageTransform.Microsoft.gradient(enabled=false)!important;
+                        -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05)!important;
+                        -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05)!important;
+                        box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05)!important;
+                        }
+                        .btn-primary {
+                        color: #fff!important;
+                        text-shadow: 0 -1px 0 rgba(0,0,0,0.25)!important;
+                        background-color: #006dcc!important;
+                        background-image: -moz-linear-gradient(top,#08c,#04c)!important;
+                        background-image: -webkit-gradient(linear,0 0,0 100%,from(#08c),to(#04c))!important;
+                        background-image: -webkit-linear-gradient(top,#08c,#04c)!important;
+                        background-image: -o-linear-gradient(top,#08c,#04c)!important;
+                        background-image: linear-gradient(to bottom,#08c,#04c)!important;
+                        background-repeat: repeat-x!important;
+                        border-color: #04c #04c #002a80!important;
+                        border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25)!important;
+                        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0044cc',GradientType=0)!important;
+                        filter: progid:DXImageTransform.Microsoft.gradient(enabled=false)!important;
+                        }                    
+                        .apexp .bPageBlock.apexDefaultPageBlock .pbBody {
+                        margin: 0px;
+                        }
+                        .widget-title-green{
+                        background-color: #bfaf00!important;
+                        background-image: -webkit-gradient(linear, 0 0%, 0 100%, from(#ddd579), to(#bfaf00))!important;
+                        background-image: -webkit-linear-gradient(top, #ddd579 0%, #bfaf00 100%)!important;
+                        }
+                        .black_overlay{
+                        display: none;
+                        position: absolute;
+                        top: 0%;
+                        left: 0%;
+                        width: 100%;
+                        height: 100%;
+                        background-color: black;
+                        z-index:1001;
+                        -moz-opacity: 0.8;
+                        opacity:.40;
+                        filter: alpha(opacity=80);
+                        }
+                        .white_content {
+                        display: none;
+                        position: absolute;
+                        text-align: center;
+                        top: 40%;
+                        left: 49%;
+                        background-color: #000;
+                        border-radius:5px;
+                        -webkit-border-radius: 5px;
+                        -moz-border-radius: 5px;
+                        border:1px solid #000;
+                        padding: 16px;
+                        z-index:1002;
+                        overflow: auto;
+                        } 
+                     </style>
+               </apex:define>
+               <apex:define name="header"> 
+               </apex:define>
+               
+               <div class="tabbable tabs-left">
+                   <div id="leftnav">
+                        <apex:define name="sidebar">
+                               <div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-home"></i> Show Navigation</a>
+                                <ul style="display: block;" class="leftnav nav ">
+                                  <li class="submenu1 active"><a href="#ctct_account" data-toggle="tab" onclick="accountsetting();"><img alt="Account Setting" src="https://clickandpledge.s3.amazonaws.com/Salesforce/Bootstrap/img/acc_setting_icon.png" width="30px"/> &nbsp;<span>Account Setting</span></a></li>
+                                  <li><a href="#ctct_contact_list" data-toggle="tab" onclick="emaillistselect();"><img alt="Email Lists" src="https://clickandpledge.s3.amazonaws.com/Salesforce/Bootstrap/img/email_lists_icon.png" width="30px"/> &nbsp;<span>Email Lists</span> </a></li>
+                                  <li><a href="#ctct_campaigns" data-toggle="tab" onclick="emaildesignselect();"><img alt="Email Designer" src="https://clickandpledge.s3.amazonaws.com/Salesforce/Bootstrap/img/email_designer_icon.png" width="30px"/> &nbsp;<span>Email Designer</span></a></li>                         
+                                </ul>
+                              </div>
+                        </apex:define>
+                   </div>
+                   <apex:define name="content">
+                         
+                          <apex:form >
+                                 <apex:actionFunction action="{!AccountSetting_format}" name="AccountSetting_format" reRender="Emaildesigner,SynchronizedData,Javascript" oncomplete="processcomplete();"/>
+                                 <apex:actionFunction action="{!EmailList_format}" name="EmailList_format" reRender="Emaildesigner,Javascript,Broadcaster" oncomplete="processcomplete();"/>
+                                 <apex:actionFunction action="{!Emaildesigner_format}" name="Emaildesigner_format" reRender="SynchronizedData,Javascript,Broadcaster" oncomplete="processcomplete();"/>
+                                 <div class="header-curve"></div>
+                                 <div class="tab-content">
+                                  <div class="alert alert-info" style="padding-left:300px;">  
+                       <strong>* Note: Max Records - 1000 (Mailchimp limitation).</strong>
+                      </div>
+                                   
+                                        <div id="light" class="white_content">   
+                                                    <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="width:32px;"  /><br/>
+                                                   <!-- <apex:outputlabel value="we are processing your request. please wait...                  "  /> -->
+                                        </div>
+                                        <div id="fade" class="black_overlay"></div>
+                                      <div class="tab-pane active" id="ctct_account"> <!-- Account setting start here ---->
+                                             <div id="content-header">
+                                                    <h1><i class="icon icon-home" style="float:left"></i>C&amp;P Broadcaster</h1>                                    
+                                             </div>
+                                             <div class="container-fluid">  
+                                           <!-------------help text content ------->
+                                         <div width="100%">
+                                            <div style="float:right">
+                                              <apex:outputLink styleClass="helpLink" rendered="{!subTab['Broadcaster']['Account Setting'].display=='true'}">  
+                                                    <Apex:outputLabel value="C&P Help for this Page" style="font-size:90%;margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo]').css('display','block');"/>      
+                                                    <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo]').css('display','block');" />                    
+                                              </apex:outputLink>
+                                              <apex:outputPanel id="Foo" styleClass="video"  >   
+                                                <ul style="padding-left:4px;" > {!subTab['Broadcaster']['Account Setting'].description} <br/> <br/>
+                                                     <Apex:outputPanel rendered="{!subTab['Broadcaster']['Account Setting'].ActiveLink=='true'}">
+                                                       <li><a href="{!subTab['Broadcaster']['Account Setting'].link}" target="_blank" >{!subTab['Broadcaster']['Account Setting'].strlink}</a> <br/></li></Apex:outputPanel>
+                                                     <Apex:outputPanel rendered="{!subTab['Broadcaster']['Account Setting'].ActiveVideo=='true'}">
+                                                       <li> <a href="{!subTab['Broadcaster']['Account Setting'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Broadcaster']['Account Setting'].strVideo}</a></li></Apex:outputPanel>
+                                                </ul>
+                                              </apex:outputPanel>
+                                             </div>
+                                            </div>
+                                            <!-------------help text content ------->                                    
+                                                    <apex:pageBlock id="Broadcaster" mode="maindetail" >
+                                                        <apex:actionFunction name="EditBroadCast" action="{!EditBroadCast}"  reRender="Broadcaster" oncomplete="processcomplete();"/>
+                                                        
+                                                     <apex:outputPanel rendered="{!IF(mcslist.size <= 0 || editbroadcast==true,true,false)}" >
+                                                     <div class="widget-box">
+                                                      <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                        <h5>MailChimp Settings</h5>
+                                                      </div>
+                                                      <div class="widget-content">      
+                                                                                                        
+                                                        <apex:pageBlockSection columns="1" collapsible="false" showHeader="false">
+                                                               <apex:pageBlockSectionItem >
+                                                                     <apex:outputLabel value="Account Name"></apex:outputLabel>
+                                                                     <apex:inputfield value="{!mcs.Name}" styleclass="acc_name" style="width: 300px;" />
+                                                               </apex:pageBlockSectionItem>
+                                                               <apex:pageBlockSectionItem >
+                                                                     <apex:outputLabel value="API Key"></apex:outputLabel>
+                                                                     <apex:inputfield value="{!mcs.CnP_PaaS__API_Key__c}" styleclass="api_key" style="width: 300px;" />
+                                                               </apex:pageBlockSectionItem>
+                                                               <apex:pageBlockSectionItem >
+                                                                     <apex:outputLabel value="Client ID"></apex:outputLabel>
+                                                                     <apex:inputfield value="{!mcs.CnP_PaaS__Client_Id__c}" styleclass="client_id" style="width: 300px;" />
+                                                               </apex:pageBlockSectionItem>
+                                                               <apex:pageBlockSectionItem >
+                                                                     <apex:outputLabel value="Client Secret"></apex:outputLabel>
+                                                                     <apex:inputfield value="{!mcs.CnP_PaaS__Client_Secret__c}" styleclass="client_secrect" style="width: 300px;" />
+                                                               </apex:pageBlockSectionItem>                                                           
+                                                        </apex:pageBlockSection>
+                                                        
+                                                        </div><!-- widget-content -->
+                                                       </div><!-- widget-box --> 
+                                                       
+                                                           <div class="btn-block pagination-centered">
+                                                                     <apex:commandButton action="{!Authorize}" onclick="if(!Authorize_validation()){return false;};" styleClass="btn btn-primary" value="Authorize & Verify" reRender="mailchimpservicelist"/>
+                                                            </div>
+                                                                                                              
+                                                       </apex:outputPanel> 
+                                                       
+                                                     <apex:outputPanel rendered="{!IF(mcslist.size > 0 && editbroadcast==false,true,false)}" >
+                                                     <div class="widget-box">
+                                                      <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                        <h5>MailChimp</h5>
+                                                      </div>
+                                                      <div class="widget-content">
+                                                                                                             
+                                                        <apex:pageBlockSection columns="1" collapsible="false" showHeader="false" >
+                                                                <apex:pageBlockSectionItem >
+                                                                      <apex:outputLabel >Account Name</apex:outputLabel>
+                                                                      <apex:outputText value="{!mcslist[0].Name}"></apex:outputText>
+                                                                </apex:pageBlockSectionItem>
+                                                                <apex:pageBlockSectionItem >
+                                                                      <apex:outputLabel >API Key</apex:outputLabel>
+                                                                      <apex:outputText value="{!mcslist[0].API_Key__c}"></apex:outputText>
+                                                                </apex:pageBlockSectionItem>
+                                                                <apex:pageBlockSectionItem >
+                                                                      <apex:outputLabel >Status</apex:outputLabel>
+                                                                      <apex:outputText value="{!IF(mcslist[0].IsAuthorized__c==true,'Authorized','Unauthorized')}"></apex:outputText>
+                                                                </apex:pageBlockSectionItem>
+                                                                
+                                                                <apex:pageBlockSectionItem >
+                                                                      <apex:outputLabel >Remote Site Settings URL</apex:outputLabel>
+                                                                      <apex:outputLabel >
+                                                                            <apex:outputText value="{!mcslist[0].Endpoint__c}"></apex:outputText>
+                                                                            <div>Please <a href="javascriptvoid(0);" onclick="return popitup('../0rp?spl1=1&setupid=SecurityRemoteProxy&retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DSecurity');">click here</a> for site URL setup</div>
+                                                                      </apex:outputLabel>
+                                                                </apex:pageBlockSectionItem>
+                                                                
+     
+                                                        </apex:pageBlockSection>                                                            
+                                                        
+                                                        </div><!-- widget-content -->
+                                                       </div><!-- widget-box -->
+                                                       
+                                                             <div class="btn-block pagination-centered">
+                                                                   <a class="btn btn-primary" href="javascript:void(0);" onclick="EditBroadCast_Validation();"> <i class="icon-edit icon-white"></i> &nbsp;Edit</a>     
+                                                             </div>
+                                                                                                               
+                                                       </apex:outputPanel> 
+                                                                                                                                                                                                  
+                                                   </apex:pageBlock>
+                                                   
+                                             </div> <!-- container-fluid end here -->
+                                            
+                                             
+                                      </div> <!-- End Account setting -->
+                                      
+                                     <!-- List Details info start here --->
+                                    
+                                     <div class="tab-pane" id="ctct_contact_list"> 
+                                              <div id="content-header">
+                                                <h1><i class="icon icon-tasks"></i> Email List </h1>
+                                             </div>
+                                             <div class="container-fluid"> 
+                                                  <!-------------help text content ------->
+                                         <div width="100%">
+                                            <div style="float:right">
+                                              <apex:outputLink styleClass="helpLink" rendered="{!subTab['Broadcaster']['Email Lists'].display=='true'}">  
+                                                    <Apex:outputLabel value="C&P Help for this Page" style="font-size:90%;margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo_list]').css('display','block');"/>      
+                                                    <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo_list]').css('display','block');" />                    
+                                              </apex:outputLink>
+                                              <apex:outputPanel id="Foo_list" styleClass="video"  >   
+                                                <ul style="padding-left:4px;" > {!subTab['Broadcaster']['Email Lists'].description} <br/> <br/>
+                                                     <Apex:outputPanel rendered="{!subTab['Broadcaster']['Email Lists'].ActiveLink=='true'}">
+                                                       <li><a href="{!subTab['Broadcaster']['Email Lists'].link}" target="_blank" >{!subTab['Broadcaster']['Email Lists'].strlink}</a> <br/></li></Apex:outputPanel>
+                                                     <Apex:outputPanel rendered="{!subTab['Broadcaster']['Email Lists'].ActiveVideo=='true'}">
+                                                       <li> <a href="{!subTab['Broadcaster']['Email Lists'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Broadcaster']['Email Lists'].strVideo}</a></li></Apex:outputPanel>
+                                                </ul>
+                                              </apex:outputPanel>
+                                             </div>
+                                            </div>
+                                            <!-------------help text content ------->      
+                                                  <!-- pageBlock Start Here --------->
+                                                  <apex:pageBlock id="SynchronizedData" mode="maindetail">
+                                                        <apex:actionFunction name="SynchronizedList" action="{!ListInfo}" reRender="Testinglist,Javascript" oncomplete="processcomplete();"/>
+                                                               <div class="btn-block pagination-centered" style="display:{!IF(listboolean==true,'block','none')}">
+                                                                    <a class="btn btn-primary" href="javascript:void(0);"  onclick="SynchronizedList_Validation();" title="Synchronized List" alt="Synchronized List" ><i  class="icon-refresh icon-white"></i> Synchronized List</a>                                                        
+                                                               </div>                                                               
+                                                         <div class="alert alert-error" style="display:{!If(errorcatch_4_list==true,'block','none')}">                  
+                                                              <strong>Some thing going wrong please synchronize first and try again.</strong>
+                                                              <a class="close" data-dismiss="alert" href="#">&times;</a>
+                                                          </div>   
+                                                        <apex:outputPanel id="Testinglist"> <!-- list display start here -->
+                                                               <apex:actionFunction name="CreateMergeFileds" action="{!CreateMergeFields}" reRender="MergeFields,Testinglist,SynchronizedData,campaigncreation,Javascript" oncomplete="processcomplete();">
+                                                                        <apex:param assignTo="{!mclistid}" value="" name="mclistid"/>
+                                                                        <apex:param assignTo="{!mchimpid}" value="" name="mchimpid"/>                                                  
+                                                               </apex:actionFunction>
+                                                               <apex:actionFunction action="{!MergeData}" name="MergeData" ReRender="Testinglist,MergeFields,SynchronizedData,Javascript,CampignDetails" oncomplete="processcomplete();"/>
+                                                               <apex:actionFunction action="{!cancelbroadcast}" name="cancelbroadcast" ReRender="Testinglist,MergeFields,SynchronizedData,Javascript,CampignDetails,Emaildesigner" oncomplete="processcomplete();"/>
+                                                              
+                                                               <apex:outputPanel rendered="{!listboolean}">
+                                                                 <div class="widget-box">
+                                                                  <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                    <h5>List Info</h5>
+                                                                  </div>
+                                                                  <div class="widget-content">                                                               
+                                                                     <apex:pageBlockTable value="{!mclistdatainfo}" var="mclist" styleclass="table table-striped table-hover datatables display"> 
+                                                                           <apex:column headerValue="Name" value="{!mclist.Name}" style="width:150px;"/>
+                                                                           <apex:column headerValue="Member Count" style="width:120px;">
+                                                                                <apex:outputLabel value="{!mclist.CnP_PaaS__Member_Count__c}"></apex:outputLabel>
+                                                                           </apex:column>
+                                                                           <apex:column headerValue="Open Rate" value="{!mclist.CnP_PaaS__Open_Rate__c}" style="width:100px;"/>
+                                                                           <apex:column headerValue="Click Rate" value="{!mclist.CnP_PaaS__Click_Rate__c}" style="width:100px;"/>
+                                                                           <apex:column headerValue="Campaign Count" value="{!mclist.CnP_PaaS__Campaign_Count__c}" style="width:100px;"/>
+                                                                           <apex:column headerValue="Report Name" style="width:150px;">
+                                                                                  <apex:outputLink value="/apex/CnP_PaaS__{!mclist.CnP_Dynamic_Report__r.CnP_PaaS__PageName__c}?id={!mclist.CnP_PaaS__CnP_Dynamic_Report__c}" target="_blank" >{!mclist.CnP_Dynamic_Report__r.Name}</apex:outputLink>
+                                                                           </apex:column>
+                                                                           <apex:column headerValue="Created Date" value="{!mclist.CnP_PaaS__Date_Created__c}"/>
+                                                                           <apex:column headerValue="Action" style="width:150px;">
+                                                                               <div class="btn-group">
+                                                                                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-cog"></i><span class="caret"></span></a>
+                                                                                    <ul class="dropdown-menu"> 
+                                                                                         <li><a href="javascript:void(0);" onclick="CreateMergeFileds_Validation('{!JSENCODE(mclist.id)}','{!JSENCODE(mclist.List_Id__c)}');" ><i class="icon-plus-sign"></i>Create Merge Field</a></li>                                                                               
+                                                                                    </ul>
+                                                                               </div>
+                                                                          </apex:column>     
+                                                                     </apex:pageBlockTable>
+                                                                </div><!-- widget-content -->
+                                                               </div><!-- widget-box --> 
+                                                               
+                                                               <div class="btn-block pagination-centered">
+                                                                    <a class="btn btn-primary" href="javascript:void(0);" style="display:{!IF(listboolean==true,'block','none')}" onclick="SynchronizedList_Validation();" title="Synchronized List" alt="Synchronized List" ><i  class="icon-refresh icon-white"></i> Synchronized List</a>                                                        
+                                                               </div> 
+                                                                                                                                     
+                                                              </apex:outputPanel>
+                                                        </apex:outputPanel><!-- list display end here -->
+                                                        
+                                                        <apex:outputPanel id="MergeFields"> <!-- Merge Fields assigning process start here --->
+                                                            <apex:outputPanel rendered="{!IF(reportdisply==true && errorcatch_4_list==false,true,false)}">    
+                                                                 <div class="widget-box">
+                                                                  <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                    <h5>Merge Fields</h5>
+                                                                  </div>
+                                                                  <div class="widget-content"> 
+                                                                                                                          
+                                                                <apex:pageBlockSection columns="1" rendered="{!reportdisply}"> <!-- C&P reports list display --->
+                                                                      <apex:pageBlockSectionItem >
+                                                                          <apex:outputLabel value="C&P Report Name"></apex:outputLabel>
+                                                                          <apex:selectList size="1" value="{!reportid}" styleClass="reportselect">
+                                                                             <apex:actionSupport event="onchange" reRender="reportdisplayinfo,MergeFields,Javascript" action="{!loadReport}"/>
+                                                                              <apex:selectOption itemLabel="--Select--" itemValue=""></apex:selectOption>
+                                                                              <apex:selectOptions value="{!ReportList}"></apex:selectOptions>
+                                                                          </apex:selectList>
+                                                                      </apex:pageBlockSectionItem>     
+                                                                </apex:pageBlockSection> <!-- end her ---> 
+                                                                <br/>
+                                                                <apex:outputPanel id="reportdisplayinfo" rendered="{!IF(reportdisply==true && errorcatch_4_list==false,true,false)}"> <!-- Merge Fields list display --->
+                                                                     <apex:pageBlockTable value="{!listmerge}" var="mg" styleClass="table table-striped table-hover"> <!-- list of the merge fields --->
+                                                                             <apex:column value="{!mg.Name}" width="440px"/>
+                                                                             <apex:column value="*|{!mg.CnP_PaaS__Tag__c}|*" headerValue="Put this tag in your content:"/>
+                                                                     </apex:pageBlockTable>  <!-- end here -->
+                                                                     <br/>
+                                                                      <apex:outputPanel rendered="{!reportdisply}"> <!-- Report fields display here --------> 
+                                                                       <div class="alert alert-info">
+                                                                                <strong>Note: *A maximum of 30 merge fields may be used.  Each Save is limited to 10 fields only.</strong>
+                                                                       </div> 
+
+                                                                          <table class="list table table-striped table-hover">                                                      
+                                                                           <apex:repeat value="{!CCFields}" var="ccf">     
+                                                                               <tr class="dataRow">
+                                                                                   <td class="dataCell">
+                                                                                      <apex:outputLabel value="{!ccf.fieldname}"></apex:outputLabel>                                                                  
+                                                                                   </td>
+                                                                                   <td class="dataCell">
+                                                                                       *|<apex:inputText value="{!ccf.CCfieldname}" size="12" maxlength="10" style="width:120px;"/>|*
+                                                                                   </td>
+                                                                                   <td>
+                                                                                      <apex:inputCheckbox value="{!ccf.CCcheck}" />
+                                                                                   </td>                                                              
+                                                                               </tr>
+                                                                          </apex:repeat>
+                                                                          </table>
+
+                                                                          <div class="btn-block pagination-centered">
+                                                                          <a class="btn" href="javascript:void(0);" onclick="MergeDataValidation();" ><i class="icon-ok"></i> Save</a>
+                                                                          <a class="btn" href="javascript:void(0);" onclick="Cancelbroadcast_Validation();" ><i class="icon-remove"></i> Cancel</a>
+                                                                          </div>                                                                                                                                                    
+                                                                                                                  
+                                                                    </apex:outputPanel> <!-- End her for Report fields display --------->    
+                                                                </apex:outputPanel> <!-- end here ------> 
+                                                                 
+                                                                </div><!-- widget-content -->
+                                                               </div><!-- widget-box -->  
+                                                               
+                                                               
+                                                            </apex:outputPanel>                                                                                                                                                                                              
+                                                       </apex:outputPanel> <!-- Merge Fields End here -->
+                                                  </apex:pageBlock>
+                                                  <!-- End here --->
+                                             </div>  <!-- container-fluid end here --->   
+                                     </div> <!-- End  List details here --->
+                                     
+                                     <!-- Camapigns List start here ------->
+                                     <div class="tab-pane" id="ctct_campaigns">
+                                         <div id="content-header">
+                                            <h1><i class="icon icon-list-alt"></i> Email Designs </h1>
+                                         </div>
+                                         <div class="container-fluid">
+                                               <!-------------help text content ------->
+                                         <div width="100%">
+                                            <div style="float:right">
+                                              <apex:outputLink styleClass="helpLink" rendered="{!subTab['Broadcaster']['Email Designers'].display=='true'}">  
+                                                    <Apex:outputLabel value="C&P Help for this Page" style="font-size:90%;margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo_email]').css('display','block');"/>      
+                                                    <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo_email]').css('display','block');" />                    
+                                              </apex:outputLink>
+                                              <apex:outputPanel id="Foo_email" styleClass="video"  >   
+                                                <ul style="padding-left:4px;" > {!subTab['Broadcaster']['Email Designers'].description} <br/> <br/>
+                                                     <Apex:outputPanel rendered="{!subTab['Broadcaster']['Email Designers'].ActiveLink=='true'}">
+                                                       <li><a href="{!subTab['Broadcaster']['Email Designers'].link}" target="_blank" >{!subTab['Broadcaster']['Email Designers'].strlink}</a> <br/></li></Apex:outputPanel>
+                                                     <Apex:outputPanel rendered="{!subTab['Broadcaster']['Email Designers'].ActiveVideo=='true'}">
+                                                       <li> <a href="{!subTab['Broadcaster']['Email Designers'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Broadcaster']['Email Designers'].strVideo}</a></li></Apex:outputPanel>
+                                                </ul>
+                                              </apex:outputPanel>
+                                             </div>
+                                            </div>
+                                            <!-------------help text content ------->  
+                                              <apex:pageBlock mode="maindetail" id="Emaildesigner">
+                                                    <apex:outputPanel id="campaigncreation" style="min-height:300px;">
+                                                             <apex:actionFunction action="{!goAction}" name="ActionProcess" reRender="campaigncreation,Emails,CampaignRecurringSchedule,Javascript,CampignDetails" oncomplete="processcomplete();">
+                                                                 <apex:param assignTo="{!sf_camp_id}" value="" name="sf_camp_id"/>
+                                                                 <apex:param assignTo="{!mc_camp_id}" value="" name="mc_camp_id" />
+                                                                 <apex:param assignTo="{!mchimpid}" value="" name="mchimpid" />
+                                                                 <apex:param assignTo="{!mc_camp_name}" value="" name="mc_camp_name" />
+                                                                 <apex:param assignTo="{!actionvalue}" value="" name="actionvalue" />
+                                                             </apex:actionFunction>
+                                                             <apex:actionFunction name="SynchronizedCampaign" action="{!CampaignInfo}" reRender="campaigncreation,Javascript" oncomplete="processcomplete();"/>
+                                                             <apex:actionFunction name="CreateCampaign" action="{!CreateCampaign}" reRender="campaigncreation,Emails,CreateCampaign,Javascript" oncomplete="processcomplete();"/>
+                                                             <div class="btn-block pagination-centered">                                                             
+                                                                        <span style="display:{!IF(campboolean==true,'inline','none')}">                                                                        
+                                                                            <a class="btn btn-primary" href="javascript:void(0);" onclick="CreateCampaign_Validation();" ><i class="icon-plus-sign icon-white"></i> New Email Design</a>                                                        
+                                                                        </span> &nbsp;
+                                                                         <span style="display:{!IF(campboolean==true,'inline','none')}">
+                                                                            <a class="btn btn-primary" href="javascript:void(0);" onclick="SynchronizedCampaign_Validation();" alt="Synchronized Campaigns" title="Synchronized Campaigns" ><i class="icon-refresh icon-white"></i> Synchronized Email Designer </a>                                                        
+                                                                         </span>
+                                                             </div>                                                            
+                                                          <div class="alert alert-error" style="display:{!If(errorcatch_4_campaign==true,'block','none')}">                  
+                                                              <strong>Some thing going wrong please synchronize first and try again.</strong>
+                                                              <a class="close" data-dismiss="alert" href="#">&times;</a>
+                                                          </div>  
+                                                             <apex:outputPanel rendered="{!IF(campboolean==true,true,false)}">  <!-- campaing list display part start here --> 
+                                                             <div class="widget-box">
+                                                              <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                <h5>Email Design List</h5>
+                                                              </div>
+                                                              <div class="widget-content">                                                                 
+                                                                                                                
+                                                                   <apex:variable value="0" var="rowNumCamp"/>
+                                                                   
+                                                                   <apex:pageBlockTable value="{!mccampaigndatainfo}" var="mcamplist" styleclass="table table-striped table-hover datatables display"> 
+                                                                       <apex:column headerValue="Email Campaign Name" value="{!mcamplist.Name}" style="width:150px;"/>
+                                                                       <apex:column headerValue="Email List Name" value="{!mcamplist.CnP_PaaS__Broadcaster_List__c}"/>
+                                                                       <apex:column headerValue="Subject" value="{!mcamplist.CnP_PaaS__Subject__c}"/>
+                                                                       <apex:column headerValue="Send Time" value="{!mcamplist.CnP_PaaS__Send_Time__c}"/>
+                                                                       <apex:column headerValue="Status" value="{!mcamplist.CnP_PaaS__Status__c}" />
+                                                                       <apex:column headerValue="Actions">
+                                                                           <div class="btn-group"> 
+                                                                                      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">                                                                                       
+                                                                                          <i class="icon-cog"></i>
+                                                                                         <span class="caret"></span>
+                                                                                      </a>
+                                                                                      <ul class="dropdown-menu"> 
+                                                                                        <li><a href="javascript:void(0);" onclick="ProcessAction('{!JSENCODE(mcamplist.id)}','{!JSENCODE(mcamplist.Camp_Id__c)}','{!JSENCODE(mcamplist.List_Id__c)}','{!JSENCODE(mcamplist.Name)}','Details');"><i class="icon-list"></i> Details</a></li>                                                                             
+                                                                                        <li style="display:{!IF(mcamplist.Status__c=='save' && mcamplist.Broadcaster_List__c!='' && mcamplist.Broadcaster_List__c!='null' && mcamplist.Broadcaster_List__r.CnP_Dynamic_Report__c!='null' && mcamplist.Broadcaster_List__r.CnP_Dynamic_Report__c!='','block','none')}"><a href="#" onclick="ProcessAction('{!JSENCODE(mcamplist.id)}','{!JSENCODE(mcamplist.Camp_Id__c)}','{!JSENCODE(mcamplist.List_Id__c)}','{!JSENCODE(mcamplist.Name)}','SendNow');"><i class="icon-hand-right" ></i>Send Now</a></li>
+                                                                                        <li><a href="javascript:void(0);" onclick="ProcessAction('{!JSENCODE(mcamplist.id)}','{!JSENCODE(mcamplist.Camp_Id__c)}','{!JSENCODE(mcamplist.List_Id__c)}','{!JSENCODE(mcamplist.Name)}','SendTest');"><i class="icon-envelope" ></i> Send Test</a></li>
+                                                                                        <li><a href="javascript:void(0);" onclick="ProcessAction('{!JSENCODE(mcamplist.id)}','{!JSENCODE(mcamplist.Camp_Id__c)}','{!JSENCODE(mcamplist.List_Id__c)}','{!JSENCODE(mcamplist.Name)}','Replicate');"><i class="icon-retweet" ></i> Replicate</a></li>
+                                                                                        <li><a href="javascript:void(0);" onclick="ProcessAction('{!JSENCODE(mcamplist.id)}','{!JSENCODE(mcamplist.Camp_Id__c)}','{!JSENCODE(mcamplist.List_Id__c)}','{!JSENCODE(mcamplist.Name)}','Schedule');"><i class="icon-time" ></i> Schedule</a></li>
+                                                                                        <li><a href="javascript:void(0);" onclick="ProcessAction('{!JSENCODE(mcamplist.id)}','{!JSENCODE(mcamplist.Camp_Id__c)}','{!JSENCODE(mcamplist.List_Id__c)}','{!JSENCODE(mcamplist.Name)}','Delete');"><i class="icon-trash"></i> Delete</a></li>                                                                               
+                                                                                      
+                                                                                      </ul>
+                                                                           </div>
+                                                                           <apex:variable var="rowNumCamp" value="{!VALUE(rowNumCamp) + 1}"/>   
+                                                                      </apex:column>
+                                                                  </apex:pageBlockTable>
+                                                                </div><!-- widget-content -->
+                                                               </div><!-- widget-box --> 
+                                                               
+                                                               <div class="btn-block pagination-centered">                                                             
+                                                                        <span style="display:{!IF(campboolean==true,'inline','none')}">                                                                        
+                                                                            <a class="btn btn-primary" href="javascript:void(0);" onclick="CreateCampaign_Validation();" ><i class="icon-plus-sign icon-white"></i> New Email Design</a>                                                        
+                                                                        </span> &nbsp;
+                                                                         <span style="display:{!IF(campboolean==true,'inline','none')}">
+                                                                            <a class="btn btn-primary" href="javascript:void(0);" onclick="SynchronizedCampaign_Validation();" alt="Synchronized Campaigns" title="Synchronized Campaigns" ><i class="icon-refresh icon-white"></i> Synchronized Email Designer</a>                                                        
+                                                                         </span>
+                                                             </div>
+                                                           
+                                                                                                                                
+                                                           </apex:outputPanel><!-- Campaign list display end here --->
+                                                       </apex:outputPanel> 
+                                                         
+                                                       <apex:outputPanel id="CreateCampaign"> <!-- Campaign Creation -->
+                                                          
+                                                           <apex:outputPanel rendered="{!IF(create_campaign==true && errorcatch_4_campaign==false,true,false)}">       
+                                                           
+                                                             <div class="widget-box">
+                                                              <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                <h5>Create Campaign</h5>
+                                                              </div>
+                                                              <div class="widget-content">  
+                                                                                                                         
+                                                               <apex:pageBlockSection columns="1" showHeader="false" collapsible="false">
+                                                                    <apex:pageBlockSectionItem >
+                                                                            <apex:outputLabel >Select List</apex:outputLabel>
+                                                                            <apex:outputPanel >
+                                                                                <apex:selectList size="1" value="{!mclistid}" styleClass="selectlist">
+                                                                                   <apex:selectOption itemLabel="Select" itemValue=""></apex:selectOption>
+                                                                                   <apex:selectOptions value="{!mcslist_option}"></apex:selectOptions>
+                                                                                </apex:selectList>
+                                                                               <!-- <apex:commandLink value="Go" action="/apex/emaildesigner" styleclass="btn createcampaing"/> -->                                                                                
+                                                                            </apex:outputPanel>
+                                                                    </apex:pageBlockSectionItem>                                                                    
+                                                               </apex:pageBlockSection>
+                                                               
+                                                            </div><!-- widget-content -->
+                                                           </div><!-- widget-box --> 
+                                                           
+                                                               <div class="btn-block pagination-centered ">
+                                                               <apex:commandButton value="Go" styleClass="btn btn-primary" action="{!Go}" onclick="if(!Go_Validation()==true){ return false; }" ></apex:commandButton>
+                                                               <a class="btn btn-primary" href="javascript:void(0);" onclick="Cancelbroadcast_Validation();" ><i class="icon-remove icon-white"></i> Cancel</a> 
+                                                               </div>
+                                                                                                                        
+                                                           </apex:outputPanel>
+                                                       </apex:outputPanel><!-- End Here -->
+                                                       
+                                                       <apex:outputPanel id="CampaignRecurringSchedule"> <!-- Campaign Schedule process start her -->
+                                                        <apex:outputPanel rendered="{!IF(campaign_schedule==true && errorcatch_4_campaign==false,true,false)}">               
+                                                     <div class="widget-box">
+                                                      <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                        <h5>Campaign Schedule</h5>
+                                                      </div>
+                                                      <div class="widget-content">  
+                                                                                                               
+                                                                                                                            
+                                                                   <apex:iframe src="{!iframe_url}" frameborder="false"/> 
+                                                                     <!-- <apex:commandButton action="{!savebroadcastTest}" value="Save" reRender="Testinglist,campaigncreation,Emails,RecurringSchedule"/> -->
+                                                              
+                                                                
+                                                        </div><!-- widget-content -->
+                                                       </div><!-- widget-box -->                                                                
+                                                        </apex:outputPanel>          
+                                                      </apex:outputPanel> <!-- end here --->
+                                                      
+                                                       <apex:outputPanel id="CampignDetails"> <!-- Campaing detail info display start here --->
+                                                             <apex:outputPanel rendered="{!IF(campaigndetailsshow==true && errorcatch_4_campaign==false,true,false)}">                                                                     
+                                                                     <div class="btn-block pagination-centered" style="display:{!IF(campainginfodata.Status__c=='sent','block','none')}">
+                                                                     <a style="display:{!IF(campainginfodata.Status__c=='sent','block','none')}" class="btn btn-primary" href="javascript:void(0);" onclick="ProcessAction('{!JSENCODE(campainginfodata.id)}','{!JSENCODE(campainginfodata.Camp_Id__c)}','{!JSENCODE(campainginfodata.List_Id__c)}','{!JSENCODE(campainginfodata.Name)}','Stats');"><i class="icon-refresh icon-white"></i> Stats</a>
+                                                                     <a style="display:{!IF(campainginfodata.Status__c=='sent','block','none')}" class="btn btn-primary" href="javascript:void(0);" onclick="ProcessAction('{!JSENCODE(campainginfodata.id)}','{!JSENCODE(campainginfodata.Camp_Id__c)}','{!JSENCODE(campainginfodata.List_Id__c)}','{!JSENCODE(campainginfodata.Name)}','Reports');"><i class="icon-refresh icon-white"></i> Reports</a>    
+                                                                     <a class="btn btn-primary" href="javascript:void(0);" onclick="Cancelbroadcast_Validation();" ><i class="icon-remove icon-white"></i> Cancel</a> 
+                                                                     </div>                                                              
+                                                                     <div class="btn-block pagination-centered" style="display:{!IF(campainginfodata.Status__c!='sent','block','none')}">                                                                    
+                                                                     <a class="btn btn-primary" href="javascript:void(0);" onclick="Cancelbroadcast_Validation();" ><i class="icon-remove icon-white"></i> Cancel</a> 
+                                                                     </div>    
+                                                                 <div class="widget-box">
+                                                                  <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                    <h5>MailChimp Campaign Detail</h5>
+                                                                  </div>
+                                                                  <div class="widget-content">                                                                    
+                                                                   
+                                                                   <apex:pageBlockSection collapsible="false" showHeader="false">
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Email Campaign Name"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.Name}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="MailChimp ID"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Camp_Id__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Subject"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Subject__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="From Name"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__From_name__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="From Email"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__From_email__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="To Name"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__To_Name__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Archive URL"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__archieve_URL__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Type"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Type__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Content Type"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Content_Type__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Create Time"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Create_Time__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Send Time"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Send_Time__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Status"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Status__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Email Sent"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Email_Sent__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                   </apex:pageBlockSection>
+                                                                   
+                                                                 </div><!-- widget-content -->
+                                                                 </div><!-- widget-box --> 
+                                                                   
+                                                                 <div class="widget-box">
+                                                                  <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                    <h5>Campaign Stats</h5>
+                                                                  </div>
+                                                                  <div class="widget-content">                                                                                                                                      
+                                                                   
+                                                                   <apex:pageBlockSection collapsible="false" showHeader="false">                                                           
+                                                                          <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Email Sent"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Emails_Sent__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Unique Likes"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Unique_Likes__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Clicks"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Clicks__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Unique Clicks"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Unique_Clicks__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Facebook Likes"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Facebook_Likes__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Last Click"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Last_Click__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Opens"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Opens__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Users Who Clicked"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Users_Who_Cclicked__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Unique Opens"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Unique_Opens__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Last Open"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Last_Open__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Forwards"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Forwards__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Forwards Opens"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Forwards_Opens__c}"/>
+                                                                         </apex:pageBlockSectionItem>                                                         
+                                                                   </apex:pageBlockSection>                                                              
+
+                                                                   <br/>
+                                                                                                                                     
+                                                                   <apex:pageBlockSection collapsible="false" showHeader="false">
+                                                                          <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Unsubscribes"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Unsubscribes__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Hard Bounces"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Hard_Bounces__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Abuse Reports"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Abuse_Reports__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Soft Bounces"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Soft_Bounces__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Syntax Errors"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campaingstatsinfodata.CnP_PaaS__Syntax_Errors__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                   </apex:pageBlockSection>
+                                                                   
+                                                                 </div><!-- widget-content -->
+                                                                 </div><!-- widget-box -->                                                                    
+                                                                   
+                                                                 <div class="widget-box">
+                                                                  <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                    <h5>Tracking</h5>
+                                                                  </div>
+                                                                  <div class="widget-content">                                                                   
+                                                                   
+                                                                   <apex:pageBlockSection showHeader="false" collapsible="false">
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="HTML Clicks Tracked"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__html_clicks__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                          <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Opens Tracked"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__opens__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                          <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Text Clicks Tracked"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__text_clicks__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                   </apex:pageBlockSection>
+                                                                   
+                                                                 </div><!-- widget-content -->
+                                                                 </div><!-- widget-box -->                                                                    
+                                                                   
+                                                                 <div class="widget-box">
+                                                                  <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                    <h5>Options</h5>
+                                                                  </div>
+                                                                  <div class="widget-content">
+                                                                   
+                                                                   <apex:pageBlockSection collapsible="false" showHeader="false">
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Auto FB Post"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__auto_fb_post__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="CSS Auto-Inlined"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__inline_CSS__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Analytics"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Analytics__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Authenticated"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Authenticate__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Analytics Tag"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Analytics_tag__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="ecomm360 Tracking Enabled"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__ecomm360__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Auto Tweeted"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__auto_tweet__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Auto Footer Enabled"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__auto_footer__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                         <apex:pageBlockSectionItem >
+                                                                                <apex:outputLabel value="Timewarp Enabled"></apex:outputLabel>
+                                                                                <apex:outputField value="{!campainginfodata.CnP_PaaS__Timewarp__c}"/>
+                                                                         </apex:pageBlockSectionItem>
+                                                                   </apex:pageBlockSection>
+
+                                                                 </div><!-- widget-content -->
+                                                                 </div><!-- widget-box -->                                                                    
+                                                                   
+                                                                 <div class="widget-box">
+                                                                  <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                    <h5>Campaign Hourly Stats</h5>
+                                                                  </div>
+                                                                  <div class="widget-content">                                                                   
+                                                                   
+                                                                          <apex:pageBlockTable value="{!HourReport}" var="hour" styleclass="table table-striped table-hover datatables display">
+                                                                                <apex:column headerValue="Statistics Hour" value="{!hour.CnP_PaaS__Timestamp__c}"/>
+                                                                                <apex:column headerValue="Emails Sent" value="{!hour.CnP_PaaS__Emails_Sent__c}"/>
+                                                                                <apex:column headerValue="Unique Opens" value="{!hour.CnP_PaaS__Unique_Opens__c}"/>
+                                                                                <apex:column headerValue="Recipients Click" value="{!hour.CnP_PaaS__Recipients_Click__c}"/>
+                                                                          </apex:pageBlockTable>
+                                                                  
+                                                                 </div><!-- widget-content -->
+                                                                 </div><!-- widget-box -->                                                                    
+                                                                   
+                                                                 <div class="widget-box">
+                                                                  <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                    <h5>Contact Member Activities</h5>
+                                                                  </div>
+                                                                  <div class="widget-content">
+                                                                                                                                    
+                                                                          <apex:pageBlockTable value="{!MemberActivities}" var="activities" styleclass="table table-striped table-hover datatables display">
+                                                                                <apex:column headerValue="Contact Name" value="{!activities.CnP_PaaS__Contact__c}"/>                                                                
+                                                                                <apex:column headerValue="List Name" value="{!activities.CnP_PaaS__Broadcaster_List__c}"/>
+                                                                                <apex:column headerValue="Opens" value="{!activities.CnP_PaaS__Opens__c}"/>
+                                                                                <apex:column headerValue="Sent" value="{!activities.CnP_PaaS__Sents__c}"/>
+                                                                                <apex:column headerValue="Clicks" value="{!activities.CnP_PaaS__Clicks__c}"/>
+                                                                                <apex:column headerValue="Bounces" value="{!activities.CnP_PaaS__Bounces__c}"/>
+                                                                                <apex:column headerValue="Unsubscibe" value="{!activities.CnP_PaaS__Unsubscribes__c}"/>
+                                                                                <apex:column headerValue="Abuses" value="{!activities.CnP_PaaS__Abuses__c}"/>
+                                                                                <apex:column headerValue="Queued" value="{!activities.CnP_PaaS__Queued__c}"/>
+                                                                                <apex:column headerValue="Ecomm" value="{!activities.CnP_PaaS__ecomm__c}"/>                                                                                
+                                                                          </apex:pageBlockTable>
+                                                                 </div><!-- widget-content -->
+                                                                 </div><!-- widget-box -->
+                                                                                                                                
+                                                             </apex:outputPanel>
+                                                       </apex:outputPanel> <!-- ends here ------->
+                                                       
+                                                       <apex:actionFunction action="{!CampaignSendTest}" name="CampaignSendTest" reRender="campaigncreation,Emails,Javascript" oncomplete="processcomplete();">
+                                                                 <apex:param value="" assignTo="{!mc_camp_id}" name="mc_camp_id"/>
+                                                       </apex:actionFunction>
+                                                       <apex:actionFunction action="{!cancelbroadcast}" name="cancelbroadcast" rerender="campaigncreation,Emails,Javascript,CreateCampaign,CampignDetails,Emaildesigner" oncomplete="processcomplete()"/>
+                                                       
+                                                       <apex:outputPanel id="Emails"> <!-- Send test email part start here ----->
+                                                                <apex:outputPanel rendered="{!IF(sendtest==true && errorcatch_4_campaign==false,true,false)}">
+                                                                 <div class="widget-box">
+                                                                  <div class="widget-title widget-title-green"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                                                    <h5>Send Test Email</h5>
+                                                                  </div>
+                                                                  <div class="widget-content">
+                                                                                                                         
+                                                                   <apex:pageBlockSection columns="1" collapsible="false" showHeader="false" rendered="{!sendtest}" >
+                                                                           <apex:pageBlockSectionItem >
+                                                                                <apex:outputtext value="Campaign Name"/>
+                                                                                <apex:outputText value="{!mc_camp_name}"/>
+                                                                           </apex:pageBlockSectionItem>
+                                                                           <apex:pageblockSectionItem >
+                                                                           <apex:outputText value="Emails"/>
+                                                                                <apex:inputtextarea rows="6" value="{!emails}" styleClass="emaillist input-block-level"/>
+                                                                           </apex:pageblockSectionItem>                                                                           
+                                                                   </apex:pageblockSection> 
+                                                                     
+                                                                         <br/>
+                                                                          <div class="btn-block pagination-centered">
+                                                                          <a class="btn btn-primary" href="javascript:void(0);" onclick="CampaignSendTestValidation('{!JSENCODE(mc_camp_id)}');" ><i class="icon-envelope icon-white"></i> Send Test</a>
+                                                                          <a class="btn btn-primary" href="javascript:void(0);" onclick="Cancelbroadcast_Validation();" ><i class="icon-remove  icon-white"></i> Cancel</a>
+                                                                          </div>    
+                                                                                                                                           
+                                                                 </div><!-- widget-content -->
+                                                                 </div><!-- widget-box -->
+                                                            </apex:outputPanel>                                                                                                                                                                
+                                                        </apex:outputPanel> <!-- send test email part end here ---> 
+                                              </apex:pageBlock>     
+                                         </div> <!-- container-fluid end here --->
+                                     </div> <!-- Campaing list end here -->
+                                    
+                                 </div> <!-- end tab-content ---------> 
+                          </apex:form> 
+                   </apex:define>
+               </div>
+               <apex:define name="javascript">
+                     <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>          
+                     <script src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+                     <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__DataTables,'js/jquery.dataTables.js')}"/>
+                     <apex:outputPanel id="Javascript">
+                     <script type="text/javascript">
+                          $(document).ready(function(){
+                                   $('.datatables').dataTable({
+                                            "bJQueryUI": true,
+                                            "bRetrieve": true,
+                                            "iDisplayLength"    : 10, 
+                                            aoColumnDefs: [
+                                              { aTargets: [0], bSortable: true}] 
+                                        });
+                                         $(".video").mouseout(function(){              
+                                              $(this).fadeOut(8000);
+                                         });
+                                       
+                          }) 
+                         
+                         function Authorize_validation(){
+                              var valid = 0;
+                              var acc_name = $('.acc_name').val();
+                              var api_key = $('.api_key').val();
+                              var client_id = $('.client_id').val();
+                              var client_secrect = $('.client_secrect').val();
+                              if(acc_name==''){
+                                  valid = 1;
+                                  alert('Please Enter Account Name');
+                                  $('.acc_name').focus();
+                                  return false;
+                              }
+                              if(api_key==''){
+                                  valid = 1;
+                                  alert('Please Enter API key');
+                                  $('.api_key').focus();
+                                  return false;
+                              }
+                              if(client_id==''){
+                                  valid = 1;
+                                  alert('Please Enter Client Id');
+                                  $('.client_id').focus();
+                                  return false;
+                              }
+                              if(client_secrect==''){
+                                  valid = 1;
+                                  alert('Please Enter Client Secrect');
+                                  $('.client_secrect').focus();
+                                  return false;
+                              }
+                              if(valid==0){
+                                 return true;
+                              }else{
+                                 return false;
+                              }
+                         }
+                         function EditBroadCast_Validation(){
+                              processstart();
+                              EditBroadCast();
+                         }
+                         
+                         function SynchronizedList_Validation(){
+                              processstart();
+                              SynchronizedList();
+                         }
+                         function CreateMergeFileds_Validation(value1,value2){
+                              processstart(); 
+                              CreateMergeFileds(value1,value2);
+                         }
+                         function CreateCampaign_Validation(){
+                              processstart(); 
+                              CreateCampaign();
+                         }
+                         function SynchronizedCampaign_Validation(){
+                              processstart();
+                              SynchronizedCampaign();
+                         }
+                         function accountsetting(){
+                             processstart();
+                             AccountSetting_format();
+                         }
+                         
+                         function emaillistselect(){ 
+                             processstart();                           
+                             EmailList_format();
+                         }
+                         
+                         function emaildesignselect(){
+                             processstart();
+                             Emaildesigner_format();
+                         }
+                                               
+                         function MergeDataValidation(){
+                              var reportselect = $(".reportselect").val();
+                              var e = 0;
+                              if(reportselect==''){
+                                  e=e+1; 
+                                  alert("Please select the report");
+                                  return false;
+                              }
+                              if(e==0){
+                                  processstart();
+                                  MergeData();
+                                  return true;
+                              }
+                         }
+                         function CampaignSendTestValidation(value){                           
+                             var emaillist = $.trim($(".emaillist").val());
+                             var e = 0;
+                             reg_email = /^([A-Za-z0-9_\+\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+                             if(emaillist==""){
+                                e = e+1;
+                                alert("Please Enter only emails");
+                                return false;
+                             }
+                             if(emaillist!=""){
+                                 var emailsdata=$(".emaillist").val().split(';'); 
+                                 for(var i=0;i<emailsdata.length;i++)
+                                  {
+                                           if(!reg_email.test(emailsdata[i]))
+                                           {
+                                                e=e+1;
+                                                alert("Please Enter the Valid Email ids");
+                                                jQuery(".emaillist").focus();
+                                                return false;
+                                           }
+                                  }
+                                 if(emailsdata.length>5)
+                                 {
+                                     e = 1;
+                                     alert("Please Enter the Only 5 emails");
+                                     jQuery(".emaillist").focus();
+                                     return false; 
+                                 }   
+                             }
+                             if(e==0){
+                               processstart();
+                               CampaignSendTest(value);
+                               return true;
+                             }
+                         }
+                         function ProcessAction(sfcampid,campid,listid,campname,actionvalue){
+                                 //alert('Hello');
+                                 /*  var actionvalue = $('.actionvalue'+rowid).val(); */ 
+                                  
+                                  if(actionvalue=="Delete"){
+                                      if(confirm("Are you sure you want to permanently delete this record?")==true){  
+                                          processstart();
+                                          ActionProcess(sfcampid,campid,listid,campname,actionvalue);
+                                       }
+                                  }else{  
+                                        processstart();            
+                                        ActionProcess(sfcampid,campid,listid,campname,actionvalue);
+                                  }
+                         }
+                         function Cancelbroadcast_Validation(){
+                               processstart();
+                               //alert('Hello');     
+                               cancelbroadcast();
+                         }
+                         
+                         function Go_Validation(){
+                              var listvalue = jQuery(".selectlist").val();
+                              if(listvalue==''){
+                                  alert('Please select the List');
+                                  jQuery(".selectlist").focus();
+                                  return false;
+                              }else{
+                                  processstart();
+                                 return true;
+                              }
+                         }
+                         
+                         function popitup(url) {    
+                               newwindow=window.open(url,'name','height=400,width=350,scrollbars=yes');
+                               if (window.focus) {newwindow.focus()}
+                               return false;
+                         }
+                         function processcomplete(){
+                             $("#light").attr('style','display:none');
+                             $("#fade").attr('style','display:none');
+                        }
+                        function processstart(){
+                               $("#light").attr('style','display:block');
+                               $("#fade").attr('style','display:block');
+                        }  
+                     </script>
+                     </apex:outputPanel>
+               </apex:define>   
+      </apex:composition>
+</apex:page>

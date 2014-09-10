@@ -1,0 +1,5 @@
+<apex:page standardController="User">
+<apex:form >
+<apex:outputText >hi</apex:outputText>
+</apex:form>
+</apex:page>

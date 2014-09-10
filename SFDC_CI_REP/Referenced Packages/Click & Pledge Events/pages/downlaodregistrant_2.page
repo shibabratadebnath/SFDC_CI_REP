@@ -1,0 +1,35 @@
+<apex:page controller="CnP_PaaS_EVT.registrant_download_controller_2" cache="true" contentType="application/vnd.ms-excel#RegistrantReport.xls"  standardStylesheets="false" tabStyle="CnP_PaaS_EVT__Event__c" language="english" readOnly="true">
+<h1>Registrant Information Report <!--<apex:outputLabel rendered="{!if(maxlimit>0,true,false)}">{!offset} to {!maxlimit}</apex:outputLabel>--></h1>
+Download Date and Time : <apex:outputLabel value="{!Dvalue}"></apex:outputLabel> 
+ <apex:pageblock >
+ <apex:pageBlockTable value="{!Results}" var="reg1">
+ <apex:column headerValue="Contact id" value="{!reg1.AccName}"/>
+ <apex:column headerValue="Name" value="{!reg1.contactfirstname}"/>
+ <!--<apex:column headerValue="Last Name" value="{!reg1.contactlastname}"/>-->
+ <apex:column headerValue="Contact Email" value="{!reg1.contactEmail}"/>
+ <apex:column headerValue="Date Registered" value="{!reg1.CreatedDate}"/>
+ <apex:column headerValue="# of Attendees Registered" value="{!reg1.noofatt}"/>
+ <apex:column headerValue="Payment Type" value="{!reg1.paymenttype}"/>
+ <apex:column headerValue="Account Number" value="{!reg1.accountnumber}"/>
+ <apex:column headerValue="Card Type" value="{!reg1.cardname}"/>
+ <apex:column headerValue="Address" value="{!reg1.street}"/>
+ <apex:column headerValue="City" value="{!reg1.City}"/>
+ <apex:column headerValue="State" value="{!reg1.State}"/>
+ <apex:column headerValue="Country" value="{!reg1.Country}"/>
+ <apex:column headerValue="Zip" value="{!reg1.zip}"/>
+ <apex:column headerValue="Total $" >
+<apex:outputText value="{0, number,$###,###,##0.00}" style="font-weight:normal;">
+<apex:param value="{!reg1.TotalAmount}"/>
+</apex:outputText></apex:column>
+<apex:column headerValue="Discount $" >
+<apex:outputText value="{0, number,$###,###,##0.00}" style="font-weight:normal;">
+<apex:param value="{!reg1.discount}"/>
+</apex:outputText></apex:column>
+ 
+ <apex:repeat value="{!customquestionevent}" var="eventquestion">
+<apex:column headerValue="{!eventquestion.Name}"><apex:variable value="{!eventquestion.id}{!reg1.regid}" var="rows"/><apex:repeat value=" {!questionmap[rows]}" var="cust1">{!cust1}</apex:repeat>  </apex:column>
+</apex:repeat>
+ </apex:pageBlockTable>
+
+ </apex:pageblock> 
+</apex:page>

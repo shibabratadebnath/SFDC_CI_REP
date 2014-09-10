@@ -1,0 +1,30 @@
+<apex:page sidebar="false" showHeader="false" standardStylesheets="false" docType="html-5.0">
+  <head>
+       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+       <title>C&amp;P MailChimp Management</title>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+       </meta>
+       <apex:insert name="css" />
+      
+  </head>
+  
+  <body>
+    <div id="header">
+       <apex:insert name="header" />
+    </div>
+       <div class="tabbable tabs-left">
+            <div id="leftnav">
+                  <apex:insert name="sidebar" />
+            </div>
+            <div id="content">
+                  <apex:insert name="content" />
+            </div>
+            <!--<div class="row-fluid" id="footer" >
+                   <apex:insert name="footer" />
+            </div>-->
+       </div>   
+  </body>
+ 
+   <apex:insert name="javascript"/>
+</apex:page>

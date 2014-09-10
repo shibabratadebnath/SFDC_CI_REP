@@ -1,0 +1,3 @@
+<apex:page standardController="CnP_PaaS_EVT__Event_listing__c" extensions="CnP_PaaS_EVT.EventListingRedirect" action="{!redirect}">
+  
+</apex:page>

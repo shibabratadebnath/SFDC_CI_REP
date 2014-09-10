@@ -1,0 +1,7 @@
+<apex:page controller="Action_poller">
+    <apex:form >
+        <apex:outputText >Number</apex:outputText><br/>
+        <apex:outputText value="{!count}" id="ref"/>
+        <apex:actionPoller action="{!actpoll}" rerender="ref" interval="5"/>        
+    </apex:form>
+</apex:page>

@@ -1,0 +1,317 @@
+<apex:page standardController="CnP_PaaS__Pledge__c" extensions="CnP_PaaS.PledgeController" tabStyle="CnP_PaaS__Pledge__c" title="C&P Pledge" action="{!loadhelpContent}">
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+<style>
+.helpLink {
+       position:relative;       
+    }
+
+    .video{
+      display:none;
+      width:12%;
+      height:auto;
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+     /* margin-left:950Px;*/
+    }
+    
+.req{
+color: #CC0000;
+float:left;
+width:10px;
+}
+a.filelink {
+
+         display:block;
+         text-decoration:none;
+         color:#333333;
+         padding:5px;
+         background-color:#FAFAFA;
+         border:solid 1px #666666;
+         margin-top:15px;
+         float:left;
+         margin-left:20px;
+    }
+a.filelink:hover {
+         background-color:#333333;
+         color:#FFFFFF;
+    }
+</style>
+ <script type="text/javascript">
+
+jQuery=$.noConflict();
+
+
+function anyskucheck(){
+       var conditionssku= jQuery(".conditionssku").val();
+       if(conditionssku=='Any SKU' ){
+          jQuery(".skuvalue").val(''); 
+          jQuery(".skuvalue").attr('disabled',true);        
+      }else{
+          jQuery(".skuvalue").attr('disabled',false);
+       }
+}
+
+
+   function validatepledge(){
+         var t =0;
+          var startdate1 = new Date(jQuery(".startdate").val());
+       var enddate1 = new Date(jQuery(".enddate").val());
+       var syst=new Date(jQuery(".aa").val());
+         var pledgename= jQuery.trim(jQuery(".pledgename").val());
+     var startdate = jQuery.trim(jQuery(".startdate").val());
+      var enddate = jQuery.trim(jQuery(".enddate").val());
+         var contactselect = jQuery.trim(jQuery(".contactselect").val());
+         var amount = jQuery(".amount").val();
+         if(pledgename == ''){
+             t=1;
+            alert("Please Enter Pledge Name");
+             jQuery(".pledgename").focus();
+            return false;
+            
+         }
+           if(contactselect == ''){
+             t=1;
+            alert("Please Select Contact");
+             jQuery(".contactselect").focus();
+            return false;
+            
+         }
+           if(amount == ''){
+             t=1;
+            alert("Please Enter Amount");
+             jQuery(".amount").focus();
+            return false;
+            
+         }
+         if(isNaN(amount)){
+               t=1;
+            alert("Please Enter a Number or Decimal value in Pledge Amount");
+             jQuery(".amount").focus();
+            return false;
+         }
+         if(parseFloat(amount)<0){
+            t=1;
+            alert("Please Enter Positive values in Pledge Amount");
+            jQuery(".amount").focus();
+            return false;
+         }
+         if(amount.length>11){
+               t=1;
+            alert("Please Enter Valid Amount");
+             jQuery(".amount").focus();
+            return false;
+         }
+     
+        
+           if(startdate == ''){
+             t=1;
+            alert("Please Enter Start date");
+             jQuery(".startdate").focus();
+            return false;
+            
+         }
+      /*  if(startdate1> syst){
+                t=1;
+                alert('Pledge Start Date Must be less than or equal to Today Date');
+                jQuery(".startdate1").focus();
+                return false;
+        }*/
+        
+        if(enddate1< syst){
+                t=1;
+                alert('Pledge End date Must be greater than or equal to Start date');
+                jQuery(".enddate1").focus();
+                return false;
+        }
+
+       if(startdate1 > enddate1){
+          t=1;
+             alert('End date should be greater than or equal to start date');
+            jQuery(".enddate1").focus();
+            return false;
+       }
+       
+       
+   <!-- Benifit Value Validation -->
+     
+     var Benifit=trim(jQuery(".benifitvalue").val());
+     if(isNaN(Benifit))
+        {
+          alert("Please Enter a Number or Decimal value in Benifit Value ");
+          jQuery(".benifitvalue").focus();
+            return false;
+        }
+   
+   <!-- Benifit Value Validation End -->    
+        
+   <!---- SKU validation ------> 
+        
+       var sku=trim(jQuery(".skuvalue").val());
+       <!-- var vtsku=trim(jQuery(".skuforvt").val()); -->   
+       var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+       
+       
+       var vtsku=trim(jQuery(".skuforvt").val());
+        if(vtsku!='' && !reg_sku.test(vtsku)){
+        alert("Please Enter a valid data (Alphanumerics - _ : space) in Default SKU for VT");
+         jQuery(".skuforvt").focus();
+         return false;
+        }
+      
+       if(sku!='' && !reg_sku.test(sku)){       
+         alert("Please Enter a valid data (Alphanumerics - _ : space) in SKU ");
+         jQuery(".skuvalue").focus();
+         return false;
+            } 
+     
+      
+      if(t==0){
+          return true;
+        }else{
+          return false;
+        }  
+            
+  }
+  
+ jQuery(function(){
+          jQuery(".video").mouseout(function(){
+             
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+  
+        
+    </script>
+<apex:form >
+ <div width="100%">
+    <div style="float:right">
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['Pledge']['Pledge'].display=='true'}">  
+            <Apex:outputLabel value="C&P Help for this Page" style="font-size:90%;margin-right:5Px;" onmouseover="jQuery('[id$=Foo]').css('display','block');"/>      
+            <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo]').css('display','block');" />                    
+      </apex:outputLink>
+      <apex:outputPanel id="Foo" styleClass="video"  >   
+        <ul style="padding-left:4px;" > {!subTab['Pledge']['Pledge'].description} <br/> <br/>
+             <Apex:outputPanel rendered="{!subTab['Pledge']['Pledge'].ActiveLink=='true'}">
+               <li><a href="{!subTab['Pledge']['Pledge'].link}" target="_blank" >{!subTab['Pledge']['Pledge'].strlink}</a> <br/></li></Apex:outputPanel>
+             <Apex:outputPanel rendered="{!subTab['Pledge']['Pledge'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['Pledge']['Pledge'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Pledge']['Pledge'].strVideo}</a></li></Apex:outputPanel>
+        </ul>
+      </apex:outputPanel>
+     </div>
+    </div>
+<apex:pageblock title="C&P Pledge"  rendered="{!xmlset}">
+ <apex:pagemessages />
+ <apex:pageblocksection title="C&P Pledge Information" collapsible="false" >
+    <apex:pageblocksectionitem >
+        <apex:outputlabel value="Pledge Name"/>
+     <apex:outputPanel styleClass="requiredInput" layout="block"  >
+      <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+       <apex:inputtext value="{!pledge.name}" styleclass="pledgename" maxlength="80"/>
+      </apex:outputPanel> 
+    </apex:pageblocksectionitem>
+  <apex:inputhidden />
+    <apex:pageblocksectionitem >
+        <apex:outputLabel value="Pledge Status"/>
+        <!-- <apex:inputfield value="{!pledge.Pledge_Status__c}"/> -->
+        <apex:selectList value="{!status}" size="1">
+          <apex:selectOption itemLabel="Active" itemValue="active"/>
+          <apex:selectOption itemLabel="Inactive" itemValue="inactive"/>
+        </apex:selectList>
+    </apex:pageblocksectionitem>
+    
+   <!-- <apex:pageblocksectionitem >
+        <apex:outputLabel value="Transaction Type"/>
+        <apex:inputfield value="{!pledge.Transaction_Type__c}"/>
+    </apex:pageblocksectionitem>-->
+    <apex:pageblockSectionItem ><apex:outputlabel style="color:#328400;padding-left: 120px;position: relative;font-weight:bold;font-size:13px;" value="Information (Internal Use)"></apex:outputlabel></apex:pageblocksectionitem>
+    
+    <apex:pageblocksectionitem >
+        <apex:outputLabel value="Contact"/>
+         <apex:outputPanel styleClass="requiredInput" layout="block"  >
+      <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+       <apex:inputfield value="{!pledge.CnP_PaaS__Contact__c}" styleclass="contactselect"/>
+       </apex:outputPanel>
+    </apex:pageblocksectionitem>
+     <apex:pageblocksectionitem >
+        <apex:outputLabel value="Tribute / Memory of / In Honor of"/>
+        <apex:inputtext value="{!pledge.CnP_PaaS__Tribute__c}" maxlength="255"/>
+    </apex:pageblocksectionitem>
+         <apex:pageblocksectionitem >
+        <apex:outputlabel value="Pledge Amount"/>
+        <apex:outputPanel styleClass="requiredInput" layout="block"  >
+      <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+        <apex:inputtext value="{!pledge.CnP_PaaS__Pledge_Amount__c}" styleclass="amount" maxlength="11" />
+        </apex:outputPanel>
+    </apex:pageblocksectionitem>
+   
+
+        <apex:pageblocksectionitem >
+        <apex:outputLabel value="Benefit Value"/>
+        <apex:inputText value="{!pledge.CnP_PaaS__Benifit_Value__c}"  maxlength="12" styleClass="benifitvalue"/>
+    </apex:pageblocksectionitem>
+ <apex:pageblocksectionItem >
+      <apex:outputLabel value="Start Date" />   
+      <apex:outputPanel styleClass="requiredInput" layout="block"  >
+      <apex:outputPanel styleClass="requiredBlock" layout="block"/>       
+         <apex:inputfield value="{!pledge.CnP_PaaS__Start_Date__c}" styleclass="startdate"/>  
+      </apex:outputPanel>     
+  </apex:pageblocksectionItem>
+    <apex:pageblocksectionitem >
+        <apex:outputLabel value="Number of Payments"/>
+        <apex:inputtext value="{!pledge.CnP_PaaS__Number_of_Payments__c}" maxlength="12"/>
+    </apex:pageblocksectionitem>
+  <apex:pageblocksectionItem >
+       <apex:outputLabel value="End Date" />          
+       <apex:inputfield value="{!pledge.CnP_PaaS__End_Date__c}" styleclass="enddate"/>       
+  </apex:pageblocksectionItem>
+       <apex:pageblocksectionitem >
+        <apex:outputLabel value="Description"/>
+        <apex:inputfield value="{!pledge.CnP_PaaS__Description__c}" />
+     </apex:pageblocksectionitem>
+
+ <apex:pageblocksectionitem >
+        <apex:outputLabel value="Default SKU for VT"/>
+        <apex:inputText value="{!pledge.CnP_PaaS__SKU_VT__c}" styleClass="skuforvt" maxlength="100"/>
+    </apex:pageblocksectionitem>
+    <apex:pageblocksectionitem />
+     <apex:pageblocksectionItem >
+         <apex:outputLabel style="font-weight:bold;font-size:11px;">SKU Condition</apex:outputLabel>
+       <apex:outputPanel >
+         <apex:selectList value="{!pledge.CnP_PaaS__SKU_Condition__c}" size="1" onchange="anyskucheck();" styleclass="conditionssku">
+            <apex:selectOptions value="{!skuconditions}"/>
+         </apex:selectList>&nbsp;&nbsp;&nbsp;&nbsp;
+          <apex:inputtext value="{!pledge.CnP_PaaS__SKU__c}"  maxlength="100" size="10" styleclass="skuvalue"/>
+        </apex:outputPanel>
+     </apex:pageblocksectionItem>
+ <apex:pageblocksectionitem />
+ 
+    <apex:pageblocksectionitem >
+        <apex:outputLabel value="Campaign"/>
+        <apex:inputfield value="{!pledge.CnP_PaaS__Campaign__c}"/>
+     </apex:pageblocksectionitem>
+    <apex:pageblocksectionitem />
+   <apex:pageblocksectionitem >
+     <apex:outputLabel value="Allow Excess Amount"/>
+     <apex:inputfield value="{!pledge.CnP_PaaS__Excess_Amount__c}"/>
+  </apex:pageblocksectionitem>
+
+        
+    </apex:pageblocksection>
+       <apex:inputtext value="{!ss}" styleclass="aa" style="display:none"/> 
+    <apex:pageBlockButtons >
+        <apex:commandButton value="Save" action="{!savepledge}" onclick="if(!validatepledge()) return false;"/>
+        <apex:commandButton value="Cancel" action="{!newpledgecancel}" immediate="true"/>
+    </apex:pageBlockButtons>
+ </apex:pageblock>
+
+ <apex:pageMessage severity="INFO" rendered="{!!xmlset}" >
+ <span style="font-weight:normal;">C&amp;P Pledge needs C&amp;P Settings Record and it applies to Opportunities but not Opportunity  Products. Please check if you have enabled Opportunity  Products in the C&amp;P Settings; therefore, this feature is not available.</span><br />
+  
+  
+ 
+ </apex:pagemessage>
+</apex:form>
+</apex:page>

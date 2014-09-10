@@ -1,0 +1,46 @@
+<apex:page controller="CnP_PaaS.ledgercontroller" action="{!godownreport}" contentType="application/x-excel#OpportunityAllocation.xls" >
+ <apex:pageBlock >
+     <apex:pageblocksection columns="1">
+     <br/>
+     <apeX:pageblockSectionItem >
+         <apex:outputText >Start Date :</apex:outputText>
+         <apex:outputText value="{!startdate}"></apex:outputText>
+      </apeX:pageblockSectionItem>
+       <apeX:pageblockSectionItem >
+         <apex:outputText >End Date :</apex:outputText>
+         <apex:outputText value="{!enddate}"></apex:outputText>
+      </apeX:pageblockSectionItem>
+     </apex:pageblocksection>
+          <br/>
+       <apex:outputPanel id="allocationreport" >      
+                          
+                                <apex:pageblocktable value="{!OpportunityReportdata}" var="opr" styleclass="datatables">
+                                    <apex:column value="{{CnP:{!opr.ordernumber}}}" headerValue="Order Number"/>
+                                    <apex:column value="{!opr.orderdate}" headerValue="Date"/>
+                                    <apex:column value="{!opr.contactname}" headerValue="Contact Name"/>
+                                    <apex:column value="{!opr.itemname}" headerValue="Item Name"/>
+                                    <apex:column value="{!opr.classname}" headerValue="Class Name"/>
+                                    <apex:column value="{!opr.subclass}" headerValue="Sub Class Name"/>
+                                    <apex:column value="{!opr.glaccount}" headerValue="GL Account Number"/>
+                                    <apex:column value="{!opr.accountname}" headerValue="Account Name"/>
+                                    <apex:column value="{!opr.amount}" headerValue="Amount"/>
+                                    <apex:column breakBefore="true" rendered="{!IF(opr.alreport!=null && opr.alreport.size > 0,true,false)}">
+                                        <apex:repeat value="{!opr.alreport}" var="alr">
+                                              <tr>
+                                                <td />
+                                                <td><Apex:outputLabel value="{!alr.orderdate}"></Apex:outputLabel></td>
+                                                <td/>
+                                                <td/>
+                                                <td><Apex:outputLabel value="{!alr.classname}"></Apex:outputLabel></td>
+                                                <td><Apex:outputLabel value="{!alr.subclass}"></Apex:outputLabel></td>
+                                                <td><Apex:outputLabel value="{!alr.glaccount}"></Apex:outputLabel></td>
+                                                <td><Apex:outputLabel value="{!alr.accountname}"></Apex:outputLabel></td>
+                                                <td><Apex:outputLabel value="{!alr.amount}"></Apex:outputLabel></td>
+                                              </tr>
+                                        </apex:repeat>
+                                    </apex:column>
+                                </apex:pageblocktable>               
+                           
+                           </apex:outputPanel>
+ </apex:pageBlock>           
+</apex:page>

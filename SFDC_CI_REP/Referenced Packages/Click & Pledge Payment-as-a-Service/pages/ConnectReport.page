@@ -1,0 +1,368 @@
+<apex:page controller="CnP_PaaS.connectreport_controller" tabStyle="C_P_Reports__tab">
+<apex:sectionHeader title="C&P Custom Reports" subtitle="Patron Contribution Statistics"/>
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__DataTables,'js/jquery.dataTables.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+ 
+ <script type="text/javascript" language="javascript" src="{!URLFOR($Resource.datepicker, "datepicker/jquery.datepick.js")}"></script> 
+ <link type="text/css" rel="stylesheet"  href="{!URLFOR($Resource.datepicker, "datepicker/jquery.datepick.css")}" />       
+  <script>
+  $(document).ready(function(){
+      $('.datepick').datepick({yearRange: 'c+0:1920',maxDate:-0,showTrigger: '<img src="{!URLFOR($Resource.datepicker, "datepicker/calendar.gif")}" alt="Calendar" ></img>'});
+       
+        })
+       
+     function getdatafields()
+     {
+       
+          $("#light").attr('style','display:block');
+          $("#fade").attr('style','display:block');
+          
+          var name=$(".name").val();
+         var numrows=$(".getrowdata").val();
+         var itemvalues='';
+    
+       
+         for(var i=0;i<numrows;i++)
+         {
+            var filedname=$(".fieldnamegroup"+i).text();
+            var agre_function=$(".getdatafield"+i).val();
+           
+            itemvalues+=filedname+':'+agre_function+';';
+         }
+          
+          
+         getdata(itemvalues);
+        
+     }
+    function changefield(id)
+     {
+   
+       var field=$(".fieldname"+id).val();
+   
+       var index=id;
+        
+       if(field=='Patron Value Rank' || field=='Total Rank' || field=='Donors Personal Contribution Amount Rank' || field=='Donors Personal Contributions Amount' || field=='Donors Personal Contributions Count' || field=='Donors Personal Contributions Count Rank' || field=='Donors Raised Contributions Amount' || field=='Donors Raised Contributions Amount Rank' || field=='Donors Raised Contributions Count' || field=='Donors Raised Contributions Count Rank' || field=='Personal Contributions Amount' ||  field=='Personal Contributions Amount Rank' || field=='Personal Contributions Count' || field=='Personal Contributions Count Rank' || field=='Raised Contributions Amount' || field=='Raised Contributions Amount Rank' || field=='Raised Contributions Count' || field=='Raised Contributions Count Rank' || field=='Total My Donors Rank' || field=='Total Network value' || field=='Total Personal Value')
+         {
+          chageoperator('numeric'); 
+         
+         }
+       
+        else
+        {
+          chageoperator('');
+           
+        }
+         
+        $(".values"+id).attr('value',''); 
+        $(".numvalues"+id).attr('value',''); 
+        
+      
+        valuechange(index);    
+      
+     }
+     function disable()
+     {
+      
+     disablemethod();
+     }
+     
+     function completerequest()
+     {
+          $("#light").attr('style','display:none');
+          $("#fade").attr('style','display:none'); 
+     }
+   function valueschange()
+   {
+    disablemethod();
+     var field=$(".fields").val();
+     
+      if(field.indexOf("Transaction Hour")!=-1 || field.indexOf("Transaction Month")!=-1 || field.indexOf("Transaction Year")!=-1)
+      {
+        if(confirm("Please select 'Transaction Hour','Transaction Month','Transaction Year' in 'Group By' fields also")==true)
+          {
+           return true;
+          }
+      }
+     if(confirm("Please Select 'Group By' fields and click the double arrow button")==true);
+    return true;
+    
+   }
+    
+   function valueschanged()
+   {
+   disablemethod();
+    if(confirm("Please click the double arrow button and select the 'Aggregate Functions', and click the 'Run Query'")==true);
+    return true;
+    
+   } 
+  
+     
+  </script>
+  
+  
+  
+<style>
+
+ .calenderIcon{    
+    
+    padding-left: 10px;
+    padding-top: 2px;
+  }
+.black_overlay{
+display: none;
+position: absolute;
+top: 0%;
+left: 0%;
+width: 100%;
+height: 100%;
+background-color: black;
+z-index:1001;
+-moz-opacity: 0.8;
+opacity:.40;
+filter: alpha(opacity=80);
+}
+.white_content {
+display: none;
+position: absolute;
+text-align: center;
+top: 40%;
+left: 49%;
+background-color: #000;
+border-radius:5px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border:1px solid #000;
+padding: 16px;
+z-index:1002;
+overflow: auto;
+}
+</style>
+   
+ <apex:form > 
+<apex:outputPanel id="message">
+ <apex:pageMessages /> </apex:outputPanel>
+  <div id="light" class="white_content">   
+                <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="width: 32px;"  /><br/>
+              <!-- <apex:outputlabel value="we are processing your request. please wait...                  "  /> -->
+              
+         </div>
+         <div id="fade" class="black_overlay"></div>
+      
+ <apex:pageBlock mode="edit" >
+ 
+<input type="button" value="Reload Page" onClick="window.location.reload()"/>
+
+  <apex:pageblock id="saveblock"  > 
+  
+  <apex:outputLabel rendered="{!savelabelbutton}" >Report Name: </apex:outputLabel>&nbsp;&nbsp;
+  <apex:inputField value="{!dreport.Name}" styleClass="Name" style="width:500px;" rendered="{!savelabelbutton}"  />&nbsp;
+  <apex:commandButton value="Save" action="{!savereport}" rendered="{!savebutton}" />
+  <apex:commandButton value="Update" action="{!savereport}" rendered="{!updatebutton}"/>
+  
+  <div style="float:right;">
+ <!-- <apex:outputLabel value="{!info}" style="padding: 4px 4px;float:left;"></apex:outputLabel>
+ 
+ <apex:selectList value="{!offset}" size="1" styleClass="offset" rendered="{!download}" style="float:left;">
+ <apex:selectOptions value="{!downloadoptionslist}"></apex:selectOptions>
+ </apex:selectList>-->
+
+<apex:outputLink value="/apex/downloadconnectreport?id={!rid}&download=down"  styleClass="download123" style="text-decoration:none;display:block;border-radius: 3px 3px 3px 3px;
+    border-style: solid;
+    border-width: 1px;
+    color: #666666;
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    padding: 4px 4px;float:left;background-color:#FFFFFF;" target="CnP_PaaS_Evt_Download" rendered="{!downloadbutton}">Download top 3500 records </apex:outputLink> 
+</div>
+
+  </apex:pageblock> 
+
+   <table width="100%" border="0">
+    <tr>  
+    <td width="100%" valign="top">
+ 
+      <apex:pageBlock title="Parameters" mode="edit" id="criteria" rendered="{!showgroup}" >
+  
+ <apex:commandButton value=" Add Filter " action="{!AddRecord}"  rendered="{!filterbutton}" reRender="pb1,orderlist,ordertype"/>
+
+  <apex:actionFunction name="chageoperator"  reRender="conditions"/>
+  
+  <apex:actionFunction name="valuechange" action="{!changefiltervalue}" reRender="values">
+  <apex:param value="" name="filterindex"/>
+  </apex:actionFunction>
+  <apex:actionFunction name="disablemethod" action="{!disablemethod}" reRender="text4,text5,runqb,criteria"/>
+           
+ <apex:variable value="0" var="rowNum"/>
+      <table cellpadding="2" cellspacing="2">
+      
+     <apex:actionFunction name="getdata" action="{!runSearch}" reRender="resulttest,results1,results,testresult,order,saveblock,bottompart,message,text3,orderlist"  oncomplete="completerequest();">
+              <apex:param value="" name="fieldwithagre_function" />  
+        </apex:actionFunction>
+      
+       <tr>
+            
+       <td> 
+         <apex:outputPanel id="pb1">
+          <apex:variable value="0" var="rowNumCampaign"/>     
+            <apex:pageBlockTable value="{!lstWrapper}"  var="item" rendered="{!filtertable}"  >
+             
+                <apex:column headerValue="Field Name" >
+                   <apex:selectList value="{!item.selectedobject}"  size="1" onchange="changefield({!rowNumCampaign});"   styleClass="fieldname{!rowNumCampaign}">
+                            <apex:selectOptions value="{!objectNames}"/>
+                   </apex:selectList>
+                
+                </apex:column>
+                 <apex:column headerValue="Operator" >
+                     <apex:outputpanel id="conditions">
+                      
+                    <apex:outputPanel rendered="{!If(item.selectedobject=='Patron Value Rank' ||  item.selectedobject=='Total rank' || item.selectedobject=='Donors Personal Contribution Amount Rank' || item.selectedobject=='Donors Personal Contributions Amount' || item.selectedobject=='Donors Personal Contributions Count' || item.selectedobject=='Donors Personal Contributions Count Rank' || item.selectedobject=='Donors Raised Contributions Amount' || item.selectedobject=='Donors Raised Contributions Amount Rank' || item.selectedobject=='Donors Raised Contributions Count' || item.selectedobject=='Donors Raised Contributions Count Rank' || item.selectedobject=='Personal Contributions Amount' ||  item.selectedobject=='Personal Contributions Amount Rank' || item.selectedobject=='Personal Contributions Count' || item.selectedobject=='Personal Contributions Count Rank' || item.selectedobject=='Raised Contributions Amount' || item.selectedobject=='Raised Contributions Amount Rank' || item.selectedobject=='Raised Contributions Count' || item.selectedobject=='Raised Contributions Count Rank' || item.selectedobject=='Total My Donors Rank' || item.selectedobject=='Total Network value' || item.selectedobject=='Total Personal Value',true,false)}">   
+                 <apex:selectList value="{!item.selectedcondition}"  size="1"  >
+                                <apex:selectOptions value="{!conditions1}" />
+                                
+                          </apex:selectList>      
+                  </apex:outputPanel>       
+                          <apex:outputpanel rendered="{!If(item.selectedobject!='Patron Value Rank' &&  item.selectedobject!='Total rank' && item.selectedobject!='Donors Personal Contribution Amount Rank' && item.selectedobject!='Donors Personal Contributions Amount' && item.selectedobject!='Donors Personal Contributions Count' && item.selectedobject!='Donors Personal Contributions Count Rank' && item.selectedobject!='Donors Raised Contributions Amount' && item.selectedobject!='Donors Raised Contributions Amount Rank' && item.selectedobject!='Donors Raised Contributions Count' && item.selectedobject!='Donors Raised Contributions Count Rank' && item.selectedobject!='Personal Contributions Amount' &&  item.selectedobject!='Personal Contributions Amount Rank' && item.selectedobject!='Personal Contributions Count' && item.selectedobject!='Personal Contributions Count Rank' && item.selectedobject!='Raised Contributions Amount' && item.selectedobject!='Raised Contributions Amount Rank' && item.selectedobject!='Raised Contributions Count' && item.selectedobject!='Raised Contributions Count Rank' && item.selectedobject!='Total My Donors Rank' && item.selectedobject!='Total Network value' && item.selectedobject!='Total Personal Value',true,false)}">
+                          <apex:selectList value="{!item.selectedcondition}"  size="1"  >
+                                <apex:selectOptions value="{!conditions}"  />
+                          </apex:selectList>
+                        </apex:outputpanel>
+                       
+                            
+                      </apex:outputpanel>    
+                </apex:column>
+                  <apex:column headerValue="Value" id="values">
+                                 
+                     <apex:inputText value="{!item.lastname}" styleClass="numvalues{!rowNumCampaign}" onkeyup="javascript:this.value=this.value.replace(/[^0-9.]/g, '');"  rendered="{!If(item.selectedobject=='Patron Value Rank' ||  item.selectedobject=='Total rank' || item.selectedobject=='Donors Personal Contribution Amount Rank' || item.selectedobject=='Donors Personal Contributions Amount' || item.selectedobject=='Donors Personal Contributions Count' || item.selectedobject=='Donors Personal Contributions Count Rank' || item.selectedobject=='Donors Raised Contributions Amount' || item.selectedobject=='Donors Raised Contributions Amount Rank' || item.selectedobject=='Donors Raised Contributions Count' || item.selectedobject=='Donors Raised Contributions Count Rank' || item.selectedobject=='Personal Contributions Amount' ||  item.selectedobject=='Personal Contributions Amount Rank' || item.selectedobject=='Personal Contributions Count' || item.selectedobject=='Personal Contributions Count Rank' || item.selectedobject=='Raised Contributions Amount' || item.selectedobject=='Raised Contributions Amount Rank' || item.selectedobject=='Raised Contributions Count' || item.selectedobject=='Raised Contributions Count Rank' || item.selectedobject=='Total My Donors Rank' || item.selectedobject=='Total Network value' || item.selectedobject=='Total Personal Value',true,false)}" maxlength="9"/>                    
+                      <apex:inputText value="{!item.lastname}" styleClass="values{!rowNumCampaign}" rendered="{!If(item.selectedobject!='Patron Value Rank' &&  item.selectedobject!='Total rank' && item.selectedobject!='Donors Personal Contribution Amount Rank' && item.selectedobject!='Donors Personal Contributions Amount' && item.selectedobject!='Donors Personal Contributions Count' && item.selectedobject!='Donors Personal Contributions Count Rank' && item.selectedobject!='Donors Raised Contributions Amount' && item.selectedobject!='Donors Raised Contributions Amount Rank' && item.selectedobject!='Donors Raised Contributions Count' && item.selectedobject!='Donors Raised Contributions Count Rank' && item.selectedobject!='Personal Contributions Amount' &&  item.selectedobject!='Personal Contributions Amount Rank' && item.selectedobject!='Personal Contributions Count' && item.selectedobject!='Personal Contributions Count Rank' && item.selectedobject!='Raised Contributions Amount' && item.selectedobject!='Raised Contributions Amount Rank' && item.selectedobject!='Raised Contributions Count' && item.selectedobject!='Raised Contributions Count Rank' && item.selectedobject!='Total My Donors Rank' && item.selectedobject!='Total Network value' && item.selectedobject!='Total Personal Value',true,false)}" maxlength="80"/>
+                </apex:column>
+               
+           <apex:column headerValue="Command">
+                <apex:commandButton value="Remove" action="{!Removefilter}"  reRender="pb1,results,resulttest,message,function,ordertype" oncomplete="return getdatafields();">
+                   <apex:param name="contIdParam" value="{!rowNumCampaign}" assignTo="{!DeleteId}"/>
+                      
+                 </apex:commandButton>
+                
+                  
+                </apex:column>
+               <apex:column >
+                 <apex:outputPanel id="selector"  style="display:{!IF(lstWrapper.size-1 >  VALUE(rowNumCampaign),'block','none')}"   rendered="{!IF(lstWrapper.size==VALUE(rowNumCampaign)+1,false,true)}">
+          
+              
+                   <apex:selectList value="{!item.filtercondition}" id="selector1"  size="1"  >
+                            <apex:selectOptions value="{!filterconoption}" />
+                   </apex:selectList>
+        
+                  </apex:outputPanel>  
+                 
+               
+                  <apex:variable var="rowNumCampaign" value="{!VALUE(rowNumCampaign) + 1}"/>
+                </apex:column> 
+                
+                
+            </apex:pageBlockTable> 
+             <input type="hidden" value="{!rowNumCampaign}" class="totalaccounts"/>
+            </apex:outputPanel> 
+            
+            </td> 
+            
+            </tr>
+       <tr >
+       <td>
+     
+       <apex:outputLabel > Row Limit [Max 50,000] </apex:outputLabel>&nbsp;&nbsp;
+    <apex:inputText value="{!querylimit}" maxlength="5" style="width:50px;" />
+      
+     <apex:outputpanel id="orderlist" >
+      <apex:outputLabel rendered="{!filtertable}">Sort By:</apex:outputLabel>&nbsp;&nbsp;
+        <apex:selectList value="{!fieldfororderby}" size="1"  id="order"   rendered="{!filtertable}">
+           <apex:selectOptions value="{!FieldsOrderby}"  id="ordervalue"/>
+           </apex:selectList>
+          
+           
+            </apex:outputpanel>
+            <apex:outputPanel id="ordertype">
+            <apex:selectList value="{!ordertype}" size="1"   rendered="{!filtertable}">
+           <apex:selectOptions value="{!orderlist}" />
+           </apex:selectList>
+           </apex:outputPanel>
+            <apex:outputPanel id="text5">
+              <apex:outputLabel value="OK" onclick="getdatafields();" styleClass="btn"  rendered="{!okbutton}"  /><br/>
+             </apex:outputPanel>
+         
+        </td>
+        
+      </tr>
+          </table>
+      </apex:pageBlock> 
+    </td>
+   </tr>
+    </table>
+   </apex:pageBlock>
+  </apex:form>
+  
+     
+    
+   <apex:pageBlock id="results" rendered="{!filterresult}"> 
+   <apex:outputlabel value="Showing only 400 Records ({!recsize})" rendered="{!messageshow}" ></apex:outputlabel>
+      <apex:variable value="1" var="rowNum1"/>
+  <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__DataTables,'js/jquery.dataTables.js')}"/>
+         <script type="text/javascript">
+            $(document).ready(function() {          
+
+                oTable = $('.displaylevel').dataTable({
+                    "bJQueryUI": true,                  
+                    aoColumnDefs: [
+                      { aTargets: [0], bSortable: true}]                           
+                }
+                             
+                );
+            } );
+        </script>
+  
+    <apex:pageBlockTable value="{!rec_trans}" rows="400" var="rect" id="testresult" styleClass="displaylevel" rendered="{!IF(filterresult==true,true,false)}" >
+    
+         <apex:column headerValue="Serial #" >
+          <apex:outputText value="{!rowNum1}"></apex:outputText>
+          
+         <apex:variable var="rowNum1" value="{!VALUE(rowNum1) + 1}" />
+         </apex:column> 
+     
+        <!-- <apex:column value="{!rect.Name}" />-->
+       
+         <apex:column value="{!rect.CnP_PaaS__Contact__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Contact__r.firstname}"/> 
+         <apex:column value="{!rect.CnP_PaaS__Contact__r.lastname}"/>
+         <apex:column value="{!rect.CnP_PaaS__Contact__r.Email}"/>
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Amount__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Amount_Rank__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Count__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Count_Rank__c}"/>
+           <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Amount__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Amount_Rank__c}"/>
+          <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Count__c}"/> 
+          <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Count_Rank__c}"/>
+           <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Amount_Donors__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Amount_Rank_Donors__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Count_Donors__c}"/>
+        <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Count_Rank_Donors__c}"/>
+        <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Amount_Donors__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Amount_Rank_Donors__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Count_Donors__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Count_Rank_Donors__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Total_Intrinsic_Value__c}"/>
+          <apex:column headerValue="Total Network Value" value="{!rect.CnP_PaaS__Total_extrinsic_value__c}"/>
+       
+         <!--<apex:column value="{!rect.Total_My_Donors_Rank__c}"/>
+         <apex:column value="{!rect.Total_rank__c}"/>-->
+         <apex:column value="{!rect.CnP_PaaS__Global_Rank__c}"/>
+        
+  </apex:pageBlockTable> 
+    
+ </apex:pageBlock>
+
+
+
+ </apex:page>

@@ -1,0 +1,20 @@
+<apex:page >
+  <html>
+      <head>
+          <script>
+              function callJS()
+              {
+                  var x = "update";
+                  btnValue.value = x;
+              }
+          </script>
+      </head>
+      <body>
+          <input type="button" value="Submit" id="btnValue" onclick="callJS()" />
+          
+      </body>
+  </html>
+  <apex:form >
+      <apex:commandButton value="Submit2" id="btnValue" onclick="callJS()" rerender="none"/>
+  </apex:form>
+</apex:page>

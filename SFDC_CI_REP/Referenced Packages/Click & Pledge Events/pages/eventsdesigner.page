@@ -1,0 +1,1100 @@
+<apex:page standardController="CnP_PaaS__CnP_Designer__c" extensions="CnP_PaaS_EVT.EventsDesigner" id="emaildesigner" sidebar="false" showHeader="false" standardStylesheets="false"> 
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+<!--<script src="http://click-pledge.v-empower.com/web/Events2.0/Evt_Live/js/ckeditor_script.js"></script> -->
+ <script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script>
+ <!--<script src="http://click-pledge.v-empower.com/web/Events2.0/Evt_Live/admin/js/jquery.flot.min.js"></script> 
+ -->
+<!-- <script src="/apexpages/ckeditor/ckeditor.js" type="text/javascript"></script>-->
+<link rel="stylesheet" href="{!URLFOR($Resource.cnp_paas__Sftree,'sftree/jquery.treeview.css')}" />
+<link rel="stylesheet" href="{!URLFOR($Resource.cnp_paas__Sftree,'sftree/screen.css')}" />
+<script src="{!URLFOR($Resource.cnp_paas__Sftree,'sftree/jquery.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.cnp_paas__Sftree,'sftree/jquery.cookie.js')}" type="text/javascript"></script>
+<script src="{!URLFOR($Resource.cnp_paas__Sftree,'sftree/jquery.treeview.js')}" type="text/javascript"></script>
+
+<!--<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap-responsive.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/main.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/grey.css"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+
+<!--<apex:includeScript value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/js/main.js"/>-->
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/main.js')}"/> 
+
+ <style>
+.sftree{
+    border:1px solid #ccc;
+    width:200px;
+}
+.sftree .title{
+    background-color: #1797C0;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+   /* height: 20px;*/
+    margin:2px;
+    padding-top: 4px;
+    padding-top: -2px;
+    text-align: center;
+    width:188px;
+}
+.filetree li{
+    text-align:left;
+    font:14px "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, sans-serif;
+}
+.customquestionapplycss input {
+     float:left;
+ }
+ .customquestionapplycss label {
+     padding-left: 18px;
+ }
+ .customquestionapplycss .overview, .customquestionapplycss table{
+     width:100%;
+ }
+ .customquestionapplycss td {
+     padding: 0px 10px;
+     line-height: normal;
+ }   
+</style>
+   <style>
+    
+
+
+    .video{
+      display:none;
+      width:12%;
+      height:auto;
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:900Px;
+    }
+    
+.layoutdiv {
+ padding:5px;
+}
+.layoutcreate {
+margin:10px;
+padding:10px;
+float:left;
+ display:block; cursor:pointer;
+ -webkit-border-radius: 8px 8px 8px 8px;
+-moz-border-radius: 8px 8px 8px 8px;
+ border-radius: 8px 8px 8px 8px;
+ background-color:#E7E7E7;
+ /* width:110px; */
+ box-shadow: 0 0 2px #999 inset;
+}
+ .layoutcontainer{
+ display:block;
+ }
+ .tbuilder{
+ width:51%;
+ float:left;
+ }
+  .tbuilder .layoutcreate{
+
+ float:left;
+ height:60px;
+ position:relative;
+
+ }
+ 
+   .tbuilder .layoutcreate .title
+ {
+    bottom: 0;
+    position: absolute;
+    text-align: center;
+    display: block;
+    width: 70%;
+    line-height: 20px;
+    font-size:12px;
+   /* font-family: 'Calibri'; */
+}
+ .design{
+    background: none repeat scroll 0 0 #FFFFFF;
+    display: block;
+    float: left;
+    padding: 5px;
+    position: relative;
+    width: 200px;
+    min-height:100px;
+ }
+ .design ul {
+     list-style:none;
+     list-style-type:none;  
+     padding:0px;
+     margin:0px;
+ }
+  .design ul li{
+     margin:0px;
+     padding-bottom:6px;
+  }
+  .layoutselect {
+ border: dashed 2px #000;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 3px;
+  }
+.layoutcreate:hover {
+  background-color:#333;
+  color:#fff;
+  font-weight:bold;
+ }
+   
+      .activetab{background-color:#5646;}
+      .layoutdesign{color:grey;}
+
+.black_overlay{
+display: none;
+position: absolute;
+top: 0%;
+left: 0%;
+width: 100%;
+height: 100%;
+background-color: black;
+z-index:1001;
+-moz-opacity: 0.6;
+opacity:.60;
+filter: alpha(opacity=60);
+}
+h1, h2 {
+ padding:0px;
+ font-family:arial;
+
+}
+.Required{
+color: #CC0000;
+}
+.CustomTextareacss{
+   Width:772px;
+   Height:100px;
+}
+   </style>
+   
+   <script type="text/javascript"> 
+       /* $(document).ready(function(){       
+              
+            
+         }); */ 
+         
+      $(function(){
+          $("#browser").treeview();
+          $(".video").mouseout(function(){                          
+              $(this).fadeOut(8000);         
+          });
+      }); 
+      
+      function changedtohttps(url)
+{
+      
+         
+      url_1 = /^(((ht){1}(tp:[/][/]){1})|((www.){1}))[-a-zA-Z0-9@:%_\+.~#?&//=]+$/;
+      if(url!="")
+      {
+             if(url.match(url_1))
+             {
+                 var re_place = url.replace('http:','https:'); 
+                //if(Edition=='Enterprise Edition'){
+                 var re_place=re_place.replace('force.com','secure.force.com'); 
+                 
+                // }                  
+                 $(".siteurl").attr('value',re_place);
+             }
+      }
+}    
+         
+       function buildtemplate(file,id){   
+             
+             $("#light").attr('style','display:block');
+             $("#fade").attr('style','display:block');
+             var image = $("."+id).attr('src');
+             var temp_id=id;
+             $(".design ul").append('<li class="delete" id="'+id+'" ondblclick="deletetemp(\''+temp_id+'\');"><img src="'+image+'" width="200px;"></li>');
+             var baseurl=$(".temp_baseUrl").text();   
+             saveOrder();            
+             calldisplayTemplatebuilder(baseurl,file,id);         
+       }
+     
+       function deletetemp(id)
+        {
+             $("#"+id).remove();
+             saveOrder();
+             //$("#"+id+'_deleteview').remove();
+        }
+        function sortordercomplete()
+        {
+             $("#light").attr('style','display:none');
+             $("#fade").attr('style','display:none');
+        }
+       function calldisplayTemplate_1(value,filename)
+       {   
+       
+              var c=$(".cat").val();
+              var t=$(".temp").val();
+              var v=0;
+             if(c=="Select")
+             {    v=1;
+                  alert("Please Select The Category");
+                  $(".cat").focus();
+                  return false;
+             }
+             if(t=="Select")
+             {   v=1;
+                 alert("Please Select The Template");
+                 $(".temp").focus();
+                 return false;
+             }
+              
+             if(v==0)
+             { 
+              $("#light").attr('style','display:block');
+              $("#fade").attr('style','display:block');
+              calldisplayTemplate(value,filename);
+             }
+       }
+       function changetempalte_1(filename,value)
+       {  
+       filename='';  
+       
+           if(value!='Select')
+           { 
+             
+             changeTemplate(filename,value);
+           }else{
+             alert("Please Select the Design Selection");
+             $(this).focus();
+             return false;
+           }
+       }
+       function checkvalidate()
+       {
+             var c=$.trim($(".cat").val());
+             var t=$(".temp").val();
+             //var libraryclass = $(".libraryclass").val();
+            // var Catname = $(".Catname").val();
+             if(c=="Select")
+             {
+                  alert("Please Select The Category");
+                  $(".cat").focus();
+                  return false;
+             }
+             if(c=="")
+             {
+                  alert("Please Enter Category Name");
+                  $(".cat").focus();
+                  return false;
+             }
+             if(t=="Select")
+             {
+                 alert("Please Select The Template");
+                 $(".temp").focus();
+                 return false;
+             }
+             
+            // return false;
+             $(".tempbuilderclass").val($(".designview").html());
+       }
+       function validateform()
+       {
+      
+      
+            var name=$.trim($(".temp_name").val());
+            var Eventinfo_siteurl=$(".siteurl").val();
+            var temp_tags=$.trim($(".temp_tags").val());
+            reg_text=/^([a-zA-Z0-9\'\,\.\-\_\ ])+$/;
+             url = /^(((ht){1}(tps:[/][/]){1})|((www.){1}))[-a-zA-Z0-9:%_\+.~?&//=]+$/;
+          /*  var paas=$(".available_paas").is(':checked');
+            var event=$(".available_event").is(':checked');
+            
+            if(paas==false && event==false)
+            {
+                 alert("Please select at least one Available in");
+                 return false;
+            }*/
+            if(name=="")
+            {
+                alert("Please Enter The Template Name");
+                $(".temp_name").focus();
+                return false;
+            }
+            if(!reg_text.test(name))
+            {
+               alert("Please Enter The Valid Template Name");
+               $(".temp_name").focus();
+               return false; 
+            }
+             var TempObjType =$(".TempObjTypeClass").val();
+            
+            if(TempObjType=='EventListings'){
+            if(!url.test(Eventinfo_siteurl) || Eventinfo_siteurl=="" || !Eventinfo_siteurl.indexOf(' ',0))
+          {
+             alert("Please Enter The SalesForce Public Site URL\n e.g:- https://salesforce.com");
+             $(".siteurl").focus();
+             return false;
+          }}
+           /* if(temp_tags=="")
+            {
+                 alert("Please Enter The Tags");
+                 $(".temp_tags").focus();
+                 return false;
+                 
+            }*/
+            var design=$(".designselection").val();
+            if(design=="Select")
+            {
+               alert("Please Choose The Design Selection");
+               $(".designselection").focus();
+               return false;
+            }
+            
+            
+             
+           
+           
+            
+           
+           // return false;
+       }
+       function displayblock()
+       {
+              $("#light").attr('style','display:block');
+              $("#fade").attr('style','display:block');    
+       }
+       
+       function popitup(url) {    
+            newwindow=window.open(url,'name','height=400,width=350,scrollbars=yes');
+            if (window.focus) {newwindow.focus()}
+            return false;
+      }
+   </script>
+   
+<div id="content-header">
+    <h1><i class="icon icon-tasks"></i> Designer</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"> <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a> </div>
+  </div>
+    
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="current">Designer</a> </div>
+  <!-- <div class="eventdatebar">
+        <span class="popover-startdate">Event:</span>
+        <span><strong>Testing Event &nbsp;&nbsp;</strong></span>    
+        <span class="popover-startdate">Start Date:</span>
+        <span><strong>7/15/2013 9:31 AM &nbsp;&nbsp;</strong></span>                                   
+        <span class="popover-endson">Ends on:</span>
+        <span><strong>7/31/2015 9:31 AM &nbsp;&nbsp;</strong></span>                             
+        <span class="popover-endson">Published on:</span>
+        <span><strong>7/1/2013 9:31 AM</strong></span>                          
+    </div> -->
+      
+<div id="frame-content" class="container-fluid">
+  
+   <apex:pageMessages />
+   <apex:form id="emailtemplateform">  
+             
+   <apex:pageBlock id="pageblock" >
+    
+   <div id="light" class="white_content modal-backdrop" style="display:none;z-index: 90;">
+    <div style="position: fixed;left:50%;top:50%;">      
+       <apex:image value="{!URLFOR($Resource.CnP_PaaS_EVT__BootstrapFrontend,'BootstrapFrontend/frontend-html/img/ajax-loader.gif')}"/>       
+    </div></div>
+   <!-- <div id="light" class="white_content">
+               <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="Processing..." style="width: 20px;"/><br/>
+               <apex:outputLabel value="we are processing your request. please wait...                  "></apex:outputLabel>
+   </div> -->
+   
+   <div id="fade" class="black_overlay"></div> 
+          
+   <apex:tabPanel tabClass="tabclass" contentClass="contentclass" activeTabClass="activetab" value="{!selecttab}" inactiveTabClass="inactivetab" switchType="Client" headerClass="headerclass" >
+  
+      <apex:tab label="Selector" name="Template Category" id="seltemp" styleClass="tablabel">
+      
+        <!-- Template Library -->
+         <!--<apex:outputLink styleClass="helpLink" rendered="{!subTab['Designer']['selector'].display=='true'}">  
+                              <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:900Px;margin-right:5Px;" onmouseover="document.getElementById('{!$Component.Foo1}').style.display='block'; "/>  
+                               <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="document.getElementById('{!$Component.Foo1}').style.display='block'; "/>                        
+                         </apex:outputLink>
+                          <apex:outputPanel id="Foo1" styleClass="video"  >   
+                           <ul style="padding-left:4px;" >                       
+                              {!subTab['Designer']['selector'].description} <br/> <br/>
+                              <apex:outputPanel rendered="{!subTab['Designer']['selector'].ActiveLink=='true'}">
+                                 <li><a href="{!subTab['Designer']['selector'].link}" target="_blank" >{!subTab['Designer']['selector'].strlink}</a> <br/></li></Apex:outputPanel>   
+                              <Apex:outputPanel rendered="{!subTab['Designer']['selector'].ActiveVideo=='true'}">
+                                 <li> <a href="{!subTab['Designer']['selector'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Designer']['selector'].strVideo}</a></li></Apex:outputPanel>   
+                           </ul>
+                          </apex:outputPanel>-->
+                          
+            
+           <div class="btn-block pagination-centered">
+           <apex:commandButton value="Next" action="{!nextedit}" onclick="return checkvalidate();"  rendered="{!IF(emailpro.id!="",true,false)}" styleClass="btn btn-small btn-primary" /> &nbsp; 
+           <apex:commandButton value="Cancel"  action="{!cancel}" styleClass="btn btn-small btn-primary" />
+           </div>
+           
+           
+                 
+                    
+                        <apex:selectRadio id="library" value="{!library}" styleClass="tabletabs" >
+                         <apex:actionSupport event="onchange" reRender="SelectSection" />   
+                           <apex:selectOption itemValue="Click & Pledge" itemLabel="Click & Pledge"   />
+                           <apex:selectOption itemValue="Custom" itemLabel="Custom"/>
+                        </apex:selectRadio>                   
+              
+        <!--  end here -->
+        
+        <apex:outputPanel id="SelectSection">
+        
+        <apex:outputPanel rendered="{!IF(library=='Click & Pledge',true,false)}">
+        <div class="tab-content">
+        
+        <apex:pageBlockSection columns="1">
+             <apex:pageBlockSectionItem dataStyle="width:75%;">
+              <apex:outputLabel value="Select Category"></apex:outputLabel>          
+               <apex:outputPanel >  
+                <apex:selectList value="{!emailpro.CnP_PaaS__Select_Template_Cat__c}" disabled="true"  size="1" styleClass="cat">
+                   <apex:selectOption itemLabel="Select" itemValue="Select"></apex:selectOption>
+                      <apex:selectOptions value="{!selectcategory}" />
+                      <apex:actionSupport event="onchange" action="{!next}" reRender="templates" />    
+                </apex:selectList>
+               </apex:outputPanel>  
+             </apex:pageBlockSectionItem>   
+           
+             <apex:pageBlockSectionItem >
+             <apex:outputLabel value="Select Template"></apex:outputLabel>         
+             <apex:outputPanel id="templates">           
+                <apex:selectList value="{!emailpro.CnP_PaaS__Select_Layout__c}" size="1" styleClass="temp">
+                      <apex:selectOption itemLabel="Select" itemValue="Select"></apex:selectOption>
+                      <apex:selectOptions value="{!selectlayout}" />
+                   <apex:actionSupport event="onchange" action="{!templates}" reRender="layouts"/>  
+                </apex:selectList>
+             </apex:outputPanel>
+             </apex:pageBlockSectionItem>          
+             </apex:pageBlockSection>
+       
+ 
+             <apex:outputPanel id="layouts" >
+              
+               <h5>{!LayoutLabel}</h5>
+            
+               <apex:actionFunction action="{!displyaTemplate}" name="calldisplayTemplate" reRender="emailtemplateform" status="sts" oncomplete="changetempalte_1('test','test');">
+                 <apex:param value="" name="templatefileurl" assignTo="{!templatefileurl}" />
+                 <apex:param value="" name="templatefilename" assignTo="{!templatefilename}" />
+               </apex:actionFunction>
+          
+               <div class="layoutcontainer" > 
+              
+                  <apex:repeat value="{!Templates}" var="temp">
+                      <div class="layoutcreate" >                        
+                         <div class="{!if(emailpro.cnp_paas__Template_Layout_Name__c==temp.FileName,'layoutselect','layoutdiv')}">  
+                         <apex:image value="{!baseUrl+'/'+emailpro.CnP_PaaS__Select_Template_Cat__c+'/'+emailpro.CnP_PaaS__Select_Layout__c+'/'+temp.Thumbnail+'.png'}" onclick="calldisplayTemplate_1('{!baseUrl+'/'+emailpro.CnP_PaaS__Select_Template_Cat__c+'/'+emailpro.CnP_PaaS__Select_Layout__c+'/'+temp.FileName+''}','{!temp.FileName}')"></apex:image>
+                        </div>
+                         <div style="text-align:center;">
+                          {!temp.LayoutName}</div>
+                       </div>
+                  </apex:repeat>
+                </div>
+            
+              </apex:outputPanel> 
+      </div> 
+             <div style="clear:both;" ></div>
+             <div class="btn-block pagination-centered">
+                <apex:commandButton value="Next" action="{!nextedit}" onclick="return checkvalidate();"  rendered="{!IF(emailpro.id!="",true,false)}" styleClass="btn btn-small btn-primary" /> &nbsp; 
+                <apex:commandButton value="Cancel"  styleClass="btn btn-small btn-primary" action="{!cancel}" />
+             </div>
+      </apex:outputPanel>
+      
+      <apex:outputPanel rendered="{!If(library=='Custom',true,false)}" id="SelectCategory">
+      <div class="tab-content">
+        <apex:pageBlockSection columns="1">
+         <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Add to"></apex:outputLabel>  
+                <apex:selectradio id="PlaceIn" value="{!PlaceIn}" styleClass="tabletabs no_border"  >
+                    <apex:actionSupport event="onchange" reRender="SelectCategory" />                                
+                    <apex:selectOption itemValue="ExistingSection" itemLabel="Existing Category"/>
+                    <apex:selectOption itemValue="NewSection" itemLabel="New Category"/>
+                </apex:selectradio>         
+         </apex:pageBlockSectionItem>
+        <!-- <apex:outputPanel id="SelectCategory"> -->
+          
+         <apex:pageBlockSectionItem rendered="{!IF(PlaceIn=='ExistingSection',true,false)}" >         
+         <apex:outputLabel value="Select Category"></apex:outputLabel>
+         <apex:outputPanel >            
+            <apex:selectList value="{!emailpro.CnP_PaaS__Select_Template_Cat__c}" size="1" styleClass="cat">
+                  <apex:selectOption itemLabel="Select" itemValue="Select"></apex:selectOption>
+                  <apex:selectOptions value="{!selectcustomecategory}" />
+                  <apex:actionSupport event="onchange" action="{!next}" reRender="templates" />    
+            </apex:selectList>
+           </apex:outputPanel>  
+         </apex:pageBlockSectionItem> 
+         <apex:pageblockSectionItem >
+                <apex:outputLabel value="Template Builder"></apex:outputLabel>
+                <apex:outputPanel >
+                 <apex:inputCheckbox value="{!templatebuilder}" styleClass="tempbuilder">
+                     <apex:actionSupport event="onclick" reRender="template_builder,templatenext,withoutid" />   
+                 </apex:inputCheckbox>
+                </apex:outputPanel>           
+         </apex:pageblockSectionItem>
+          <apex:pageBlockSectionItem rendered="{!IF(PlaceIn=='NewSection',true,false)}">
+          <apex:outputLabel value="Category Name"></apex:outputLabel>
+            <apex:outputPanel >            
+                  <apex:inputField value="{!emailpro.CnP_PaaS__Select_Template_Cat__c}" styleClass="cat"/>
+            </apex:outputPanel>  
+         </apex:pageBlockSectionItem>
+         
+         <apex:actionFunction action="{!displyaTemplateBuilder}" name="calldisplayTemplatebuilder" reRender="build_design" status="sts" oncomplete="sortordercomplete();">
+                 <apex:param value="" name="temp_fileurl"  />
+                 <apex:param value="" name="temp_filename"  />
+                 <apex:param value="" name="temp_label" />
+         </apex:actionFunction>
+                 <apex:outputPanel id="template_builder"> 
+                                 
+                     <apex:outputPanel rendered="{!templatebuilder}">
+                      <apex:outputLabel value="{!templatebuilderlabel}" styleClass="title" ></apex:outputLabel>     
+                     <div class="tbuilder">
+                     <apex:repeat value="{!Templatesbuilder}" var="temp">
+                          <div class="layoutcreate" >
+                             <apex:image value="{!temp_baseurl+'/'+temp.Thumbnail+'.gif'}" styleClass="{!temp.LayoutName}" onclick="buildtemplate('{!temp.FileName}','{!temp.LayoutName}');" ></apex:image>
+                           
+                             <div class="title">
+                               {!temp.LayoutName}</div>
+                          </div>
+                    </apex:repeat>
+                    </div>
+                     <apex:outputLabel value="{!temp_baseurl}" style="display:none" styleClass="temp_baseUrl"></apex:outputLabel>
+                     <div class="design" style="float:left;">
+                    <span style="font-size:11px;color:#ccc;margin-bottom:5px;padding:5px;display:block;">Click on Layout to Add Section.<br/>
+                    Double Click on the Section to Delete.<br/></span>
+                            <ul id="list1">
+                            </ul>
+                       <div class="btn-block pagination-centered" >
+                         <apex:commandbutton value="Preview" action="{!DisplayPreviewTemplate}" onclick="displayblock();" reRender="build_design" styleClass="btn btn-small btn-primary" oncomplete="prevpage1();" rendered="{!templatebuilder}" /> &nbsp;    
+                         <apex:commandButton value="Next" action="{!nextcustome}" styleClass="btn btn-small btn-primary" onclick="return checkvalidate();"  rendered="{!templatebuilder}" /> <!-- rendered="{!IF(emailpro.id=="",true,false)}" -->
+                       </div>        
+                     </div>
+
+
+          <br/>   
+           <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquerydragsort)}"/>         
+                <script>
+                        $("ul").dragsort({dragEnd: saveOrder});
+                            function saveOrder() {      
+                                var data = $("#list1 li").map(function() { return $(this).attr('id'); }).get();
+                                $(".templateorder").val(data.join("-"));
+                            };
+                    </script>  
+               </apex:outputPanel>
+                    <apex:outputPanel rendered="{!templatebuilder}" id="build_design">
+                    <apex:inputtext value="{!templateprviewdata}" style="display:none" styleclass="TemplatePreClass"/>                                   
+                    <script type="text/javascript">
+                    function prevpage1(){ 
+                          $("#light").attr('style','display:none');
+                          $("#fade").attr('style','display:none');                        
+                         var content=''; 
+                         var TemplatePreview=$(".TemplatePreClass").val();
+                                                
+                         content = TemplatePreview;                       
+                        top.consoleRef=window.open('','myconsole',
+                                      'width=350,height=250'
+                                       +',menubar=0'
+                                       +',toolbar=1'
+                                       +',status=0'
+                                       +',scrollbars=1'
+                                       +',resizable=1')
+                                     top.consoleRef.document.writeln(
+                                      '<html><head><title>C&P Designer Template Preview</title></head>'
+                                       +'<body bgcolor=white onLoad="self.focus()">'
+                                       +content
+                                       +'</body></html>'
+                                     )
+                        top.consoleRef.document.close()                         
+                        }
+                      </script>
+                    
+                       
+                    </apex:outputPanel> 
+
+                                        
+                <apex:inputText value="{!templateorder}" styleClass="templateorder" style="display:none"/>
+                
+                 <apex:inputtext value="{!templateprviewdata}" style="display:none" styleclass="TemplatePreClass"/>
+                </apex:outputPanel>                
+
+        <!-- </apex:outputPanel> -->           
+       <apex:pageBlockSectionItem > 
+       <apex:outputPanel id="withoutid">
+       
+           <div class="btn-block pagination-centered">  
+                   <apex:commandButton value="Next" action="{!nextedit}" onclick="return checkvalidate();" rendered="{!IF(emailpro.id=="" && templatebuilder==false,true,false)}" styleClass="btn btn-small btn-primary" /> &nbsp; 
+                   <apex:commandButton value="Cancel"  styleClass="btn btn-small btn-primary" action="{!cancel}" rendered="{!IF(emailpro.id=="",true,false)}"/>   
+           </div>
+                            </apex:outputPanel> 
+               </apex:pageBlockSectionItem>   
+                <apex:pageBlockSection columns="1" >
+         <apex:outputPanel id="templatenext" >
+        
+              <div class="btn-block pagination-centered">             
+                <apex:commandButton value="Next" action="{!nextedit}" onclick="return checkvalidate();" rendered="{!IF(emailpro.id!="" && templatebuilder==false,true,false)}" styleClass="btn btn-small btn-primary" /> &nbsp; 
+               <apex:commandButton value="Cancel"  styleClass="btn btn-small btn-primary" action="{!cancel}" rendered="{!IF(emailpro.id!="",true,false)}" />
+              </div>
+        </apex:outputPanel>
+        
+        </apex:pageBlockSection> 
+        
+        </apex:pageBlockSection> 
+        </div>      
+      </apex:outputPanel>      
+     </apex:outputPanel>
+      </apex:tab>
+      
+      <apex:tab label="Designer" id="selectlayout" disabled="{!layout}" styleClass="tablabel">
+             <!--<apex:outputLink styleClass="helpLink" rendered="{!subTab['Designer']['designer'].display=='true'}">  
+                              <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:900Px;margin-right:5Px;" onmouseover="document.getElementById('{!$Component.Foo2}').style.display='block'; "/>  
+                               <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="document.getElementById('{!$Component.Foo2}').style.display='block'; "/>                        
+                         </apex:outputLink>
+                          <apex:outputPanel id="Foo2" styleClass="video"  >   
+                           <ul style="padding-left:4px;" >                       
+                              {!subTab['Designer']['designer'].description} <br/> <br/>
+                              <apex:outputPanel rendered="{!subTab['Designer']['designer'].ActiveLink=='true'}">
+                                 <li><a href="{!subTab['Designer']['designer'].link}" target="_blank" >{!subTab['Designer']['designer'].strlink}</a> <br/></li></apex:outputPanel>
+                               <apex:outputPanel rendered="{!subTab['Designer']['designer'].ActiveVideo=='true'}">  
+                                 <li> <a href="{!subTab['Designer']['designer'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Designer']['designer'].strVideo}</a></li></apex:outputPanel>
+                           </ul>
+                          </apex:outputPanel>-->
+          <apex:outputPanel >
+            <div class="btn-block pagination-centered">
+            <apex:commandlink value="Save & Exit"  styleClass="btn btn-small btn-primary" action="{!save}" onclick="return validateform();"><apex:param name="saveandexit" value="" assignto="{!SaveMode}"/></apex:commandlink> &nbsp; 
+            <apex:commandlink value="Save"  styleClass="btn btn-small btn-primary" action="{!save}" onclick="return validateform();"><apex:param name="saveandexit" value="saveandexit" assignto="{!SaveMode}"/></apex:commandlink> &nbsp; 
+            
+            <apex:commandButton value="Back"  styleClass="btn btn-small btn-primary" action="{!back}"/> &nbsp; 
+             <apex:commandButton value="Cancel"  styleClass="btn btn-small btn-primary" action="{!cancel}"/> &nbsp;
+             &nbsp;
+             <!--<apex:outputPanel rendered="{!IF(ObjectType=='Sites',true,false)}">
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Event_Site_2v__c}" id="ViewSite"/>
+         </span>
+         </apex:outputPanel>-->
+              </div>
+              
+         </apex:outputPanel> 
+         <br/>
+          <br/> 
+         
+          <apex:pageBlockSection columns="1" id="designer" >            
+          <!--  <apex:pageBlockSectionItem >
+                      <apex:outputLabel value="Available In"></apex:outputLabel>
+                      <apex:outputPanel >                            
+                                 <apex:inputcheckbox value="{!emailpro.PaaS_Platform__c}" styleclass="available_paas" />
+                                  <apex:outputLabel value="PaaS Platform"/>                               
+                                 <br/>
+                                 <apex:inputcheckbox value="{!emailpro.Event_Platform__c}" styleclass="available_event" rendered="{!event}"/>
+                                 <apex:outputLabel value="Event Platform" rendered="{!event}"/>  
+                                 
+                      </apex:outputPanel>
+                     
+            </apex:pageBlockSectionItem>-->
+            <apex:pageBlockSectionItem >
+                      <apex:outputLabel value="Template Name"><span class="Required">*</span></apex:outputLabel>
+                      <apex:inputField value="{!emailpro.Name}" styleClass="temp_name"/>
+            </apex:pageBlockSectionItem> 
+             <!--<apex:pageBlockSectionItem >
+                      <apex:outputLabel value="Tags"></apex:outputLabel>
+                      <apex:outputPanel >
+                      <apex:inputtext value="{!emailpro.CnP_PaaS__Tags__c}" styleClass="temp_tags" size="80" maxlength="255"/>
+                       (Tags separated by semicolon ";" )
+                      </apex:outputPanel>
+            </apex:pageBlockSectionItem>-->             
+            <apex:pageBlockSectionItem rendered="{!If(library=='Click & Pledge',true,false)}">           
+                     <apex:outputLabel value="Design Selection"></apex:outputLabel>
+                     <apex:outputPanel >
+                     <apex:actionFunction action="{!changetemplates}" name="changeTemplate">
+                     </apex:actionFunction> 
+                     <apex:selectList value="{!emailpro.CnP_PaaS__Design_Selection__c}" styleClass="designselection"  size="1" onchange="changetempalte_1('{!templatefilename}',this.value)">
+                      <apex:selectOption itemLabel="Select" itemValue="Select"></apex:selectOption>
+                      <apex:selectOptions value="{!selectDesign}" />                                         
+                    </apex:selectList>
+                    </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem >
+                      <apex:outputLabel value="Custom CSS"></apex:outputLabel>
+                      <apex:inputField value="{!emailpro.CnP_PaaS_EVT__Event_Custom_Css__c}" styleClass="CustomTextareacss" />
+            </apex:pageBlockSectionItem> 
+          <!-- <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="SalesForce Public Site URL"></apex:outputLabel>
+                     <apex:outputPanel >
+                     
+                              <apex:inputtext value="{!emailpro.cnp_paas__SalesForce_Public_Site_URL__c}" styleclass="siteurl" size="100" maxlength="255"/>
+                              <span>
+                                   <a href="javascript:void(0);" onclick="return popitup('../0DM/o?setupid=CustomDomain&retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DDevToolsIntegrate')" style="text-decoration:none;float:left;postion:relative;margin-left:5px" class="btn"><apex:outputText value="Get the Site URL"></apex:outputText></a>
+                              </span>
+                     </apex:outputPanel>
+            </apex:pageBlockSectionItem> -->
+            <apex:pageBlockSectionItem rendered="{!if(eventlistcheck==true,true,false)}">
+                     <apex:outputLabel value="SalesForce Public Site URL"><span class="Required">*</span></apex:outputLabel>
+                     <apex:outputPanel >
+                     <!--<apex:inputtext value="{!SalesforceEdition}" style="display:none" styleclass="Edition"/>-->
+                     <apex:inputtext value="{!TempObjectType}" style="display:none" styleclass="TempObjTypeClass"/>
+                     <span>
+                        <span>
+                              <apex:inputtext value="{!Eventlistingpublicsite}" styleclass="siteurl" size="100" style="min-width:450px;" maxlength="255" onblur="changedtohttps(this.value);"/></span>
+                              <span>
+                                   <a href="javascript:void(0);" onclick="return popitup('../0DM/o?setupid=CustomDomain&retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DDevToolsIntegrate')" style="text-decoration:none;float:center;postion:relative;margin-left:5px" class="btn"><apex:outputText value="Get the Site URL"></apex:outputText></a></span>
+                              </span>                        
+                    <br/><br/>
+                     <apex:outputlabel value="e.g. https://yourdomain.SECURE.FORCE.COM/pagename" />           
+                     <apex:outputlabel value="[for secure site change URL to .secure.force.com instead of .force.com]" />
+                       
+                     </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem rendered="False">
+            
+                 <apex:outputLabel value="PDF Attachment"></apex:outputLabel>
+                 <apex:outputPanel >
+                 <apex:inputfile value="{!myAjenda.body}" filename="{!myAjenda.Name}" styleClass="pdffile" /> 
+                    ( Max size is 500KB )
+                 </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+           <!-- <apex:pageBlockSectionItem > 
+                
+                 <apex:outputLabel value=""></apex:outputLabel>                
+                 <apex:outputPanel >
+                 <apex:inputField value="{!emailpro.cnp_paas__Pdf_include__c}" style="float:left;"/>
+                 <apex:outputLabel value="Send attached PDF with email"></apex:outputLabel> 
+                 </apex:outputPanel>    
+            </apex:pageBlockSectionItem> -->
+            <!--<apex:pageBlockSectionItem rendered="{!IF(widgets==false,true,false)}">
+                                    <apex:outputLabel value="Ticket Applies to:"/>
+                                    <apex:outputpanel styleClass="customquestionapplycss">
+                                     <script>
+                                        $(document).ready(function(){
+                           
+                                            $('#scrollbar1').tinyscrollbar();
+                                        })
+                                     </script>
+                                     <apex:inputCheckbox value="{!Selectallcheckboxs}" label="Select All" onclick="checkAll(this)" />
+                                   
+                                    <apex:outputLabel >Select All</apex:outputLabel>
+                                    <div id="scrollbar1">
+                                        <div class="scrollbar"><div class="track"><div class="thumb"><div class="end"></div></div></div></div>
+                                        
+                                        <div class="viewport">
+                                        <div class="overview">
+               
+                                          <apex:selectCheckboxes value="{!CustomeQuestionforall}" id="checkedone" layout="pageDirection"  >
+                                              <apex:selectOptions value="{!levelnames}"/>                                         
+                                          </apex:selectCheckboxes>
+                                        </div>
+                                        </div>
+                                   </div>
+                                   
+                                   
+                                   </apex:outputpanel>
+                                </apex:pageBlockSectionItem>-->
+            <apex:pageBlockSectionItem id="emailcontent">
+                      <apex:outputPanel >
+                      <apex:outputLabel value="Template Body"></apex:outputLabel>                      
+                                                    
+                         <div class="sftree">
+                         <div class="title" title="SF Tree Demo">Merge Fields</div>
+                         <ul id="browser" class="filetree"> 
+                             <!--<li class="closed"><span class="folder" >Contact Fields</span> 
+                                <ul>       
+                                <apex:repeat value="{!ContactFields}" var="ct">
+                                      <li onclick="insertAtCaret1('{!ct.name}','Contact')"><a href="javascript:void(0);">{!ct.label}</a></li>                                 
+                                </apex:repeat> 
+                                </ul> 
+                            </li> 
+                             <li class="closed"><span class="folder" >Custom Questions</span>        
+                                <ul>       
+                                    <li onclick="insertAtCaret2('<@CnP_CustomQuestions>')"><a href="javascript:void(0);">Custom Questions</a></li>               
+                                </ul>
+                            </li> 
+                             <li class="closed"><span class="folder" >Transaction Fields</span>        
+                                <ul>       
+                                   <apex:repeat value="{!TransactionFields}" var="ct">
+                                      <li onclick="insertAtCaret1('{!ct.name}','CnP_PaaS__CnP_Transaction__c')"><a href="javascript:void(0);">{!ct.label}</a></li>                                 
+                                    </apex:repeat> 
+                                </ul>
+                            </li> 
+                            <li class="closed"><span class="folder" >Order Item Fields</span>       
+                                <ul>       
+                                      <li onclick="insertAtCaret2('<@CnP_OrderItems>')"><a href="javascript:void(0);">Order Items</a></li>                                    
+                                      <li onclick="insertAtCaret2('<@CnP_Shipping>')"><a href="javascript:void(0);">Shipping</a></li>   
+                                      <li onclick="insertAtCaret2('<@CnP_Discount>')"><a href="javascript:void(0);">Discount</a></li>   
+                                      <li onclick="insertAtCaret2('<@CnP_Discount Show=0.00>')"><a href="javascript:void(0);">if Discount have zero(0.00) then show the Discount</a></li>   
+                                      <li onclick="insertAtCaret2('<@CnP_Tax>')"><a href="javascript:void(0);">Tax</a></li>  
+                                      <li onclick="insertAtCaret2('<@CnP_Tax Show=0.00>')"><a href="javascript:void(0);">if Tax have zero(0.00) then show the Tax</a></li>                                
+                                       <li onclick="insertAtCaret2('<@CnP_Convenience_Fee>')"><a href="javascript:void(0);">Convenience Fee</a></li>  
+                                </ul>
+                            </li>-->
+                            
+                            <li style="{!if(event==true  && TempEventFields==true,'display:block','display:none')}"><span class="folder" >Event Fields</span>        
+                                <ul>    
+                                   <apex:repeat value="{!EventFields}" var="et">
+                                      <li onclick="insertAtCaret1('{!JSENCODE(et.label)}','')"><a href="#"><apex:outputtext value="{!HTMLENCODE(et.name)}" /></a></li>                                 
+                                    </apex:repeat>  
+                                </ul>
+                            </li>
+                            <li style="{!if(event==true && eventlistcheck ==true,'display:block','display:none')}"><span class="folder" >Event Listings</span>        
+                                <ul>    
+                                   <apex:repeat value="{!EventFields}" var="et">
+                                      <li onclick="insertAtCaret2('<{!JSENCODE(et.label)}>','')"><a href="javascript:void(0);"><apex:outputtext value="{!et.name}" /></a></li>                                 
+                                    </apex:repeat>  
+                                </ul>
+                            </li>
+                            <li style="{!if(event==true && widgets==true,'display:block','display:none')}"><span class="folder" >Widgets</span>        
+                                <ul>    
+                                   <apex:repeat value="{!widgetnames}" var="et">
+                                      <li onclick="insertAtCaret1('{!JSENCODE(et.label)}','')"><a href="#"><apex:outputtext value="{!HTMLENCODE(et.name)}" /></a></li>                                 
+                                    </apex:repeat>  
+                                </ul>
+                            </li>
+                         </ul>
+                         </div>                     
+                      </apex:outputPanel>
+                      <!--<apex:inputField value="{!emailpro.Email_Content__c}"/>-->  
+                      <apex:outputPanel id="testdesign">    
+                       <!--<textarea id="emailbody1" class="emailbody1" name="emailcontent" >{!emailcontentbody}</textarea>-->  
+                               
+                      <apex:inputTextarea id="emailbody" styleClass="emailbody" value="{!Emailcontentstring}"  richText="false"></apex:inputTextarea>
+                       
+                       <br />
+                      <h3>Filtered HTML</h3>
+                        <ul>
+                          <li>Web page addresses and e-mail addresses turn into links automatically.</li>
+                          <li > Allowed HTML tags: &lt;a&gt; &lt;dt&gt; &lt;q&gt; &lt;abbr&gt; &lt;em&gt; &lt;samp&gt; &lt;acronym&gt; &lt;font&gt; &lt;small&gt; &lt;address&gt; &lt;h1&gt; &lt;span&gt; &lt;b&gt; &lt;h2&gt; &lt;strike&gt; &lt;bdo&gt; &lt;h3&gt; &lt;strong&gt; &lt;big&gt; &lt;h4&gt; &lt;sub&gt; &lt;blockquote&gt; &lt;h5&gt; &lt;sup&gt; &lt;br&gt; &lt;h6&gt; &lt;table&gt; &lt;caption&gt; &lt;hr&gt; &lt;tbody&gt; &lt;cite&gt; &lt;i&gt; &lt;td&gt; &lt;code&gt; &lt;img&gt; &lt;tfoot&gt; &lt;col&gt; &lt;ins&gt; &lt;th&gt; &lt;colgroup&gt; &lt;kbd&gt; &lt;thead&gt; &lt;dd&gt; &lt;li&gt; &lt;tr&gt; &lt;del&gt; &lt;ol&gt; &lt;tt&gt; &lt;dfn&gt; &lt;p&gt; &lt;ul&gt; &lt;div&gt; &lt;pre&gt; &lt;var&gt; &lt;dl&gt;
+                            <p>For more information see <a href="https://help.salesforce.com/apex/HTViewHelpDoc?id=fields_using_html_editor.htm&language=en" target="_blank">Supported HTML Tags and Attributes in Salesforce HTML Editor</a></p></li>
+                        </ul>
+                       
+                       </apex:outputPanel>
+            </apex:pageBlockSectionItem>
+         
+        </apex:pageBlockSection> 
+       
+         <apex:outputPanel >
+            <div class="btn-block pagination-centered"> 
+            <apex:commandlink value="Save & Exit"  styleClass="btn btn-small btn-primary" action="{!save}" onclick="return validateform();"><apex:param name="saveandexit" value="" assignto="{!SaveMode}"/></apex:commandlink> &nbsp; 
+            <apex:commandlink value="Save"  styleClass="btn btn-small btn-primary" action="{!save}" onclick="return validateform();"><apex:param name="saveandexit" value="saveandexit" assignto="{!SaveMode}"/></apex:commandlink> &nbsp; 
+            
+            
+            <apex:commandButton value="Back"  styleClass="btn btn-small btn-primary" action="{!back}"/> &nbsp; 
+             <apex:commandButton value="Cancel"  styleClass="btn btn-small btn-primary" action="{!cancel}"/>
+             &nbsp;
+             <!--<apex:outputPanel rendered="{!IF(ObjectType=='Sites',true,false)}">
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Event_Site_2v__c}" id="ViewSite1"/>
+         </span>
+         </apex:outputPanel>-->
+            </div>
+         </apex:outputPanel>
+         
+         
+         
+<apex:outputPanel Id="TemplatePreview" rendered="{!IF(ObjectType=='Sites',true,false)}">        
+ <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5> Template Preview</h5>
+            
+          </div>
+          <div class="widget-content">
+ <apex:outputtext value="{!EventsTicketTable}" style="display:none"/>
+ <apex:outputlabel value="Select template for this Event:" style="display:inline;font-weight:bold;" />&nbsp;&nbsp;  
+ <apex:selectList value="{!EventTemplate.CnP_PaaS_EVT__Select_Template__c}" size="1">
+ <apex:selectOptions value="{!selectEventTemplate}"/>
+ </apex:selectList>&nbsp;&nbsp;
+ 
+ <apex:commandButton value="Save" action="{!SaveTemplateorTicket}" styleClass="btn btn-primary"/> &nbsp;&nbsp;
+
+ <apex:outputpanel >
+  
+               
+                &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+  </apex:outputpanel>  
+ </div>
+ </div>
+ </div>
+ </div>
+ </apex:outputPanel>
+ 
+ <apex:outputPanel rendered="{!if(ObjectType=='EventListings' && Eventlistingid!=null,true,false)}">
+       
+                                           
+             
+    
+       <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Event Listings</h5>
+            
+          </div>
+          <div class="widget-content">
+          <apex:pageblockSection columns="1">
+          <apex:pageblockSectionItem >
+          <apex:outputLabel value="Select the events to be included in the listing"/>
+          <apex:outputpanel styleClass="customquestionapplycss">
+           
+          <apex:inputCheckbox value="{!Selectallcheckbox}" styleClass="checkallclass" label="Select All" onclick="checkAll(this)" />
+          <apex:outputLabel >Select All</apex:outputLabel>                            
+          <apex:selectCheckboxes value="{!Eventselectedlist}" id="checkedone" layout="pageDirection"  styleClass="Eventselect" >
+                                             <apex:selectOptions value="{!Eventdetailslist}"/>                                      
+                                          </apex:selectCheckboxes>
+                                          
+           </apex:outputPanel>
+            </apex:pageblockSectionItem>
+           </apex:pageblockSection>
+            </div>
+      </div>
+      </div>
+      </div>
+      <div class="btn-block pagination-centered">                                          
+                                           
+                                           <apex:commandButton value="Save" styleClass="btn btn-small btn-primary" onclick="return validate();" action="{!EventlistingJunction}" id="EventlistSave"  >
+                                          
+                                           </apex:commandButton> 
+                                           </div>
+      </apex:outputPanel> 
+ <script>
+
+    function checkAll(cb)
+    {
+        var inputElem = document.getElementsByTagName("input");
+       
+        for(var i=0; i<inputElem.length; i++)
+        {
+            if(inputElem[i].id.indexOf("checkedone")!=-1)
+            inputElem[i].checked = cb.checked;
+
+        }
+
+    }
+    function validate(){
+                   
+                
+                if($(".Eventselect").length>0){
+                   if($('.Eventselect input[type=checkbox]:checked').length == 0) {
+                     alert("Please select at least one check box.");
+                     if($(".checkallclass").is(':checked')){ 
+                         $('.checkallclass').attr('checked', false); 
+                       }
+                     $(".Eventselect").focus();
+                            return false;
+                    }
+                 }
+                 if($(".checkallclass").is(':checked')){ 
+                 $('.checkallclass').attr('checked', false); 
+               }
+    }   
+
+</script>
+ 
+ 
+ <apex:outputPanel rendered="{!IF(ObjectType=='EventListings' && Eventlistingid!=null,true,false)}">        
+ <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Listing Preview</h5>
+            
+          </div>
+          <div class="widget-content">
+          <span class="btn btn-primary" >
+ <apex:outputlink value="{!Eventlistingpublicsite}/CnP_PaaS_EVT__EventListingPage?elid={!Eventlistingid}" target="CnP_PaaS_EVT__EventListingPage">Preview</apex:outputlink>
+ </span>
+ </div>
+ </div>
+ </div>
+ </div>
+ </apex:outputPanel>                  
+       
+          
+       <script type="text/javascript">           
+            instance = CKEDITOR.currentInstance;
+           CKEDITOR.replace($(".emailbody").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});    
+           // CKEDITOR.replace($(".emailbody").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}}});    
+            CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+            CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+            CKEDITOR.config.contentsCss= ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+            CKEDITOR.config.language = 'en-us';  
+            CKEDITOR.config.customConfig = '{!$Resource.CnP_PaaS__ckconfig}';
+            CKEDITOR.config.toolbar='Custome'; 
+            CKEDITOR.config.height='800'; 
+            
+            
+      </script>  
+      </apex:tab> 
+       
+   
+   </apex:tabPanel>
+   
+ </apex:pageBlock> 
+<script>
+ 
+
+  function insertAtCaret1(value,label){
+          
+            var editorid = $(".emailbody").attr('id');           
+            oEditor = CKEDITOR.instances[editorid];
+            //alert(oEditor);
+            var value='{'+label+''+value+'}';
+           if ( oEditor.mode == 'wysiwyg' )
+            {
+               oEditor.insertHtml( value );
+            }
+            else{
+                alert( 'You must be in WYSIWYG mode!' );
+            }
+        
+        }
+     function insertAtCaret2(value){
+          
+            var editorid = $(".emailbody").attr('id');           
+            oEditor = CKEDITOR.instances[editorid];
+            //alert(oEditor);
+            
+           if ( oEditor.mode == 'wysiwyg' )
+            {
+               oEditor.insertHtml( value );
+            }
+            else{
+                alert( 'You must be in WYSIWYG mode!' );
+            }
+        
+        }
+        function insertWidget(value)
+        {
+                   var oEditor = CKEDITOR.instances.emailbody;
+            
+                   if ( oEditor.mode == 'wysiwyg' )
+                    {
+                       var html = value;
+
+                        var newElement = CKEDITOR.dom.element.createFromHtml( html, oEditor.document );
+                        oEditor.insertElement( newElement );
+                      // oEditor.insertText( value);
+                    }
+                    else{
+                        alert( 'You must be in WYSIWYG mode!' );
+                    }
+        }
+       
+     </script>
+    
+   </apex:form> 
+   
+   
+   
+</div>   
+  
+</apex:page>

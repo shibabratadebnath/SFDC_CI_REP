@@ -1,0 +1,35 @@
+<apex:page controller="CnP_PaaS_EVT.TicketDesign" contentType="application/msWord#NameBadges.doc" applyBodyTag="false" standardStylesheets="false">
+
+<head>
+
+        <style>
+            body {
+                padding:0px!important;
+                margin:0px!important;
+            }
+           
+        </style> 
+<apex:outputPanel rendered="{!IF(Print=='true',true,false)}">
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__pdfstylefile,'pdfstyle/pdfstyle.css')}"/>
+</apex:outputPanel>
+</head>
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script> 
+                   
+                    $(document).ready(function(){
+                     var emailcontent=$(".contentvalue").text();b
+                     alert(emailcontent);
+                       $(".emailcontent").html(emailcontent);
+            });
+                   </script> -->
+<apex:pageMessages />
+ <!--<apex:repeat value="{!Attids}" var="f">
+    
+  <apex:outputText value="{!(RegTickets[f])}"/>      
+          
+ 
+<div style="page-break-after:always;"/>
+</apex:repeat>-->
+ <apex:dynamicComponent componentValue="{!HTMLContent}"/>
+ </apex:page>

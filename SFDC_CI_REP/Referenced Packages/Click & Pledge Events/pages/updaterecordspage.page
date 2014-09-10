@@ -1,0 +1,14 @@
+<apex:page controller="CnP_PaaS_EVT.updateRecords"> 
+
+<script type = "text/javascript">
+    window.onload=function()       
+    {    
+       
+      jsupdateattendee(); 
+    };
+</script>
+
+<apex:form id="Formid">
+<apex:actionFunction name="jsupdateattendee" action="{!updateattendee}" reRender="Formid"/>
+</apex:form>
+</apex:page>

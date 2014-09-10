@@ -1,0 +1,32 @@
+<apex:page standardController="Company__c" extensions="Confirm_delete">
+    
+    <script>
+        function CallJS()
+        {
+            var r=confirm("are u sure u want to delete");
+            if(r==true)
+            {
+                MethodCallingFunction();
+            }
+            else
+            {
+                location.reload();
+            }
+        }
+    </script>
+    <apex:form >
+    <apex:actionFunction name="MethodCallingFunction" action="{!DeleteMethod}"/>
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!DE}" var="Employees">
+                <apex:column headerValue="CHECKBOX">
+                    <apex:inputCheckbox value="{!Employees.CheckBOXVar}" onclick="CallJS()">
+                    </apex:inputCheckbox>
+                </apex:column>
+                <apex:column value="{!Employees.empVar.id}"/>
+                <apex:column value="{!Employees.empVar.name}"/>
+                <apex:column value="{!Employees.empVar.Address__c}"/>
+            </apex:pageBlockTable>
+          <!--   <apex:commandButton value="DEL" action="{!DeleteMethod}"/> -->
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

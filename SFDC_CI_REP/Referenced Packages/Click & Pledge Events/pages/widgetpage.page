@@ -1,0 +1,670 @@
+<apex:page controller="CnP_PaaS_EVT.widget_class" showHeader="false" sidebar="false" standardStylesheets="false" >
+
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery-1.9.1.js')}"/>
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery-ui.js')}"/>
+ 
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__JqueryUi, '/development-bundle/themes/base/jquery.ui.all.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/> 
+
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.dataTables.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+
+<style>
+.Required{
+color: #CC0000;
+}
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+
+
+
+</style>
+<script>
+ jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+          
+ function reportdelete()
+{
+  
+  if(confirm("Are you sure you want to permanently delete this record?")==true)
+  {
+    return true;
+  }
+}         
+</script>
+ <apex:form id="widgetform">
+
+ <div id="content-header">
+    <h1><i class="icon icon-tasks"></i> Widgets</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"><!-- <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a> -->
+ 
+     <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Widgets'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Widgets'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Widgets'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Widgets'].link}" target="_blank" >{!subTab['Active Events']['Widgets'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Widgets'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Widgets'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Widgets'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel> 
+     </div>
+  </div>
+    
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="current">Widgets</a> </div>
+   <div class="eventdatebar">
+   <i class="icon-time"></i>&nbsp;&nbsp;
+        <span class="popover-startdate">Event:</span>
+        <span><strong>{!EventTemplate.Name} &nbsp;&nbsp;</strong></span>    
+        <span class="popover-startdate">Start Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Start_date_and_time__c}" /> &nbsp;&nbsp;</strong></span>                                   
+        <span class="popover-endson">End Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Start_date_and_time__c}" /> &nbsp;&nbsp;</strong></span>                             
+        <span class="popover-endson">Publish Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Publish_date__c}" /></strong></span>                          
+    </div>
+    
+<div id="frame-content" class="container-fluid"> 
+ 
+ <apex:pageBlock >
+     <apex:pagemessages ></apex:pagemessages>      
+ <apex:outputPanel id="Table">
+ <apex:outputPanel rendered="{!tablebool}" > 
+ <script>
+ function reportdelete()
+ {
+  if(confirm("Are you sure you want to permanently delete this record?")==true)
+  {
+    return true;
+  }
+ } 
+ </script>
+ 
+ <div class="btn-block pagination-centered">
+ <apex:commandButton value="Create New Widget" action="{!newrec}" styleClass="btn btn-primary"  reRender="Table,newrec"/>
+ &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+ </div>
+ 
+ <div class="row-fluid">
+                          <div class="span12">
+                            
+                            <div class="widget-box">
+                              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                                <h5>Widgets List</h5>
+                              </div>
+                              <div class="widget-content">
+                             
+                             <apex:pageBlockTable value="{!wid}" var="w" styleClass="table table-bordered table-striped">
+                             <apex:column headerValue="Action" style="width:35px;" headerClass="white_space_nowrap">
+                             <!--<apex:outputLink value="/apex/widgetpage?id={!eveid}&wid={!w.id}" target="_self" style="btn">Edit</apex:outputLink>-->
+                             <apex:commandLink action="{!editwidget}" styleClass="icon-edit" >
+                             <apex:param name="editwidgetid" value="{!w.id}"/>
+                             </apex:commandLink>
+                             &nbsp;
+                              <apex:commandLink styleClass="icon-trash" action="{!deletewidgets}" onclick="if(!reportdelete()) return false;" reRender="Table"  >
+                              <apex:param name="delwidgetid" value="{!w.id}" />
+                              </apex:commandLink>
+                             </apex:column>
+                             <apex:column headerValue="Widget Name"  width="10%" style="white-space:nowrap;">
+                             <apex:outputLink value="/{!w.id}" target="_new" style="btn">{!w.Name}</apex:outputLink>
+                             </apex:column>
+                             <apex:column headerValue="Description" value="{!w.CnP_PaaS_EVT__description__c}"/>
+                             <apex:column headerValue="Widget Type" value="{!w.CnP_PaaS_EVT__Widget_type__c}" headerClass="white_space_nowrap"/>
+                             </apex:pageBlockTable>
+                           
+                            <script type="text/javascript">
+                                $(document).ready(function() {          
+                    
+                                    oTable = $('.table').dataTable({
+                                        "bJQueryUI": true,                  
+                                        aoColumnDefs: [
+                                          { aTargets: [0], bSortable: false}]                           
+                                    }
+                                                 
+                                    );
+                                   
+                                } );
+                                </script> 
+                          </div>
+                         </div>
+                         </div>
+                         </div>
+ 
+ </apex:outputPanel>
+ </apex:outputPanel>
+ 
+ <apex:outputPanel id="newrec" >
+ <apex:outputpanel rendered="{!newbool}"  >
+ 
+ 
+ <div class="row-fluid">
+     <div class="span12">
+                            
+         <div class="widget-box">
+           <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Create New Widget</h5>
+           </div>
+          <div class="widget-content">
+                      
+             <div class="btn-block pagination-centered">
+             <apex:commandButton value="Save"  styleClass="btn btn-primary" onclick="return checkvalidate();" action="{!Savewidget}" />&nbsp;
+              <apex:commandButton value="Save & Exit"  styleClass="btn btn-primary" onclick="return checkvalidate();" action="{!savewidgetandexit}" />&nbsp;
+             <apex:commandButton value="Cancel" action="{!cancel}" styleClass="btn btn-primary"/> 
+             </div>
+ 
+             <apex:pageBlockSection rendered="{!newbool}" columns="1" id="tabpaneldata" > 
+             <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Widget Name"><span class="Required">*</span></apex:outputLabel>
+             <apex:inputField value="{!widget.Name}" styleClass="Widget_Name"  onblur="trimvalue(this.value,'Widget_Name');"/>
+             </apex:pageBlockSectionItem>
+             
+            
+             <apex:inputField value="{!widget.CnP_PaaS_EVT__description__c}" styleClass="Widget_description span11"/>
+             
+             <apex:selectRadio value="{!widget.CnP_PaaS_EVT__Widget_type__c}" styleClass="tabletabs no_border">
+             <apex:selectOption itemLabel="Single" itemValue="Single" itemDisabled="{!if(widget.CnP_PaaS_EVT__Widget_type__c=='Tabbed' && widgetid!=null,true,false)}"/>
+             <apex:selectOption itemLabel="Tabbed" itemValue="Tabbed" itemDisabled="{!if(widget.CnP_PaaS_EVT__Widget_type__c=='Single' && widgetid!=null,true,false)}"></apex:selectOption>
+             <apex:actionSupport event="onchange" action="{!singletabbedchange}"  reRender="Tabbedwidget,tabpaneldata" />
+             </apex:selectRadio>
+            
+             
+            
+             <apex:inputField id="singlewidget" styleClass="span11" value="{!widget.CnP_PaaS__Widget_Code__c}" rendered="{!singlebool}"/>
+             
+            <apex:outputpanel id="Tabbedwidget">
+            <apex:outputPanel rendered="{!tabbedbool}">
+           
+            <apex:actionFunction name="tabsave" action="{!tabsaving}"  reRender="refreshtabs,afterrefresh,editorscript,widgetform" >
+            <apex:param name="tab2content" value="" />
+            </apex:actionFunction>
+
+          <!--   <apex:actionFunction name="removetab" action="{!removetab}" oncomplete="refreshtabs();" reRender="refreshtabs,afterrefresh,editorscript">
+             <apex:param name="deleteid" value="" />
+             <apex:param name="removetabid" value=""/>
+             </apex:actionFunction>-->
+  
+             <apex:outputPanel id="refreshtabs">
+
+             <table id="table" class="table table-bordered table-striped white_bg" >
+             <tr>
+             <td>
+              <div class="sftree" id="sftree">
+              <div class="title" title="SF Tree Demo">Merge Fields</div>
+    
+              <ul id="browser" class="filetree"> 
+              <li class="closed" style="display:{if(Widgets.size>0,'block','none')}"><span class="folder" >Widgets</span>        
+                 <ul>       
+                 <apex:repeat value="{!singlewidget}" var="ct">
+                 <li onclick="insertWidget('{!HTMLENCODE(ct.CnP_PaaS__Widget_Code__c)}')"><a href="javascript:void(0);">{!ct.Name}</a></li>                                 
+                 </apex:repeat> 
+                 </ul>
+              </li>
+              </ul>
+              </div> 
+              </td>  
+              <td >
+
+  <apex:outputPanel rendered="{!tabbedbool}">
+
+   <script>
+function selectradioshow(){
+selectradioshowadmin();
+}
+
+</script>
+<apex:actionFunction name="selectradioshowadmin" action="{!Gettabdata}" >
+
+</apex:actionFunction>
+ <apex:selectRadio value="{!etid}" layout="lineDirection" styleClass="tabletabs"  onclick="if(!checkvalidate()) {return false;}else{selectradioshow();}" >
+
+ <apex:selectOptions value="{!externaltabs}"></apex:selectOptions>
+ </apex:selectRadio>
+
+    
+     </apex:outputPanel>
+  <apex:inputtext style="display:none" value="{!ettabs1.Id}" styleclass="firsttabid" rendered="{!if(ettabs1.Id!=null,true,false)}"/> 
+<apex:inputtext style="display:none" value="{!ettabs2.Id}" styleclass="secondtabid" rendered="{!if(ettabs2.Id!=null,true,false)}"/> 
+<apex:inputtext style="display:none" value="{!ettabs3.Id}" styleclass="thirdtabid" rendered="{!if(ettabs3.Id!=null,true,false)}"/> 
+<apex:inputtext style="display:none" value="{!ettabs4.Id}" styleclass="fourthtabid" rendered="{!if(ettabs4.Id!=null,true,false)}"/>
+
+<!----------------- first tab ---------------------------->
+    <apex:outputPanel styleClass="firsttab tab-content display_block" rendered="{!firsttab}">
+    
+    Tab Title: &nbsp;<apex:inputField value="{!ettabs1.Name}" styleClass="firsttabname"/> &nbsp;&nbsp;
+    Tab Order: &nbsp;<!--<apex:inputField value="{!ettabs1.CnP_PaaS_EVT__Tab_order_number__c}"/> -->
+    <apex:selectList value="{!ettabs1.CnP_PaaS_EVT__Tab_order_number__c}" size="1" styleClass="firsttaborder">
+    <apex:selectOption itemLabel="1" itemValue="1" />
+    <apex:selectOption itemLabel="2" itemValue="2" />
+    <apex:selectOption itemLabel="3" itemValue="3" />
+    <apex:selectOption itemLabel="4" itemValue="4" />
+    <apex:selectOption itemLabel="Hide" itemValue="5" />
+    </apex:selectList>
+    <br /><br />
+    <textarea id="emailbodychange0" class="textchangeone0" name="emailcontent0" > 
+    {!ettabs1.CnP_PaaS_EVT__content_tab1__c}
+    </textarea>
+    
+    <apex:inputtext style="display:none" value="{!resultset}" styleclass="resultsetfinal"/>  
+    
+    <apex:outputPanel > 
+    <apex:inputTextarea styleClass="emailbodychange0" value="{!ettabs1.CnP_PaaS_EVT__content_tab1__c}" style="display:none;" />
+    </apex:outputPanel> 
+    
+    <script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script> 
+    <script type="text/javascript">
+ 
+      $(document).ready(function() {
+ 
+      CKEDITOR.replace($(".textchangeone0").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'},CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+
+      CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+      CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+      CKEDITOR.config.contentsCss = ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+      CKEDITOR.config.language = 'en-us';  
+      CKEDITOR.config.customConfig = '{!$Resource.ckconfig}';
+      CKEDITOR.config.toolbar ='Custome'; 
+      });
+  
+    function insertWidget(value)
+        {     
+        
+          
+                 if($(".textchangeone0").length>0 )
+                 {
+                   var oEditor = CKEDITOR.instances.emailbodychange0;
+             
+                   if (oEditor.mode == 'wysiwyg' )
+                   {
+                      oEditor.insertHtml( value );
+                   }
+                   else{
+                       alert( 'You must be in WYSIWYG mode!' );
+                       }
+                 }
+          }   
+        </script>
+      </apex:outputPanel>
+ <!-------------------------- first Tab end ---------------------------> 
+ 
+ <!-------------------------------------- second tab --------------->
+ 
+    <apex:outputPanel styleClass="SecondTab tab-content display_block" rendered="{!secondtab}">
+    
+    Tab Title: &nbsp;<apex:inputField value="{!ettabs2.Name}" styleClass="secondtabname"/>  &nbsp;&nbsp;
+    <apex:commandLink value="" styleClass="icon-trash" style="cursor: pointer;" action="{!removetab}" rendered="{!if(ettabs2.Id!=null,true,false)}"  onclick="if(!reportdelete()) return false;">
+     <apex:param value="{!ettabs2.id}" assignTo="{!removetabid}" name="removetabid"/>
+    </apex:commandLink>&nbsp;&nbsp;
+    Tab Order: &nbsp;<!--<apex:inputField value="{!ettabs2.CnP_PaaS_EVT__Tab_order_number__c}"/> -->    
+    <apex:selectList value="{!ettabs2.CnP_PaaS_EVT__Tab_order_number__c}" size="1" styleClass="secondtaborder">
+    <apex:selectOption itemLabel="1" itemValue="1" />
+    <apex:selectOption itemLabel="2" itemValue="2" />
+    <apex:selectOption itemLabel="3" itemValue="3" />
+    <apex:selectOption itemLabel="4" itemValue="4" />
+    <apex:selectOption itemLabel="Hide" itemValue="5" />
+    </apex:selectList>
+    <br /><br />
+    <textarea id="emailbodychange1" class="textchangeone1" name="emailcontent0"> 
+    {!ettabs2.CnP_PaaS_EVT__content_tab1__c}
+    </textarea>
+
+    <apex:inputtext style="display:none" value="{!resultset}" styleclass="resultsetfinal"/> 
+ 
+    <apex:outputPanel > 
+    <apex:inputTextarea styleClass="emailbodychange1" value="{!ettabs2.CnP_PaaS_EVT__content_tab1__c}" style="display:none;" />
+    </apex:outputPanel> 
+
+    <script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script> 
+    <script type="text/javascript"> 
+    
+      $(document).ready(function() { 
+      CKEDITOR.replace($(".textchangeone1").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'},CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+  
+      CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+      CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+      CKEDITOR.config.contentsCss = ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+      CKEDITOR.config.language = 'en-us';  
+      CKEDITOR.config.customConfig = '{!$Resource.ckconfig}';
+      CKEDITOR.config.toolbar ='Custome'; 
+      });
+  
+        function insertWidget(value)
+        {
+       
+                 if($(".textchangeone1").length>0 )
+                 {
+                   var oEditor = CKEDITOR.instances.emailbodychange1;
+             
+                   if (oEditor.mode == 'wysiwyg' )
+                   {
+                      oEditor.insertHtml( value );
+                   }
+                   else{
+                       alert( 'You must be in WYSIWYG mode!' );
+                       }
+                 }
+          }   
+          </script>
+    </apex:outputPanel> 
+ <!------------------------------ second tab end ----------------------------------------->
+ 
+ <!---------------------- Third Tab ------------------------------------------------->
+     <apex:outputPanel styleClass="Thirdtab tab-content display_block" rendered="{!thirdtab}">
+     
+        Tab Title: &nbsp;<apex:inputField value="{!ettabs3.Name}" styleClass="thirdtabname"/> &nbsp;&nbsp;
+        <apex:commandLink value="" styleClass="icon-trash" style="cursor: pointer;" action="{!removetab}" rendered="{!if(ettabs3.Id!=null,true,false)}" onclick="if(!reportdelete()) return false;" >
+         <apex:param value="{!ettabs3.id}" assignTo="{!removetabid}" name="removetabid"/>
+    </apex:commandLink>&nbsp;&nbsp;
+        Tab Order: &nbsp;<!--<apex:inputField value="{!ettabs3.CnP_PaaS_EVT__Tab_order_number__c}" /> -->
+        <apex:selectList value="{!ettabs3.CnP_PaaS_EVT__Tab_order_number__c}" size="1" styleClass="thirdtaborder">
+        <apex:selectOption itemLabel="1" itemValue="1" />
+        <apex:selectOption itemLabel="2" itemValue="2" />
+        <apex:selectOption itemLabel="3" itemValue="3" />
+        <apex:selectOption itemLabel="4" itemValue="4" />
+        <apex:selectOption itemLabel="Hide" itemValue="5" />
+        </apex:selectList>
+        <br /><br />
+        <textarea id="emailbodychange2" class="textchangeone2" name="emailcontent0"> 
+        {!ettabs3.CnP_PaaS_EVT__content_tab1__c}
+        </textarea>
+
+        <apex:inputtext style="display:none" value="{!resultset}" styleclass="resultsetfinal"/>
+  
+        <apex:outputPanel > 
+        <apex:inputTextarea styleClass="emailbodychange2" value="{!ettabs3.CnP_PaaS_EVT__content_tab1__c}" style="display:none;" />
+        </apex:outputPanel> 
+
+        <script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script> 
+        <script type="text/javascript">
+ 
+          $(document).ready(function() {
+           
+          CKEDITOR.replace($(".textchangeone2").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'},CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+  
+          CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+          CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+          CKEDITOR.config.contentsCss = ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+          CKEDITOR.config.language = 'en-us';  
+          CKEDITOR.config.customConfig = '{!$Resource.ckconfig}';
+          CKEDITOR.config.toolbar ='Custome'; 
+          });
+  
+            function insertWidget(value)
+                {
+       
+                 if($(".textchangeone2").length>0 )
+                 {
+                   var oEditor = CKEDITOR.instances.emailbodychange2;
+             
+                   if (oEditor.mode == 'wysiwyg' )
+                   {
+                      oEditor.insertHtml( value );
+                   }
+                   else{
+                       alert( 'You must be in WYSIWYG mode!' );
+                       }
+                 }
+              }  
+        </script>
+        </apex:outputPanel>
+
+ <!----------------------- Third Tab end ------------------------------------------>
+ 
+ <!------------------------ Fourth Tab ----------------------------------->
+     <apex:outputPanel styleClass="Fourttab tab-content display_block" rendered="{!fourthtab}">
+     
+      Tab Title: &nbsp;<apex:inputField value="{!ettabs4.Name}" styleClass="fourthtabname"/> &nbsp;&nbsp;
+       <apex:commandLink value="" styleClass="icon-trash" style="cursor: pointer;" action="{!removetab}" rendered="{!if(ettabs4.Id!=null,true,false)}"  onclick="if(!reportdelete()) return false;">
+       <apex:param value="{!ettabs4.id}" assignTo="{!removetabid}" name="removetabid"/>
+     </apex:commandLink>&nbsp;&nbsp;
+      Tab Order: &nbsp;<!--<apex:inputField value="{!ettabs4.CnP_PaaS_EVT__Tab_order_number__c}" />  -->      
+        <apex:selectList value="{!ettabs4.CnP_PaaS_EVT__Tab_order_number__c}" size="1" styleClass="fourthtaborder">
+        <apex:selectOption itemLabel="1" itemValue="1" />
+        <apex:selectOption itemLabel="2" itemValue="2" />
+        <apex:selectOption itemLabel="3" itemValue="3" />
+        <apex:selectOption itemLabel="4" itemValue="4" />
+        <apex:selectOption itemLabel="Hide" itemValue="5" />
+        </apex:selectList>   
+        <br /><br />
+        <textarea id="emailbodychange3" class="textchangeone3" name="emailcontent0"> 
+        {!ettabs4.CnP_PaaS_EVT__content_tab1__c}
+        </textarea>
+        
+        <apex:inputtext style="display:none" value="{!resultset}" styleclass="resultsetfinal"/>
+         
+        <apex:outputPanel > 
+        <apex:inputTextarea styleClass="emailbodychange3" value="{!ettabs4.CnP_PaaS_EVT__content_tab1__c}" style="display:none;" />
+        </apex:outputPanel>
+
+ 
+    <script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script> 
+    <script type="text/javascript"> 
+      $(document).ready(function() { 
+ 
+      CKEDITOR.replace($(".textchangeone3").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'},CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+  
+      CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+      CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+      CKEDITOR.config.contentsCss = ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+      CKEDITOR.config.language = 'en-us';  
+      CKEDITOR.config.customConfig = '{!$Resource.ckconfig}';
+      CKEDITOR.config.toolbar ='Custome'; 
+      });
+  
+        function insertWidget(value)
+            {
+       
+                 if($(".textchangeone3").length>0 )
+                 {
+                   var oEditor = CKEDITOR.instances.emailbodychange3;
+             
+                   if (oEditor.mode == 'wysiwyg' )
+                   {
+                      oEditor.insertHtml( value );
+                   }
+                   else{
+                       alert( 'You must be in WYSIWYG mode!' );
+                       }
+                 }
+              } 
+      </script>
+         </apex:outputPanel>
+ 
+ 
+         <!---------------------------- Fourth Tab End ------------------------------> 
+        </td>
+        </tr></table>
+ 
+  
+    </apex:outputPanel>
+
+ </apex:outputPanel>
+ </apex:outputpanel>
+ </apex:pageBlockSection>
+  <div class="btn-block pagination-centered">
+             <apex:commandButton value="Save"  styleClass="btn btn-primary" onclick="return checkvalidate();" action="{!Savewidget}" />&nbsp;
+              <apex:commandButton value="Save & Exit"  styleClass="btn btn-primary" onclick="return checkvalidate();" action="{!savewidgetandexit}" />&nbsp;
+             <apex:commandButton value="Cancel" action="{!cancel}" styleClass="btn btn-primary"/> 
+             </div>
+                         </div>
+                         </div>
+                         
+                         </div>
+                         </div>
+
+
+ </apex:outputpanel>
+ </apex:outputPanel>
+
+ </apex:pageBlock>
+ 
+</div>
+</apex:form>
+
+
+  
+ 
+
+<style>
+ 
+.sftree{
+   // border:1px solid #ccc;
+   // width:200px;
+    
+}
+.sftree .title{
+    background-color: #1797C0;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+  
+    margin:2px;
+    padding-top: 4px;
+    padding-top: -2px;
+    text-align: center;
+    width:188px;
+}
+.filetree li{
+    text-align:left;
+    font:14px "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, sans-serif;
+}
+</style>
+
+ <script>
+function valuechange()
+   {
+     
+            
+     if($(".textchangeone0").length>0)
+      {
+      
+         var e_data1 = CKEDITOR.instances.emailbodychange0.getData();
+      
+            $(".emailbodychange0").val(e_data1);
+       }
+   
+  
+      if($(".textchangeone1").length>0)
+      {
+      
+         var e_data1 = CKEDITOR.instances.emailbodychange1.getData();
+      
+            $(".emailbodychange1").val(e_data1);
+       }
+   
+      if($(".textchangeone2").length>0)
+      {
+      
+         var e_data1 = CKEDITOR.instances.emailbodychange2.getData();
+      
+            $(".emailbodychange2").val(e_data1);
+       }
+   
+       if($(".textchangeone3").length>0)
+      {
+      
+         var e_data1 = CKEDITOR.instances.emailbodychange3.getData();
+      
+            $(".emailbodychange3").val(e_data1);
+       }
+   
+           
+   } 
+      
+  function checkvalidate()
+  {
+   
+       var tab1id=$(".firsttabid").val();
+      var tab2id=$(".secondtabid").val();
+       var tab3id=$(".thirdtabid").val();
+        var tab4id=$(".fourthtabid").val();  
+        
+       
+     var tab1name=$(".firsttabname").val();
+         var tab2name=$(".secondtabname").val();
+          var tab3name=$(".thirdtabname").val();    
+           var tab4name=$(".fourthtabname").val();  
+ 
+  var wname=$(".Widget_Name").val();
+  var reg_text=/^([a-zA-Z0-9\ ])+$/; 
+   var t=0;
+     
+   
+     if(tab1name=="")
+       {      
+        alert("Please Enter Tab Title");
+        $(".firsttabname1").focus();
+        return false;
+        
+       } 
+    
+      /* if(tab2id!=null && tab2name=="")
+       {
+       
+        alert("Please Enter Tab Title");
+        $(".secondtabname1").focus();
+        return false;
+        
+       } */
+        
+       if(tab3id!=null && tab3name=="")
+       {
+      
+        alert("Please Enter Tab Title");
+        $(".thirdtabname1").focus();
+        return false;
+        
+       } 
+      
+       if(tab4id!=null  && tab4name=="" )
+       {
+        alert("Please Enter Tab Title");
+        $(".fourthtabname1").focus();
+        return false;
+        
+       }
+     
+      if(wname=="" || reg_text.test(wname)==false )
+      {
+             
+              alert("Please enter valid widget name");
+              $(".Widget_Name").focus();
+              return false;
+              
+       }
+  
+      valuechange();
+      return true;
+      
+   }
+
+</script> 
+</apex:page>

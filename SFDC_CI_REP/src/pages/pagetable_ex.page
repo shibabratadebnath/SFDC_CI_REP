@@ -1,0 +1,11 @@
+<apex:page controller="pagetable_ex">
+    <apex:form >
+        Enter the number:<apex:inputText value="{!Num}"/>
+        <apex:commandButton value="Submit" action="{!numbers}"/>
+        <apex:pageBlock title="Display Numbers">
+            <apex:pageblockTable value="{!numlist}" var="values">
+                <apex:column headervalue="Numbers" Value="{!values}"/>              
+            </apex:pageblockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

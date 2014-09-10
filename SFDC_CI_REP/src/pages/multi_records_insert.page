@@ -1,0 +1,14 @@
+<apex:page controller="mypagecontroller">
+<apex:form >
+<apex:pageBlock >
+<apex:pageblockbuttons >
+<apex:commandButton action="{!saving}" value="save" />
+</apex:pageblockbuttons>
+<apex:repeat value="{!myrecords }" var="itr">
+Name:<apex:inputField value="{!itr.Name}"/><br/>
+Price:<apex:inputField value="{!itr.Price__c}"/><br/>
+Quantity:<apex:inputField value="{!itr.Quantity__c}"/><br/>
+</apex:repeat>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

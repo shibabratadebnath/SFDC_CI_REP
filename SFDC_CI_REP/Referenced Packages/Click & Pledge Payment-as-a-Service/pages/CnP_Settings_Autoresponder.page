@@ -1,0 +1,1685 @@
+<apex:page controller="CnP_PaaS.SettingsController" cache="false" action="{!refreshpage}">
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__DataTables,'js/jquery.dataTables.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+<style>
+.Stagespayment input{
+    margin-left:10px !important;
+}
+.Stagespayment label{
+    display: inline;
+    margin-left: 10px;
+}
+.subStages input{
+    float:left;
+    margin-left:40px !important;
+}
+.subStages label{
+    margin-left:10px;
+}
+.sendoption td input{
+    margin-top:0px;
+}
+.sendoption td label{
+    display:inline;
+}
+</style>
+
+
+
+<script type="text/javascript">
+
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+      
+    
+    function  newautoresponder(){
+        processstart();
+        newform();
+    }
+    
+    
+ function Edit_Autoresponder(responderid)
+ {
+        processstart();
+         callEditResponder(responderid);
+ }
+ function Delete_Autoresponder(responderid)
+ {
+        if(confirm("Are you sure you want to permanently delete this record?")==true){  
+           processstart();
+           callDeleteResponder(responderid);
+        }         
+ }
+ function View_Autoresponder(responderid)
+ {
+      processstart();
+      callViewResponder(responderid);
+ }
+ function widchange(classvalue){
+   var checkoutvalue=jQuery.trim(jQuery(".auto_check"+classvalue).val());
+                 var checkwid =   jQuery(".checkwid"+classvalue).val();
+                 
+  if(checkwid == 'Any WID'){
+                      jQuery(".auto_check"+classvalue).attr('disabled',true); 
+                      jQuery(".auto_check"+classvalue).val(''); 
+            
+            }else{
+               jQuery(".auto_check"+classvalue).attr('disabled',false);
+            }
+ }    
+    
+   function Autorespondervalidation()
+{
+            var valid=0;
+            reg_text=/^([a-zA-Z0-9\'\,\.\-\_\|\ ])+$/; 
+            reg_questiontext=/^([a-zA-Z0-9\'\,\.\:\-\_\|\ \?\ \/\+])+$/; 
+            reg_cam=/^([a-zA-Z0-9\'\,\.\-\_\#\&\ ])+$/; 
+           // reg_email = /^([A-Za-z0-9_\+\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+            reg_email = /^([A-Za-z0-9_\-\+\&\.\!\#\$\%\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9\-\.])+\.([A-Za-z]{2,4})$/; // remove ; and _ adding &
+            reg_sku=/^([a-zA-Z0-9\_\:\-\ ])+$/;
+            reg_dob = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/; 
+            var reg_num=/^([0-9\.])+$/;
+            var reg_amount =/^[0-9]*\.?[0-9]*$/;
+            var reg_no=/^([0-9])+$/;     
+            var respondername=jQuery.trim(jQuery(".respondername").val());
+            if(respondername=="")
+            {
+              valid=valid+1;
+              alert("Please enter a Responder Name");
+              jQuery(".respondername").focus();
+              return false;
+            }
+            if(!reg_text.test(respondername))
+            {   
+                valid=valid+1;
+                 alert("Please enter a valid responder name");
+                 jQuery(".respondername").focus();
+                 return false;
+            }
+           
+            var autotags=jQuery(".autotags").val();
+            if(autotags=="")
+            {
+                 valid=valid+1;
+                 alert("Please select Tags");
+                 jQuery(".autotags").focus();
+                 return false;
+            }
+            var templatedesign=jQuery(".templatedesign").val();
+            if(templatedesign=="")
+            {
+                 valid=valid+1;
+                 alert("Please select Template Design");
+                 jQuery(".templatedesign").focus();
+                 return false;
+            }
+            var smtpsender=jQuery(".smtpsender").val();
+            var cnpapisetting=jQuery(".cnpapisetting").val();
+           
+            if(cnpapisetting=="" && smtpsender!='salesforce')
+            {
+                valid=valid+1;
+                alert("Please select C&P Account");
+                jQuery(".cnpapisetting").focus();
+                return false;
+            } 
+
+            
+            var mailto=jQuery(".mailto").val();
+            if(mailto=="")
+            {
+               valid=valid+1;
+                 alert("Please select mail to");
+                 jQuery(".mailto").focus();
+                 return false;
+            } 
+            var specific_email = jQuery(".specificemail").val();           
+            if(!reg_email.test(specific_email) && mailto!='Payee')
+            {
+                  valid=valid+1;
+                  alert("Please enter a recipient");
+                  jQuery(".specific_email").focus();
+                  return false;
+            }
+            var mailfromname=jQuery.trim(jQuery(".mailfromname").val());
+            if(mailfromname=="" && smtpsender!='salesforce'  && smtpsender=='ClickandPledge')
+            {
+               valid=valid+1;
+               alert("Please enter a mail from name");
+               jQuery(".mailfromname").focus();
+               return false;
+            }                                               
+            var mailfrom=jQuery.trim(jQuery(".mailfrom").val());
+            if(mailfrom=="" && smtpsender!='salesforce'  && smtpsender=='ClickandPledge')
+            {    valid=valid+1;
+                 alert("Please enter a mail from address");
+                 jQuery(".mailfrom").focus();
+                 return false;
+            }
+            if(!reg_email.test(mailfrom) && smtpsender!='salesforce' && smtpsender=='ClickandPledge')
+            {   valid=valid+1;
+                 alert("Please enter a valid email address");
+                 jQuery(".mailfrom").focus();
+                 return false;  
+            }
+           
+            var replayto=jQuery.trim(jQuery(".replayto").val());
+            if(replayto=="")
+            {   valid=valid+1;
+                 alert("Please enter a reply to address");
+                 jQuery(".replayto").focus();
+                 return false;
+            } 
+            if(!reg_email.test(replayto))
+            {   valid=valid+1;
+                 alert("Please enter a valid email address");
+                 jQuery(".replayto").focus();
+                 return false;  
+            }
+            var subject=jQuery.trim(jQuery(".subject").val());
+            if(subject=="")
+            {   valid=valid+1;
+                 alert("Please enter a subject");
+                 jQuery(".subject").focus();
+                 return false;
+            }
+            
+            var  responderstatus= jQuery(".responderstatus").val();
+            if(responderstatus == ''){
+            valid=valid+1;
+                 alert("Please select responder status");
+                 jQuery(".responderstatus").focus();
+                 return false;
+            }
+            
+           /*if(!reg_text.test(subject))
+            {    valid=valid+1;
+                 alert("Please enter a valid data");
+                 jQuery(".subject").focus();
+                 return false;
+            }*/
+               var accountmulti = jQuery(".accountmulti").val();
+            if(accountmulti ==null)
+              {
+                   valid=valid+1;
+                   alert("please select at least one C&P Account Number");
+                   jQuery(".accountmulti").focus();
+                   return false;
+              }
+            var Credit_card=jQuery(".Credit_card").is(':checked');
+            
+            var Visa_card=jQuery(".Visa_card").is(':checked');
+            
+            var Master_card=jQuery(".Master_card").is(':checked');
+            
+            var Discover=jQuery(".Discover").is(':checked');
+            
+            var AmericanEx=jQuery(".AmericanEx").is(':checked');
+           
+            var e_check=jQuery(".e_check").is(':checked');
+           
+            var InVoice=jQuery(".InVoice").is(':checked');
+            
+            var PurchaseOrder=jQuery(".PurchaseOrder").is(':checked');
+            
+            var Jcb=jQuery(".Jcb").is(':checked');
+            
+            var CustomPayment=jQuery(".CustomPayment").is(':checked');
+            
+            if(Credit_card==false && Visa_card==false && Master_card==false && Discover==false &&  AmericanEx==false && e_check==false && InVoice==false && PurchaseOrder==false && Jcb==false && CustomPayment==false)
+            {    valid=valid+1;
+                 alert("Please select at least one payment method");                      
+                 return false; 
+            }
+            
+            if(Credit_card==true && Visa_card==false && Master_card==false && Discover==false &&  AmericanEx==false && Jcb==false)
+            {
+                 valid=valid+1;
+                 alert("Please select at least one credit card");
+                 return false;
+            }
+           
+            if(Credit_card==false && (Visa_card==true || Master_card==true ||  Discover==true ||  AmericanEx==true || Jcb==true))
+            {
+                 valid=valid+1;
+                 alert("Please select the credit card");
+                 return false;   
+            }
+            
+            var authorized=jQuery(".authorized").is(':checked');
+           
+            var declined=jQuery(".declined").is(':checked');
+            
+            if(authorized==false && declined==false)
+            {   valid=valid+1;
+                alert("Please select at least one payment status");                      
+                return false;
+            }
+                 var recurringtransaction = jQuery(".recurringtransaction").is(':checked');
+           var futuretransaaction = jQuery(".futuretransaaction").is(':checked');
+           
+           if(recurringtransaction == true){
+                var ch=0;
+                jQuery(".recurringtransactiontype input:radio").each(function(){
+                           if(jQuery(this).is(':checked')==true)
+                           {                
+                                ch=1;                                
+                           }                   
+                 });
+                 if(ch==0){
+                      valid=valid+1;
+                      alert('Select at least one recurring radio option!');
+                      jQuery('.recurringtransactiontype').focus();
+                      return false;
+                 }
+            }
+            if(futuretransaaction == true){
+                  var ch=0;
+                  jQuery(".futuretransaactiontype input:radio").each(function(){
+                           if(jQuery(this).is(':checked')==true)
+                           {                
+                                ch=1;                                
+                           }                   
+                 });
+                 if(ch==0){
+                      valid=valid+1;
+                      alert('Select at least one future transaction radio option!');
+                      jQuery('.futuretransaactiontype').focus();
+                      return false;
+                 }
+            }
+            var rowvaluesCampaign=jQuery(".rowvaluesCampaign").val();
+            
+            for(var i=0;i<rowvaluesCampaign;i++)
+            {
+                 var campaignvalue=jQuery.trim(jQuery(".auto_campaign"+i).val());
+                 if(campaignvalue=="")
+                 {     valid=valid+1;
+                       alert("Please enter a Campaign name");
+                       jQuery(".auto_campaign"+i).focus();
+                       return false;
+                 }
+                 if(!reg_cam.test(campaignvalue))
+                 {     valid=valid+1;
+                       alert("Please enter a valid Campaign name");
+                       jQuery(".auto_campaign"+i).focus();
+                       return false;
+                 }
+            }
+            var rowvaluesCheck=jQuery(".rowvaluesCheck").val();
+            
+            for(var i=0;i<rowvaluesCheck;i++)
+            {
+                 var checkoutvalue=jQuery.trim(jQuery(".auto_check"+i).val());
+                 var checkwid =   jQuery(".checkwid"+i).val();
+                 if(checkoutvalue=="" && checkwid != 'Any WID')
+                 {     valid=valid+1;
+                       alert("Please enter a checkout page WID");
+                       jQuery(".auto_check"+i).focus();
+                       return false;
+                 }
+                 if(!reg_no.test(checkoutvalue) && checkoutvalue!='')
+                 {     valid=valid+1;
+                       alert("Please enter a valid checkout page WID");
+                       jQuery(".auto_check"+i).focus();
+                       return false;
+                 }
+               
+                 
+            }
+           
+            var rowvaluesSKU=jQuery(".rowvaluesSKU").val();
+            for(var i=0;i<rowvaluesSKU;i++)
+            {
+                 var skuvalue=jQuery.trim(jQuery(".auto_sku"+i).val());
+                 if(skuvalue=="")
+                 {    valid=valid+1;
+                       alert("Please enter SKU");
+                       jQuery(".auto_sku"+i).focus();
+                       return false;
+                 }
+                 if(!reg_sku.test(skuvalue))
+                 {     valid=valid+1;
+                      alert("Please enter the only Alphanumeric _ - : and space for SKU");
+                      jQuery(".auto_sku"+i).focus();
+                      return false;
+                 }
+            }
+           
+            var rowvaluesPayment=jQuery(".rowvaluesPayment").val();
+            for(var i=0;i<rowvaluesPayment;i++)
+            {
+                 var paymentvalue=jQuery.trim(jQuery(".auto_payment"+i).val());
+                 if(paymentvalue=="")
+                 {     valid=valid+1;
+                       alert("Please enter a payment amount");
+                       jQuery(".auto_payment"+i).focus();
+                       return false;
+                 }
+                 if(!reg_amount.test(paymentvalue))
+                 {    valid=valid+1;
+                       alert("Please enter a valid payment amount");
+                       jQuery(".auto_payment"+i).focus();
+                       return false;
+                 }
+                 if(parseFloat(paymentvalue) > 99999999.99){
+                      valid = valid+1;
+                      alert("Amount $ should not be greater than 99,999,999.99");
+                      jQuery(".auto_payment"+i).focus();
+                      return false;
+                 }
+            }
+           
+            var rowvaluesQuestion=jQuery(".rowvaluesQuestion").val();
+            for(var i=0;i<rowvaluesQuestion;i++)
+            {
+                 var question=jQuery.trim(jQuery(".auto_question"+i).val());
+                 if(question=="")
+                 {     valid=valid+1;
+                       alert("Please enter a question");
+                       jQuery(".auto_question"+i).focus();
+                       return false;
+                 }
+                 if(!reg_questiontext.test(question))
+                 {    valid=valid+1;
+                       alert("Please enter a valid question");
+                       jQuery(".auto_question"+i).focus();
+                       return false;
+                 }
+                 var answer=jQuery.trim(jQuery(".auto_answer"+i).val());
+                 if(answer=="")
+                 {     valid=valid+1;
+                       alert("Please enter an answer");
+                       jQuery(".auto_answer"+i).focus();
+                       return false;
+                 }
+                 if(!reg_questiontext.test(answer))
+                 {     valid=valid+1;
+                       alert("Please enter a valid answer");
+                       jQuery(".auto_answer"+i).focus();
+                       return false;
+                 }
+            }
+            var log_archive = jQuery(".log_archive").val();
+            if(!reg_no.test(log_archive))
+                     {    valid=valid+1;
+                          alert("Please enter only days(number)");
+                          jQuery(".log_archive").focus();
+                          return false;
+            }
+            if(parseInt(log_archive)>1095)
+            {
+                          valid=valid+1;
+                          alert("Please enter  lessthan 3 years(1095 days)");
+                          jQuery(".log_archive").focus();
+                          return false;
+            }          
+             var stop_deliver = jQuery(".stop_deliver").val();
+            if(!reg_no.test(stop_deliver))
+                     {    valid=valid+1;
+                          alert("Please enter only number");
+                          jQuery(".stop_deliver").focus();
+                          return false;
+            }
+            if(parseInt(stop_deliver)>10 || parseInt(stop_deliver)<1)
+            {
+                          valid=valid+1;
+                          alert("Please enter a number between 1 to 10");
+                          jQuery(".stop_deliver").focus();
+                          return false;
+            }
+            jQuery(".sendoption input:radio").each(function(){
+                var optionname;     
+                if(jQuery(this).is(':checked')==true)
+                {
+                    optionname=jQuery(this).val();
+                }
+                if(optionname=="delayed")
+                {
+                     var delayed=jQuery(".delayed").val();
+                     if(delayed=="")
+                     {    valid=valid+1;
+                          alert("Please enter the days");
+                          jQuery(".delayed").focus();
+                          return false;
+                     }
+                     if(!reg_no.test(delayed))
+                     {    valid=valid+1;
+                          alert("Please enter only days(number)");
+                          jQuery(".delayed").focus();
+                          return false;
+                     }
+                }
+                if(optionname=="specificdate")
+                {
+                     var specificdate=jQuery(".specificdate").val();
+                     if(specificdate=="")
+                     {    valid=valid+1;
+                          alert("Please enter the date");
+                          jQuery(".specificdate").focus();
+                          return false;
+                     }
+                    /* if(!reg_dob.test(specificdate))
+                     {    valid=valid+1;
+                          alert("Please enter a valid date");
+                          jQuery(".specificdate").focus();
+                          return false;
+                     }*/
+                }
+           
+            }) 
+           var emaildata=jQuery.trim(jQuery(".bcc_email").val());
+           if(emaildata!='')
+           {
+            var emailsdata=jQuery(".bcc_email").val().split(';'); 
+             for(var i=0;i<emailsdata.length;i++)
+             {
+                   if(!reg_email.test(emailsdata[i]))
+                   {
+                        valid=valid+1;
+                        alert("Please Enter the Valid Email ids");
+                        jQuery(".bcc_email").focus();
+                        return false;
+                   }
+             }
+           } 
+                                                     
+       if(valid==0)
+       {
+          processstart();
+          saveautoresponcesetting();  
+           return true;
+       }else{
+           return false;
+       }
+       
+      
+ } 
+ 
+ function addItemQuestionProcess(){
+     processstart();
+     addItemQuestion();
+}
+
+function addItemPaymentProcess(){
+     processstart();
+     addItemPayment();
+}
+
+function addItemSKUProcess(){
+     processstart();
+     addItemSKU();
+}
+
+function addItemCheckoutProcess(){
+     processstart();
+     addItemCheckout();
+}
+function addItemCampaignProcess(){
+     processstart();
+     addItemCampaign();
+}
+ function CreditOptions()
+ {
+      var Credit_card=jQuery(".Credit_card").is(':checked');
+      if(Credit_card==true)
+      {
+            jQuery(".CreditCardOptions").attr('style','display:block;position:relative;left:30px;');
+      }
+      if(Credit_card==false)
+      {
+            jQuery(".CreditCardOptions").attr('style','display:none');
+                                                        
+      }
+ } 
+ 
+ function Cancel_AutoResponder(){
+     processstart();
+     Cancel_AutoResponderaction();
+ }
+</script>     
+           
+   <apex:form >
+     
+                <div class="padding_5" style="float:right;">
+                <apex:outputLink styleClass="helpLink align_right" rendered="{!subTab['Settings']['AutoResponder'].display=='true'}"   >
+                  <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo7]').css('display','block');" />
+                  <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo7]').css('display','block');" style="display:inline;" />
+                </apex:outputLink>
+                <apex:outputPanel id="Foo7" styleClass="video"  >
+                  <ul style="padding-left:5px;" >
+                    {!subTab['Settings']['AutoResponder'].description}
+                    <br/>
+                    <apex:outputpanel rendered="{!subTab['Settings']['AutoResponder'].ActiveLink=='true'}" >
+                      <li> <a href="{!subTab['Settings']['AutoResponder'].link}" target="_blank" >{!subTab['Settings']['AutoResponder'].strlink}</a> <br/>
+                      </li>
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!subTab['Settings']['AutoResponder'].ActiveVideo=='true'}" >
+                      <li> <a href="{!subTab['Settings']['AutoResponder'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['AutoResponder'].strvideo}</a> </li>
+                    </apex:outputpanel>
+                  </ul>
+                </apex:outputPanel>
+                </div>
+
+<div id="content-header">
+    <h1><img alt="Autoresponder" title="Autoresponder" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/autoresponder_icon.png" style="display:inline;vertical-align:top;" width="25" /> C&amp;P Autoresponder Setting</h1>                                    
+</div>
+<div class="container-fluid">              
+<apex:pageBlock id="newform" mode="maindetail">
+
+               <apex:pagemessages ></apex:pagemessages>
+               
+                <!-- <div align="center">
+                                      <apex:commandButton action="{!saveautoresponce}" value="Save" styleClass="saveautoresponce" onclick="return Autorespondervalidation();"  />
+                                      <apex:commandButton action="{!Cancel_AutoResponder}" value="Cancel" />
+                             </div>-->
+                             
+                    <apex:actionFunction action="{!saveautoresponce}" name="saveautoresponcesetting" reRender="newform,javascriptload" oncomplete="processcomplete();"/>
+                    <apex:actionFunction action="{!Cancel_AutoResponder}" name="Cancel_AutoResponderaction" reRender="newform,javascriptload" oncomplete="processcomplete();"/>
+                    <apex:actionFunction action="{!addItemCheckout}" name="addItemCheckout" id="addItemCheckout" reRender="RefreshcheckoutBlock" oncomplete="processcomplete();"/>
+                    <apex:actionFunction action="{!addItemSKU}" name="addItemSKU" id="addItemSKU" reRender="RefreshSKUBlock" oncomplete="processcomplete();"/>
+                    <apex:actionFunction action="{!addItemPayment}" name="addItemPayment" id="addItemPayment" reRender="RefreshPaymentBlock" oncomplete="processcomplete();"/>
+                    <apex:actionFunction action="{!addItemQuestion}" name="addItemQuestion" id="addItemQuestion" reRender="RefreshQuestionBlock" oncomplete="processcomplete();"/>
+                    <apex:actionFunction action="{!addItemCampaign}" name="addItemCampaign" id="addItemCampaign" reRender="RefreshcampaignBlock" oncomplete="processcomplete();"/>
+                                   
+                    <apex:actionFunction action="{!delcampaign}" name="delcampaign" id="delcampaign" reRender="RefreshcampaignBlock" status="statusIdForDeleteCampaign" oncomplete="processcomplete();">
+                      <apex:param name="DeleteIdCampaign" value="" assignTo="{!DeleteIdCampaign}"/>
+                      <apex:param name="DeleteFromObjectIdcampaign" value="" assignTo="{!DeleteFromObjectIdcampaign}"/>
+                    </apex:actionFunction>
+                    <apex:actionFunction action="{!delcheckoutWID}" name="delcheckoutWID" id="delcheckoutWID" reRender="RefreshcheckoutBlock" oncomplete="processcomplete();">
+                      <apex:param name="DeleteIdCheckout" value="" assignTo="{!DeleteIdCheckout}"/>
+                      <apex:param name="DeleteFromObjectIdcheckout" value="" assignTo="{!DeleteFromObjectIdcheckout}"/>
+                    </apex:actionFunction>
+                    <apex:actionFunction action="{!delSKU}" name="delSKU" id="delSKU" reRender="RefreshSKUBlock" oncomplete="processcomplete();">
+                      <apex:param name="DeleteIdSKU" value="" assignTo="{!DeleteIdSKU}"/>
+                      <apex:param name="DeleteFromObjectIdSKU" value="" assignTo="{!DeleteFromObjectIdSKU}"/>
+                    </apex:actionFunction>
+                    <apex:actionFunction action="{!delPayment}" name="delPayment" id="delPayment"  reRender="RefreshPaymentBlock" oncomplete="processcomplete();">
+                      <apex:param name="DeleteIdPayment" value="" assignTo="{!DeleteIdPayment}"/>
+                      <apex:param name="DeleteFromObjectIdPayment" value="" assignTo="{!DeleteFromObjectIdPayment}"/>
+                    </apex:actionFunction>
+                                 
+                    <apex:actionFunction action="{!delQuestion}" name="delQuestion" id="delQuestion"  reRender="RefreshQuestionBlock" oncomplete="processcomplete();">
+                      <apex:param name="DeleteIdQuestion" value="" assignTo="{!DeleteIdQuestion}"/>
+                      <apex:param name="DeleteFromObjectIdQuestion" value="" assignTo="{!DeleteFromObjectIdQuestion}"/>
+                    </apex:actionFunction>
+                    
+                    <apex:actionFunction action="{!newform}" id="newform" name="newform" reRender="newform" oncomplete="processcomplete();"/>
+                    <apex:actionFunction action="{!EditResponder}" name="callEditResponder" reRender="newform" oncomplete="processcomplete();">
+                      <apex:param value="" name="AutoResponderId" assignTo="{!AutoResponderId}" />
+                    </apex:actionFunction>
+                    <apex:actionFunction action="{!DeleteResponder}" name="callDeleteResponder" reRender="newform"  oncomplete="processcomplete();">
+                      <apex:param value="" name="AutoResponderDeleteId" assignTo="{!AutoResponderDeleteId}" />
+                    </apex:actionFunction>
+                    <apex:actionFunction action="{!ViewResponder}" name="callViewResponder" reRender="newform" oncomplete="processcomplete();">
+                      <apex:param value="" name="AutoResponderViewId" assignTo="{!AutoResponderViewId}" />
+                    </apex:actionFunction>
+                                                 
+                             
+                                              
+                    <apex:outputPanel rendered="{!IF(new_form==false && view_form==false,true,false)}">
+                    
+                            <div class="btn-block pagination-centered">
+                             
+                            <a class="btn btn-primary" href="javascript:void(0)" onclick="newautoresponder();" ><i class="icon-plus-sign icon-white"></i> New </a>
+                             <!-- <apex:commandButton action="{!newform}" value="New" reRender="newform" onclick="if(!countryprocess()){return false;}" oncomplete="processcomplete();"/>-->
+                            </div>
+                            
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Autoresponder Setting Listing</h5>
+                      </div>
+                      <div class="widget-content">
+                                                  
+                            
+                            <apex:pageblocktable value="{!AutoResponderSettings}" var="auto" styleClass="datatables display table table-bordered table-striped" >
+                                    <apex:column headerValue="Action" style="white-space:nowrap;"><a href="javascript:void(0)" onclick="Edit_Autoresponder('{!auto.Id}')"><i class="icon-edit" /></a> &nbsp;|&nbsp; <a href="javascript:void(0)" onclick="Delete_Autoresponder('{!auto.Id}')"><i class="icon-trash" /></a></apex:column>
+                                    <apex:column headerValue="Responder Name"><a href="javascript:void(0)" onclick="View_Autoresponder('{!auto.Id}')"><apex:outputText value="{!auto.Name}"></apex:outputText></a></apex:column>
+                                    <apex:column headerValue="SMTP Sender"><apex:outputText value="{!if(auto.CnP_PaaS__SMTP_settings__c!=null,auto.CnP_PaaS__SMTP_settings__r.Name,'Salesforce')}" rendered="{!if(auto.CnP_PaaS__Clickandpledge_SMTP__c==null,true,false)}"></apex:outputText><apex:outputText value="{!auto.CnP_PaaS__Clickandpledge_SMTP__c}" rendered="{!if(auto.CnP_PaaS__Clickandpledge_SMTP__c!=null,true,false)}"></apex:outputText></apex:column> 
+                                    <apex:column headerValue="Template Category" ><apex:outputText value="{!auto.CnP_PaaS__CnP_Designer__r.CnP_PaaS__Select_Template_Cat__c}"></apex:outputText></apex:column>  
+                                    <apex:column headerValue="C&P Template Name" style="word-break:break-all;"><apex:outputText value="{!auto.CnP_PaaS__CnP_Designer__r.Name}"></apex:outputText></apex:column>   
+                                    <apex:column headerValue="Payment Status" style="white-space:nowrap;"><apex:outputLabel value="Authorized" rendered="{!auto.CnP_PaaS__Authorized__c}" style="display:inline"></apex:outputLabel><apex:outputLabel value=" / " rendered="{!if(auto.CnP_PaaS__Declined__c==true && auto.CnP_PaaS__Authorized__c==true,true,false)}"  style="display:inline"></apex:outputLabel><apex:outputLabel value="Declined" rendered="{!auto.CnP_PaaS__Declined__c}"  style="display:inline"></apex:outputLabel><apex:outputLabel value=" / " rendered="{!if((auto.CnP_PaaS__Declined__c==true && auto.CnP_PaaS__Authorized__c==true && auto.CnP_PaaS__Pending__c==true)||(auto.CnP_PaaS__Declined__c==true && auto.CnP_PaaS__Pending__c==true)||(auto.CnP_PaaS__Authorized__c==true && auto.CnP_PaaS__Pending__c==true),true,false)}"  style="display:inline"></apex:outputLabel><apex:outputLabel value="Pending" rendered="{!auto.CnP_PaaS__Pending__c}" style="display:inline"></apex:outputLabel></apex:column> 
+                                     <apex:column headerValue="Created Date">
+                                     <apex:outputText value="{0,date,E MMM d yyyy 'at' HH:mm:ss z}">
+                                         <apex:param value="{!auto.createddate}" />
+                                    </apex:outputText>
+                                    </apex:column>  
+                                     <apex:column headerValue="Responder Status"><apex:outputText value="{!auto.CnP_PaaS__Status__c}"></apex:outputText></apex:column>         
+                           </apex:pageblocktable> 
+                    
+                    
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                    
+                </apex:outputPanel>   
+                 
+                 
+                    <apex:outputPanel >
+                        <!-- Details Page Start Here -->
+                        <apex:outputPanel rendered="{!view_form}">
+                        
+                           <div class="btn-block pagination-centered">
+                                 <a href="javascript:void(0)" onclick="Edit_Autoresponder('{!viewautores.Id}')" class="btn1 btn btn-primary"><apex:outputText value="Edit"></apex:outputText></a>
+                                 <apex:commandButton value="Delete" reRender="newform" styleClass="btn btn-primary" onclick="Delete_Autoresponder('{!viewautores.Id}')"/>
+                                 <apex:commandButton action="{!Cancel_AutoResponder}" styleClass="btn btn-primary" value="Cancel" reRender="newform"/>
+                              </div>
+
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>C&amp;P Autoresponder (On New)</h5>
+                      </div>
+                      <div class="widget-content">  
+                                                 
+                           <apex:pageBlockSection columns="1" collapsible="false"  >                              
+                              <apex:pageBlockSectionItem >
+                                         <apex:outputLabel value="Responder Name"></apex:outputLabel>
+                                         <apex:outputfield value="{!viewautores.Name}" />
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                          <apex:outputLabel value="Tags"></apex:outputLabel>
+                                          <apex:outputField value="{!viewautores.CnP_PaaS__Tags__c}" />                                          
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                          <apex:outputLabel value="C&P Template Name"></apex:outputLabel>
+                                          <apex:outputField value="{!viewautores.CnP_PaaS__CnP_Designer__c}" />                                          
+                                </apex:pageBlockSectionItem>
+ 
+                                <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="SMTP sender"></apex:outputLabel>
+                                            <apex:outputPanel >
+                                                <apex:outputtext value="{!IF(viewautores.CnP_PaaS__SMTP_settings__c!=null,viewautores.CnP_PaaS__SMTP_settings__r.Name,'Salesforce')}" rendered="{!IF(viewautores.CnP_PaaS__Clickandpledge_SMTP__c==null,true,false)}"/>  
+                                                <apex:outputtext value="{!viewautores.CnP_PaaS__Clickandpledge_SMTP__c}" rendered="{!IF(viewautores.CnP_PaaS__Clickandpledge_SMTP__c!=null,true,false)}"/>  
+                                               <!-- <apex:outputfield value="Salesforce" rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c==null,true,false)}"/>-->   
+                                           </apex:outputPanel> 
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem labelstyleclass="normal" rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c!=null,true,false)}">
+                                           <apex:outputLabel value="C&P Account Number"></apex:outputLabel>
+                                            <apex:outputtext value="{!viewautores.CnP_PaaS__CnP_API_Settings__r.Name}"/> 
+                                </apex:pageBlockSectionItem>   
+                                <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Mail To"></apex:outputLabel>
+                                           <apex:outputfield value="{!viewautores.CnP_PaaS__Mail_to__c}"/>                                          
+                                </apex:pageBlockSectionItem>
+                                 <apex:pageBlockSectionItem rendered="{!IF(viewautores.CnP_PaaS__Mail_to__c=='Specific Email',true,false)}">
+                                           <apex:outputLabel value="Recipient"></apex:outputLabel>
+                                           <apex:outputfield value="{!viewautores.CnP_PaaS__Recipient__c}"/>                                          
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c!=null,true,false)}">
+                                           <apex:outputLabel value="Mail From Name"></apex:outputLabel>
+                                            <apex:outputpanel >
+                                           <apex:outputtext value="{!viewautores.CnP_PaaS__Mail_From_Name__c}"  rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c!="" || viewautores.CnP_PaaS__Clickandpledge_SMTP__c=='ClickandPledge',true,false )}" />
+                                               
+                                           <apex:outputLabel value="User name used for remote connection of Click & Pledge and Salesforce" rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c==null,true,false )}"></apex:outputLabel>
+                                           </apex:outputpanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c!=null,true,false)}">
+                                           <apex:outputLabel value="Mail From Address"></apex:outputLabel>
+                                           <apex:outputpanel >
+                                                <apex:outputtext value="{!viewautores.CnP_PaaS__Mail_From_Address__c}" rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c!="" || viewautores.CnP_PaaS__Clickandpledge_SMTP__c=='ClickandPledge',true,false )}" />
+                                               
+                                                <apex:outputLabel value="User e-mail used for remote connection of Click & Pledge and Salesforce" rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c==null,true,false )}"></apex:outputLabel>
+                                           </apex:outputpanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Reply To Address"></apex:outputLabel>
+                                           <apex:outputField value="{!viewautores.CnP_PaaS__Replay_to_Address__c}"/>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Subject"></apex:outputLabel>
+                                           <apex:outputField value="{!viewautores.CnP_PaaS__Subject__c}"/>
+                                </apex:pageBlockSectionItem>
+                                 <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Status"></apex:outputLabel>
+                                           <apex:outputField value="{!viewautores.CnP_PaaS__Status__c}"/>
+                                </apex:pageBlockSectionItem>
+                             </apex:pageBlockSection>
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                             
+                             
+                             
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Send When</h5>
+                      </div>
+                      <div class="widget-content">                              
+                             <apex:pageBlockSection columns="1" collapsible="false">
+                                 <apex:pageBlockSectionItem dataStyleClass="word_break">
+                                          <apex:outputLabel value="C&P Account Number"></apex:outputLabel>
+                                          <apex:outputtext value="{!viewautores.CnP_PaaS__C_P_Account_Names__c}" />                                          
+                                 </apex:pageBlockSectionItem>
+                                 <apex:pageblocksectionItem id="CreditCardItem" >
+                                 <apex:outputLabel value="Payment Method"/>
+                                 <apex:outputpanel styleclass="Stagespayment">                               
+                                        
+                                        <apex:outputLabel value="Credit Card"/><br />
+                                        <apex:outputpanel id="CreditCardOptions">
+                                        <apex:outputpanel styleclass="subStages" style="margin-left: 17px;display: block;">
+                                        <apex:outputField value="{!viewautores.CnP_PaaS__Visa__c}" id="Visa_card" styleclass="Visa_card"/>
+                                        <apex:outputLabel value="Visa"/><br />
+                                        <apex:outputField value="{!viewautores.CnP_PaaS__Master_Card__c}" id="Master_card" StyleClass="Master_card"/>
+                                        <apex:outputLabel value="Master Card"/><br />
+                                        <apex:outputField value="{!viewautores.CnP_PaaS__Discover__c}" id="Discover" StyleClass="Discover"/>
+                                        <apex:outputLabel value="Discover"/><br />
+                                        <apex:outputField value="{!viewautores.CnP_PaaS__American_Express__c}" id="AmericanEx" StyleClass="AmericanEx"/>
+                                        <apex:outputLabel value="American Express"/><br />
+                                        <apex:outputField value="{!viewautores.CnP_PaaS__JCB__c}" id="Jcb" StyleClass="Jcb"/>
+                                        <apex:outputLabel value="JCB"/><br />
+                                        </apex:outputpanel>
+                                        </apex:outputpanel>
+                                        <apex:outputField value="{!viewautores.CnP_PaaS__eCheck__c}" id="e_check" StyleClass="e_check"/>
+                                        <apex:outputLabel value="eCheck"/><br />
+                                        <apex:outputField value="{!viewautores.CnP_PaaS__Invoice__c}" id="InVoice" StyleClass="InVoice"/>
+                                        <apex:outputLabel value="Invoice"/><br />
+                                        <apex:outputField value="{!viewautores.CnP_PaaS__Purchase_Order__c}" id="PurchaseOrder" StyleClass="PurchaseOrder"/>
+                                        <apex:outputLabel value="Purchase Order"/><br />
+                                         <apex:outputField value="{!viewautores.CnP_PaaS__Custom_Payment_Type__c}" id="CustomPayment" StyleClass="CustomPayment"/>
+                                        <apex:outputLabel value="Custom Payment Type"/><br />
+                                         <apex:outputPanel id="custompaymentrender" style="padding-left:20px;">
+                                           <apex:outputPanel rendered="{!viewautores.CnP_PaaS__Custom_Payment_Type__c}">
+                                               <apex:outputLabel value="Name">:</apex:outputLabel>
+                                               <apex:outputText value="{!viewautores.CnP_PaaS__Custom_Payment_Type_Name__c}" style="padding-left:5px;"/>
+                                           </apex:outputPanel>
+                                         </apex:outputPanel>
+                                       </apex:outputpanel>
+                         </apex:pageblocksectionItem> 
+                                 
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="Payment Status"></apex:outputLabel>
+                                            <apex:outputPanel styleclass="Stagespayment">
+                                                  <apex:outputField value="{!viewautores.CnP_PaaS__Authorized__c}" StyleClass="authorized"/>
+                                                  <apex:outputLabel value="Authorized"/><br />
+                                                  <apex:outputField value="{!viewautores.CnP_PaaS__Declined__c}"  StyleClass="declined"/>
+                                                  <apex:outputLabel value="Declined"/><br />
+                                            </apex:outputPanel>
+                                 </apex:pageBlockSectionItem> 
+                                 <apex:pageBlockSectionItem >
+                                               <Apex:outputLabel value="Recurring"></Apex:outputLabel>
+                                                <apex:outputPanel >
+                                                <apex:outputField value="{!viewautores.CnP_PaaS__Recurring__c}"/>
+                                                <br/>
+                                                <apex:outputPanel rendered="{!viewautores.CnP_PaaS__Recurring__c}" style="Padding-left:22px;display: block;">
+                                                          <!--<apex:outputField value="{!viewautores.CnP_PaaS__Indefinite_Recurring__c}"/><apex:outputLabel value="Indefinite Recurring"></apex:outputLabel><br/> -->
+                                                          <apex:outputLabel value="Recurring Type:" style="display:inline"></apex:outputLabel> &nbsp;
+                                                               <apex:outputLabel value="All Recurring" rendered="{!IF(viewautores.CnP_PaaS__Recurring_Type__c=='all-recurring',true,false)}" style="display:inline"></apex:outputLabel>
+                                                               <apex:outputLabel value="Definite Recurring" rendered="{!IF(viewautores.CnP_PaaS__Recurring_Type__c=='definite-recurring',true,false)}" style="display:inline"></apex:outputLabel>
+                                                               <apex:outputLabel value="Indefinite Recurring" rendered="{!IF(viewautores.CnP_PaaS__Recurring_Type__c=='indefinite-recurring',true,false)}" style="display:inline"></apex:outputLabel>
+                                                          <br/>
+                                                          <apex:outputLabel value="Transaction Type:" style="display:inline"></apex:outputLabel> &nbsp;
+                                                               <apex:outputLabel value="Pre-authorization of future recurring" rendered="{!IF(viewautores.CnP_PaaS__Subscription_Installment_type__c=='pre-authorization',true,false)}" style="display:inline"></apex:outputLabel>
+                                                               <apex:outputLabel value="First Installment" rendered="{!IF(viewautores.CnP_PaaS__Subscription_Installment_type__c=='first',true,false)}" style="display:inline"></apex:outputLabel>
+                                                               <apex:outputLabel value="Middle Installments(exclude first and last)" rendered="{!IF(viewautores.CnP_PaaS__Subscription_Installment_type__c=='middle',true,false)}" style="display:inline"></apex:outputLabel>
+                                                               <apex:outputLabel value="Last Installment" rendered="{!IF(viewautores.CnP_PaaS__Subscription_Installment_type__c=='last',true,false)}" style="display:inline"></apex:outputLabel>
+                                                               <apex:outputLabel value="All Installments" rendered="{!IF(viewautores.CnP_PaaS__Subscription_Installment_type__c=='all',true,false)}" style="display:inline"></apex:outputLabel>
+                                                              <!-- <apex:outputField value="{!viewautores.CnP_PaaS__Subscription_Installment_type__c}"/> -->
+                                                </apex:outputPanel>                    
+                                               </apex:outputPanel>
+                                 </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem >
+                                          <Apex:outputLabel value="Future Transaction"></Apex:outputLabel>
+                                          <apex:outputPanel >
+                                                        <apex:outputField value="{!viewautores.CnP_PaaS__Future_Transaction__c}"/><br/>
+                                                        <apex:outputPanel rendered="{!viewautores.CnP_PaaS__Future_Transaction__c}" style="Padding-left:22px;">
+                                                              <apex:outputLabel value="Pre-authorization" rendered="{!IF(viewautores.CnP_PaaS__Future_Transaction_Type__c=='pre-authorization',true,false)}" style="display:inline"></apex:outputLabel>
+                                                              <apex:outputLabel value="Actual Transaction" rendered="{!IF(viewautores.CnP_PaaS__Future_Transaction_Type__c=='actual-transaction',true,false)}" style="display:inline"></apex:outputLabel>
+                                                              <apex:outputLabel value="Either Transaction" rendered="{!IF(viewautores.CnP_PaaS__Future_Transaction_Type__c=='either-transaction',true,false)}" style="display:inline"></apex:outputLabel>
+                                                        </apex:outputPanel>
+                                          </apex:outputPanel>
+                                  </apex:pageBlockSectionItem>
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="Transaction Campaign"></apex:outputLabel>                                            
+                                             <apex:outputPanel > 
+                                                     <apex:outputLabel value="{!viewautores.CnP_PaaS__Campain_Math_Condition__c}"></apex:outputLabel>
+                                                     <apex:dataTable value="{!CampaignList}"  var="item" styleClass="table table-bordered table-striped" style="width:initial;">
+                                                          <apex:column headerValue="Condition">
+                                                                  <apex:outputText value="{!item.CnP_PaaS__Campaign__c}"></apex:outputText>                        
+                                                           </apex:column>
+                                                           <apex:column headerValue="Value">
+                                                             <apex:outputText value="{!item.CnP_PaaS__Campaign_Value__c}"/>
+                                                           </apex:column>
+                                                     </apex:dataTable>
+                                    </apex:outputPanel>     
+                                 </apex:pageBlockSectionItem>  
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="Checkout Page WID"></apex:outputLabel>                                            
+                                             <apex:outputPanel > 
+                                                      <apex:outputLabel value="{!viewautores.CnP_PaaS__WID_Math_Condition__c}"></apex:outputLabel>
+                                                     <apex:dataTable value="{!CheckoutList}"  var="item" styleClass="table table-bordered table-striped" style="width:initial;">
+                                                       <apex:column headerValue="Condition">
+                                                              <apex:outputText value="{!item.CnP_PaaS__Checkout_page_WID__c}"></apex:outputText>                        
+                                                       </apex:column>
+                                                       <apex:column headerValue="Value">
+                                                         <apex:outputText value="{!item.CnP_PaaS__WID_value__c}" />
+                                                       </apex:column>
+                                                    </apex:dataTable>
+                                    </apex:outputPanel>     
+                                 </apex:pageBlockSectionItem>   
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="SKU"></apex:outputLabel>                                            
+                                             <apex:outputPanel > 
+                                                      <apex:outputLabel value="{!viewautores.CnP_PaaS__SKU_Math_Condition__c}"></apex:outputLabel> 
+                                                     <apex:dataTable value="{!SKUList}" var="item" styleClass="table table-bordered table-striped" style="width:initial;">
+                                                       <apex:column headerValue="Condition">
+                                                              <apex:outputText value="{!item.CnP_PaaS__SKU__c}"></apex:outputText>                        
+                                                       </apex:column>
+                                                       <apex:column headerValue="Value">
+                                                         <apex:outputText value="{!item.CnP_PaaS__SKU_Value__c}" />
+                                                       </apex:column>
+                                            </apex:dataTable>
+                                    </apex:outputPanel>     
+                                 </apex:pageBlockSectionItem>   
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="Payment Amount"></apex:outputLabel>                                            
+                                             <apex:outputPanel > 
+                                                      <apex:outputLabel value="{!viewautores.CnP_PaaS__Payment_Math_Condition__c}"></apex:outputLabel>    
+                                                     <apex:dataTable value="{!PaymentList}"  var="item" styleClass="table table-bordered table-striped" style="width:initial;">
+                                                       <apex:column headerValue="Condition">
+                                                              <apex:outputText value="{!item.CnP_PaaS__Payment_Amount__c}"></apex:outputText>                        
+                                                       </apex:column>
+                                                       <apex:column headerValue="Value">                                               
+                                                       <apex:outputText value="{!item.CnP_PaaS__Amount_Value__c}" />
+                                                       </apex:column>
+                                                     </apex:dataTable>
+                                    </apex:outputPanel>     
+                                 </apex:pageBlockSectionItem>   
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="Custom Questions"></apex:outputLabel>                                            
+                                             <apex:outputPanel > 
+                                                     <apex:outputLabel value="{!viewautores.CnP_PaaS__Question_Math_Condition__c}"></apex:outputLabel>   
+                                                     <apex:dataTable value="{!QuestionList}" var="item" styleClass="table table-bordered table-striped" style="width:initial;">
+                                                       <apex:column headerValue="Question">
+                                                              <apex:outputText value="{!item.CnP_PaaS__Question__c}"></apex:outputText>                        
+                                                       </apex:column>
+                                                       <apex:column headerValue="Condition">
+                                                         <apex:outputText value="{!item.CnP_PaaS__Question_Options__c}" />
+                                                       </apex:column>
+                                                       <apex:column headerValue="Answer">
+                                                         <apex:outputText value="{!item.CnP_PaaS__Answer__c}" />
+                                                       </apex:column>
+                                            </apex:dataTable>
+                                    </apex:outputPanel>     
+                                 </apex:pageBlockSectionItem>          
+                              </apex:pageBlockSection>
+                              
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                               
+                              
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Mail Policies</h5>
+                      </div>
+                      <div class="widget-content">                                
+                               <apex:pageBlockSection collapsible="false" columns="1">
+                                        <apex:pageBlockSectionItem >
+                                                  <apex:outputLabel value="Log Retention"></apex:outputLabel>
+                                                  <apex:outputPanel >
+                                                  <apex:outputText style="width:35px;" value="{!viewautores.CnP_PaaS__Log_Archive__c}"  styleClass="log_archive"/>&nbsp;&nbsp; day(s).
+                                                  </apex:outputPanel>
+                                        </apex:pageBlockSectionItem>
+                                        <apex:pageBlockSectionItem >
+                                                  <apex:outputLabel value="Stop delivery after"></apex:outputLabel>
+                                                  <apex:outputPanel >
+                                                  <apex:outputText style="width:35px;" value="{!viewautores.CnP_PaaS__Stop_dele__c}" styleClass="stop_deliver"/>&nbsp;&nbsp;failed attempts.
+                                                  </apex:outputPanel>
+                                        </apex:pageBlockSectionItem>
+                             </apex:pageBlockSection>  
+
+                </div><!-- widget-content -->
+                </div><!-- widget-box --> 
+                                             
+
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Send Option</h5>
+                      </div>
+                      <div class="widget-content">                                                         
+                              <apex:pageBlockSection collapsible="false" columns="1">  
+                                        <apex:pageBlockSectionItem >
+                                                <apex:outputLabel value="Send Option"></apex:outputLabel>  
+                                                <apex:outputText value="{!viewautores.CnP_PaaS__Send_Option__c}"></apex:outputText>
+                                        </apex:pageBlockSectionItem>                                  
+                                        
+                                        <apex:pageBlockSectionItem rendered="{!IF(viewautores.CnP_PaaS__Send_Option__c=='delayed',true,false)}" > 
+                                                 <apex:outputLabel value="Delayed"></apex:outputLabel>
+                                                 <apex:outputPanel >
+                                                          <apex:outputtext value="{!viewautores.CnP_PaaS__Delayed_day__c}" style="width:35px;"/> day &nbsp; at &nbsp;<apex:outputtext value="{!viewautores.CnP_PaaS__hour__c}" style="width:35px;"/>&nbsp; hr.&nbsp;&nbsp; <apex:outputtext value="{!viewautores.CnP_PaaS__minute__c}" style="width:35px;"/> &nbsp;min.
+                                                 </apex:outputPanel>
+                                        </apex:pageBlockSectionItem>
+                                        <apex:pageBlockSectionItem rendered="{!IF(viewautores.CnP_PaaS__Send_Option__c=='specificdate',true,false)}" > 
+                                                 <apex:outputLabel value="On a specific date"></apex:outputLabel> 
+                                                 <apex:outputPanel >
+                                                     <apex:outputText value="{0,date,E MMM d yyyy 'at' HH:mm:ss z}">
+                                                          <apex:param value="{!viewautores.CnP_PaaS__Specific_date_and_time__c}" />
+                                                     </apex:outputText>                           
+                                                </apex:outputPanel>
+                                        </apex:pageBlockSectionItem>
+                                        <apex:outputPanel rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c==null,false,true )}">
+                                            <apex:outputLabel value="Internal Notifications" style="font-weight:bold;"></apex:outputLabel>
+                                        </apex:outputPanel>                                       
+                                       <apex:pageBlockSectionItem rendered="{!IF(viewautores.CnP_PaaS__SMTP_settings__c==null && viewautores.CnP_PaaS__Clickandpledge_SMTP__c==null,false,true )}" > 
+                                                    <apex:outputLabel value="BCC the following email addresses when the message goes out (type email addresses separated by semicolon) "></apex:outputLabel>
+                                                    <apex:outputField value="{!viewautores.CnP_PaaS__BCC_Email_Address__c}"/>                                              
+                                       </apex:pageBlockSectionItem> 
+                             </apex:pageBlockSection>  
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                             
+                             
+                             
+                              <div class="btn-block pagination-centered">
+                                 <a href="javascript:void(0)" onclick="Edit_Autoresponder('{!viewautores.Id}')" class="btn1 btn btn-primary" ><apex:outputText value="Edit"></apex:outputText></a>
+                                 <apex:commandButton value="Delete" reRender="newform" onclick="Delete_Autoresponder('{!viewautores.Id}')" styleClass="btn btn-primary" />
+                                 <apex:commandButton action="{!Cancel_AutoResponder}" value="Cancel" styleClass="btn btn-primary" />
+                              </div>
+                        </apex:outputPanel>                      
+                        
+                        
+                        <!-- End Here -->
+                        
+                        
+                        
+                        <!-- Create Auto Responder Start Here -->
+                        
+                        <apex:outputPanel rendered="{!new_form}">                        
+                         <script>
+                                 jQuery(document).ready( function () {
+                           // checksmtp();
+                          
+                         // jQuery(".cnpapisetting").attr("style","display:none;");
+                          // jQuery(".cnpapisetting").attr("disabled","disabled");
+                          
+                          function checksmtp() {
+                          
+                            smtpval = jQuery(".smtpsender").val() ;
+                            //alert(smtpval);
+                            
+                          if(jQuery(".smtpsender").val() == "salesforce")
+                          {
+                             var cc_bcc = jQuery(".compliancebccemail").val();
+                            
+                             if(cc_bcc=='false')
+                             {
+                                    jQuery('.compliancebccemailenable').attr("style","display:none");
+                                    
+                             }
+                            /*if(cc_bcc=='true'){
+                                  jQuery('.compliancebccemailenable').attr("style","display:tabel-cell;");
+                                  
+                             }*///version 8.3053
+                             
+                             //jQuery(".cnpaccount, .mailfromadd, .mailfrmname").attr("style","display:none;");
+                            // jQuery(".cnpaccount input, .mailfromadd input, .mailfrmname input").attr("disabled","disabled");
+                             jQuery(".cnpaccount").attr("style","display:none;"); // version 8
+                             jQuery(".cnpaccount input").attr("disabled","disabled"); // version 8
+                          }
+                         if(jQuery(".smtpsender").val() != "salesforce")
+                          {
+                             jQuery('.compliancebccemailenable').attr("style","display:tabel-cell;");
+                             //jQuery(".cnpaccount input, .mailfromadd input, .mailfrmname input").removeAttr("disabled");
+                             //jQuery(".cnpaccount, .mailfromadd, .mailfrmname").attr("style","display:tabel-cell;");
+                             jQuery(".cnpaccount input").removeAttr("disabled"); // version 8
+                             jQuery(".cnpaccount").attr("style","display:tabel-cell;"); // version 8
+                             
+                          }
+                             // alert("test");
+                        
+                          }
+                          
+                          function checkmailto(){
+                                mailto = jQuery('.mailto').val();
+                              
+                                if(mailto=='Specific Email')
+                                {
+                                     jQuery(".specific_email input").removeAttr("disabled");
+                                     jQuery(".specific_email").attr("style","display:tabel-cell;");
+                                }
+                                if(mailto=='Payee')
+                                {
+                                     jQuery(".specific_email").attr("style","display:none;");
+                                     jQuery(".specific_email input").attr("disabled","disabled");
+                                }
+                          }
+                          
+                          jQuery(".smtpsender").change( function() {
+                          checksmtp();
+                          });
+                          jQuery(".mailto").change(function(){
+                                checkmailto();
+                          })
+                          checksmtp();
+                          checkmailto();
+                        });
+                         </script>        
+                         
+                         
+                              <!--  <div align="center">
+                                      <apex:commandButton action="{!saveautoresponce}" value="Save" styleClass="saveautoresponce" onclick="return Autorespondervalidation();" />
+                                      <apex:commandButton action="{!Cancel_AutoResponder}" value="Cancel" />
+                             </div>-->
+                             
+                              <div class="btn-block pagination-centered">
+                              <a class="btn btn-primary" href="javascript:void(0)" onclick="Autorespondervalidation();" ><i class="icon-ok icon-white"></i> Save</a>
+                              <a class="btn btn-primary" href="javascript:void(0)" onclick="Cancel_AutoResponder();" ><i class="icon-remove icon-white"></i> Cancel</a>
+                               </div>
+                               
+                             <apex:actionFunction action="{!SMTPType}" name="smtptype" reRender="mailfrommail_render,mailfromname_render">                              
+                             </apex:actionFunction>
+                             
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>C&amp;P Autoresponder (On New)</h5>
+                      </div>
+                      <div class="widget-content"> 
+                                                   
+                            <apex:pageBlockSection columns="1" collapsible="false" id="mailprocess" >
+                                
+                                <apex:pageBlockSectionItem >
+                                         <apex:outputLabel value="Responder Name"></apex:outputLabel>
+                                     <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                                         <apex:inputtext value="{!autores.Name}" styleClass="respondername" size="50" maxlength="80" />
+                                         </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                         <apex:outputLabel value="Tags"></apex:outputLabel>
+                                          <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                         <apex:selectList size="1" value="{!autorestag}" styleClass="autotags">
+                                             <apex:actionSupport event="onchange" reRender="templatesdesing" />
+                                             <apex:selectOption itemLabel="Select" itemValue=""></apex:selectOption>
+                                             <apex:selectOptions value="{!showselectedtags}"></apex:selectOptions>
+                                         </apex:selectList>
+                                         </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                          <apex:outputLabel value="C&P Template Name"></apex:outputLabel>
+                                           <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                          <apex:outputPanel id="templatesdesing">
+                                          <apex:selectlist value="{!autores.CnP_PaaS__CnP_Designer__c}" styleClass="templatedesign"  size="1" style="width:auto">   
+                                            <apex:selectOption itemLabel="Select" itemValue=""></apex:selectOption>          
+                                            <apex:selectOptions value="{!showTemplate}" />
+                                          </apex:selectlist>
+                                          </apex:outputPanel>
+                                          </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                               <!-- <apex:pageBlockSectionItem >
+                                     <apex:outputLabel value="PDF Attachment"></apex:outputLabel>
+                                     <apex:inputfile value="{!myAjenda.body}" filename="{!myAjenda.Name}" styleClass="agenda" /> 
+                                </apex:pageBlockSectionItem>-->
+                                <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="SMTP Sender"></apex:outputLabel>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block">
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                           <apex:selectList size="1" value="{!smtpsender}" styleClass="smtpsender" onchange="smtptype();">
+                                             <!-- <apex:actionSupport event="onchange" reRender="displaysmtpsendgrid,mailprocess"/>-->
+                                               <apex:selectOption itemLabel="Salesforce" itemValue="salesforce"></apex:selectOption>
+                                               <apex:selectOption itemLabel="Click & Pledge" itemValue="ClickandPledge"></apex:selectOption>
+                                               <apex:selectOptions value="{!showSMTP}" />
+                                           </apex:selectList>   
+                                           </apex:outputPanel>                                    
+                                </apex:pageBlockSectionItem>
+                                <!--<apex:outputPanel id="displaysmtpsendgrid" style="padding-left:106px;">-->
+                                    <apex:pageBlockSectionItem labelStyleClass="cnpaccount" dataStyleClass="cnpaccount" ><!-- rendered="{!if(smtpsender!='salesforce',true,false)}" -->
+                                                <apex:outputLabel value="C&P Account Number" /> 
+                                                 <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>             
+                                                <apex:selectList size="1" value="{!autores.CnP_PaaS__CnP_API_Settings__c}" styleClass="cnpapisetting">
+                                                    <apex:selectOption itemLabel="Select" itemvalue=""></apex:selectOption>
+                                                    <apex:selectOptions value="{!showCnPAPI}"></apex:selectOptions>
+                                                </apex:selectList>
+                                                </apex:outputPanel>
+                                    </apex:pageBlockSectionItem>
+                               <!-- </apex:outputPanel> -->           
+                                <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Mail To"></apex:outputLabel>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                            <apex:selectList value="{!autores.CnP_PaaS__Mail_to__c}" styleClass="mailto" size="1">
+                                               <Apex:selectOption itemLabel="Payee" itemvalue="Payee"></Apex:selectOption>
+                                               <Apex:selectOption itemLabel="Specific Email" itemvalue="Specific Email"></Apex:selectOption>
+                                            </apex:selectList>                                            
+                                           </apex:outputPanel>                                        
+                                </apex:pageBlockSectionItem>
+                                 <apex:pageBlockSectionItem labelStyleClass="specific_email" dataStyleClass="specific_email" >                                  
+                                        
+                                            <apex:outputLabel value="Recipient"></apex:outputLabel>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                            <apex:inputtext value="{!autores.CnP_PaaS__Recipient__c}" styleClass="specificemail" size="50" maxlength="100"/>
+                                            </apex:outputPanel>                                         
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem labelStyleClass="mailfrmname" dataStyleClass="mailfrmname" ><!-- rendered="{!if(smtpsender!='salesforce',true,false)}" -->
+                                           <apex:outputLabel value="Mail From Name"></apex:outputLabel>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                           <!-- <apex:inputtext value="{!autores.CnP_PaaS__Mail_From_Name__c}" styleClass="mailfromname" size="50" maxlength="100"/> -->
+                                           <apex:outputPanel id="mailfromname_render">                                             
+                                              <apex:inputtext value="{!autores.CnP_PaaS__Mail_From_Name__c}" rendered="{!IF(smtpsender!='salesforce' && smtpsender=='ClickandPledge',true,false )}" styleClass="mailfromname" size="50" maxlength="100"/>
+                                              <apex:outputtext value="{!autores.CnP_PaaS__Mail_From_Name__c}" rendered="{!IF(smtpsender!='salesforce' && smtpsender!='ClickandPledge',true,false )}" style="margin-left:5px;" />
+                                              <apex:outputLabel value="User name used for remote connection of Click & Pledge and Salesforce" rendered="{!IF(smtpsender=='salesforce' && smtpsender!='ClickandPledge',true,false )}" style="margin-left:5px;"></apex:outputLabel>
+                                           </apex:outputPanel>
+                                           </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem labelStyleClass="mailfromadd" dataStyleClass="mailfromadd" ><!-- rendered="{!if(smtpsender!='salesforce',true,false)}" -->
+                                           <apex:outputLabel value="Mail From Address"></apex:outputLabel>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                           <!-- <apex:inputtext value="{!autores.CnP_PaaS__Mail_From_Address__c}" styleClass="mailfrom" size="50" maxlength="100" /> -->
+                                           <apex:outputPanel id="mailfrommail_render">
+                                                <apex:inputtext value="{!autores.CnP_PaaS__Mail_From_Address__c}" styleClass="mailfrom" size="50" maxlength="100" rendered="{!IF(smtpsender!='salesforce' && smtpsender=='ClickandPledge',true,false )}" />
+                                                <apex:outputText value="{!autores.CnP_PaaS__Mail_From_Address__c}" rendered="{!IF(smtpsender!='salesforce' && smtpsender!='ClickandPledge',true,false )}" style="margin-left:5px;"></apex:outputText>
+                                                <apex:outputLabel value="User e-mail used for remote connection of Click & Pledge and Salesforce" rendered="{!IF(smtpsender=='salesforce' && smtpsender!='ClickandPledge',true,false )}" style="margin-left:5px;"></apex:outputLabel>
+                                           </apex:outputPanel>
+                                           </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Reply To Address"></apex:outputLabel>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                           <apex:inputtext value="{!autores.CnP_PaaS__Replay_to_Address__c}" styleClass="replayto" size="50" maxlength="100"/>
+                                      </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Subject"></apex:outputLabel>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block">
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                           <apex:inputtext value="{!autores.CnP_PaaS__Subject__c}" styleClass="subject" size="80" maxlength="255"/>
+                                           </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                 <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="Responder Status"></apex:outputLabel>
+                                            <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                           <apex:inputField value="{!autores.CnP_PaaS__Status__c}" styleClass="responderstatus"/>
+                                           </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                             </apex:pageBlockSection>
+                             
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                              
+                             
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Send When</h5>
+                      </div>
+                      <div class="widget-content">
+                                                   
+                             <apex:pageBlockSection columns="1" collapsible="false">
+                                  <apex:pageBlockSectionItem >
+                                           <apex:outputLabel value="C&P Account Number"></apex:outputLabel>
+                                           <apex:outputPanel styleClass="requiredInput" layout="block">
+                                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                 <apex:selectList multiselect="true" value="{!multi_accounts}" size="10" styleClass="accountmulti">
+                                                     <apex:selectOptions value="{!CnPAccount}"></apex:selectOptions>
+                                                 </apex:selectList>                                               
+                                           </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                 <apex:pageblocksectionItem id="CreditCardItem" >
+                                 <apex:outputLabel value="(AND) Payment Method"/>
+                                    <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                 <apex:outputpanel styleclass="Stagespayment">                                 
+                                        <apex:inputCheckbox value="{!CreditCard}" id="Credit_card" onchange="CreditOptions();" styleclass="Credit_card">                                        
+                                        </apex:inputCheckbox>
+                                        <apex:outputLabel value="Credit Card"/><br />
+                                        <apex:outputpanel id="CreditCardOptions" styleClass="CreditCardOptions">
+                                        <apex:outputpanel styleclass="subStages">
+                                        <apex:inputCheckbox value="{!autores.CnP_PaaS__Visa__c}" id="Visa_card" styleclass="Visa_card" />
+                                        <apex:outputLabel value="Visa"/><br />
+                                        <apex:inputCheckbox value="{!autores.CnP_PaaS__Master_Card__c}" id="Master_card" StyleClass="Master_card"/>
+                                        <apex:outputLabel value="Master Card"/><br />
+                                        <apex:inputCheckbox value="{!autores.CnP_PaaS__Discover__c}" id="Discover" StyleClass="Discover"/>
+                                        <apex:outputLabel value="Discover"/><br />
+                                        <apex:inputCheckbox value="{!autores.CnP_PaaS__American_Express__c}" id="AmericanEx" StyleClass="AmericanEx"/>
+                                        <apex:outputLabel value="American Express"/><br />
+                                        <apex:inputCheckbox value="{!autores.CnP_PaaS__JCB__c}" id="Jcb" StyleClass="Jcb"/>
+                                        <apex:outputLabel value="JCB"/><br />
+                                        
+                                        </apex:outputpanel>
+                                        </apex:outputpanel>
+                                     
+                                        <apex:inputField value="{!autores.CnP_PaaS__eCheck__c}" id="e_check" StyleClass="e_check"/>
+                                        <apex:outputLabel value="eCheck"/><br />
+                                        <apex:inputField value="{!autores.CnP_PaaS__Invoice__c}" id="InVoice" StyleClass="InVoice"/>
+                                        <apex:outputLabel value="Invoice"/><br />
+                                        <apex:inputField value="{!autores.CnP_PaaS__Purchase_Order__c}" id="PurchaseOrder" StyleClass="PurchaseOrder"/>
+                                        <apex:outputLabel value="Purchase Order"/><br />
+                                        <apex:inputField value="{!autores.CnP_PaaS__Custom_Payment_Type__c}" id="CustomPayment" StyleClass="CustomPayment">
+                                                    <apex:actionSupport event="onclick" reRender="custompaymentrender"/>
+                                        </apex:inputField>
+                                        <apex:outputLabel value="Custom Payment Type"/><br />
+                                         <apex:outputPanel id="custompaymentrender" style="padding-left:20px;">
+                                           <apex:outputPanel rendered="{!autores.CnP_PaaS__Custom_Payment_Type__c}">
+                                               <apex:outputLabel value="Name"></apex:outputLabel>
+                                               <apex:inputText value="{!autores.CnP_PaaS__Custom_Payment_Type_Name__c}"/>
+                                           </apex:outputPanel>
+                                         </apex:outputPanel>
+                                       </apex:outputpanel>
+                                      </apex:outputPanel>
+                         </apex:pageblocksectionItem> 
+                                 
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="(AND) Payment Status"></apex:outputLabel>
+                                    <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                            <apex:outputPanel styleclass="Stagespayment">
+                                                  <apex:inputField value="{!autores.CnP_PaaS__Authorized__c}" StyleClass="authorized"/>
+                                                  <apex:outputLabel value="Authorized"/><br />
+                                                  <apex:inputField value="{!autores.CnP_PaaS__Declined__c}"  StyleClass="declined"/>
+                                                  <apex:outputLabel value="Declined"/><br />
+                                               <!--   <apex:inputField value="{!autores.CnP_PaaS__Pending__c}"  StyleClass="declined"/>
+                                                  <apex:outputLabel value="Pending"/><br />-->
+                                            </apex:outputPanel>
+                                       </apex:outputPanel>    
+                                 </apex:pageBlockSectionItem>  
+                                 <apex:pageBlockSectionItem >
+                                               <Apex:outputLabel value="(AND) Recurring"></Apex:outputLabel>
+                                               <apex:outputPanel >
+                                                   <apex:inputField value="{!autores.CnP_PaaS__Recurring__c}" styleClass="recurringtransaction">
+                                                          <apex:actionSupport event="onclick" reRender="firstinstalment"/>
+                                                   </apex:inputField>
+                                                    <apex:outputPanel id="firstinstalment" styleclass="Stagespayment"> 
+                                                          <apex:outputPanel rendered="{!autores.CnP_PaaS__Recurring__c}"  style="padding-left:20px;">
+                                                                    <!-- <apex:inputField value="{!autores.CnP_PaaS__Indefinite_Recurring__c}" /><apex:outputLabel value="Indefinite Recurring"></apex:outputLabel> -->
+                                                                    <apex:selectRadio layout="pagedirection" value="{!autores.CnP_PaaS__Recurring_Type__c}" >
+                                                                         <apex:selectOption itemLabel="All Recurring" itemValue="all-recurring"></apex:selectOption>
+                                                                         <apex:selectOption itemLabel="Definite Recurring" itemValue="definite-recurring"></apex:selectOption>
+                                                                         <apex:selectOption itemLabel="Indefinite Recurring" itemValue="indefinite-recurring"></apex:selectOption>
+                                                                    </apex:selectRadio>                                                                    
+                                                                    <apex:selectRadio value="{!autores.CnP_PaaS__Subscription_Installment_type__c}" styleClass="recurringtransactiontype subStages" layout="pagedirection" style="padding-left:20px;width:200">
+                                                                        <apex:selectOption itemValue="pre-authorization" itemLabel="Pre-authorization of future recurring"></apex:selectOption>
+                                                                        <apex:selectOption itemValue="first" itemLabel="First Installment"></apex:selectOption>
+                                                                        <apex:selectOption itemValue="middle" itemLabel="Middle Installments(exclude first and last)"></apex:selectOption>
+                                                                        <apex:selectOption itemValue="last" itemLabel="Last Installment"></apex:selectOption>
+                                                                        <apex:selectOption itemValue="all" itemLabel="All Installments"></apex:selectOption>
+                                                                    </apex:selectRadio>
+                                                     </apex:outputPanel>  
+                                                    </apex:outputPanel>
+                                               </apex:outputPanel>
+                                 </apex:pageBlockSectionItem>
+                                 <apex:pageBlockSectionItem >
+                                           <Apex:outputLabel value="(AND) Future Transaction"></Apex:outputLabel>
+                                           <apex:outputPanel >
+                                               <apex:inputField value="{!autores.CnP_PaaS__Future_Transaction__c}" styleClass="futuretransaaction">
+                                                   <apex:actionSupport event="onclick" reRender="futurehandle"/>
+                                               </apex:inputField>
+                                               <apex:outputPanel id="futurehandle" styleclass="Stagespayment">
+                                                           <apex:outputPanel rendered="{!autores.CnP_PaaS__Future_Transaction__c}">
+                                                                <apex:selectRadio value="{!autores.CnP_PaaS__Future_Transaction_Type__c}" styleClass="futuretransaactiontype" layout="pagedirection" style="padding-left:20px;">
+                                                                     <apex:selectOption itemValue="pre-authorization" itemLabel="Pre-authorization"></apex:selectOption>
+                                                                     <apex:selectOption itemLabel="Actual Transaction" itemValue="actual-transaction"></apex:selectOption>
+                                                                     <apex:selectOption itemLabel="Either Transaction" itemValue="either-transaction"></apex:selectOption>
+                                                                </apex:selectRadio>
+                                                           </apex:outputPanel>
+                                               </apex:outputPanel>
+                                           </apex:outputPanel>
+                                 </apex:pageBlockSectionItem>
+                                    <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="(AND) Transaction Campaign"></apex:outputLabel>
+                                             <apex:outputPanel id="RefreshcampaignBlock">  
+                                             <apex:outputLabel value="Condition " rendered="{!if(CampaignListValues.size > 0,true,false)}"> 
+                                                  <apex:selectList value="{!autores.CnP_PaaS__Campain_Math_Condition__c}" size="1" >
+                                                      <apex:selectOptions value="{!MathCondition}"></apex:selectOptions>                                                
+                                                  </apex:selectList>
+                                              </apex:outputLabel>
+                                              
+                                     <apex:variable value="0" var="rowNumCampaign"/>
+                                    
+                                    <apex:dataTable columns="3" value="{!CampaignListValues}" var="item" styleClass="table table-bordered table-striped width_initial">
+                                      <apex:column >
+                                        <apex:selectlist value="{!item.conditions_Campaign}"  size="1" >
+                                          <apex:selectOptions value="{!showCampaignConditions}" />
+                                        </apex:selectlist>
+                                      </apex:column>
+                                      <apex:column >
+                                        <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                        <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                                        <apex:inputText value="{!item.CampaignValue}"  maxlength="80" styleClass="auto_campaign{!rowNumCampaign}">
+                                          <c:PaymentAutoCompleteSettings objecttype="campaign" autocomplete_textbox="auto_campaign{!rowNumCampaign}" autocomplete_id="{!rowNumCampaign}" autocomplete_process="1" />
+                                        </apex:inputText>
+                                        </apex:outputPanel>
+                                          
+                                      </apex:column>
+                                      
+                                      <apex:column >
+                                        <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delcampaign('{!JSENCODE(rowNumCampaign)}','{!JSENCODE(item.RecordIdCampaign)}');"><i class="icon-trash"></i></a></div>
+                                        <!--   <apex:commandButton value="Delete" action="{!delcampaign}"  reRender="RefreshcampaignBlock" status="statusIdForDeleteCampaign">
+                                                                               <apex:param name="contIdParamCheck" value="{!rowNumCampaign}" assignTo="{!DeleteIdCampaign}"/>
+                                                                               <apex:param name="contIdParam1check" value="{!item.RecordIdCampaign}" assignTo="{!DeleteFromObjectIdcampaign}"/>
+                                                                             </apex:commandButton>-->
+                                        <apex:actionstatus id="statusIdForDeleteCampaign" startText="Please wait..">
+                                          <apex:facet name="stop"/>
+                                        </apex:actionstatus>
+                                       <apex:inputHidden value="{!item.RecordIdCampaign}"/>
+                                        <apex:variable var="rowNumCampaign" value="{!VALUE(rowNumCampaign) + 1}"/>
+                                      </apex:column>
+                                        
+                                    </apex:dataTable>
+
+                                    <input type="hidden" value="{!rowNumCampaign}" class="rowvaluesCampaign" name="rowvaluesCampaign"/>                                                                                    
+                                     <!-- <apex:commandButton action="{!addItemCampaign}"  value="Add New" reRender="RefreshcampaignBlock" status="NextRowStatusCampaign" />
+                                        <apex:actionstatus id="NextRowStatusCampaign" startText="Please wait....">                                
+                                            <apex:facet name="stop"/>                                                    
+                                        </apex:actionstatus> -->
+                                         <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0);" onclick="addItemCampaignProcess();"><i class="icon-plus-sign"></i> Add New</a></div> 
+                                    </apex:outputPanel>                                           
+                                 </apex:pageBlockSectionItem>
+                                                                                              
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="(AND) Checkout Page WID"></apex:outputLabel>
+                                             <apex:outputPanel id="RefreshcheckoutBlock">  
+                                             <apex:outputLabel value="Condition " rendered="{!if(CheckoutListValues.size > 0,true,false)}"> 
+                                                  <apex:selectList value="{!autores.CnP_PaaS__WID_Math_Condition__c}" size="1" >
+                                                     <apex:selectOptions value="{!MathCondition}"></apex:selectOptions>                                               
+                                                  </apex:selectList>
+                                              </apex:outputLabel>
+                                              
+                                            <apex:variable value="0" var="rowNumCheckout"/>
+                                           
+                                            <apex:dataTable columns="3" value="{!CheckoutListValues}" var="item" styleClass="table table-bordered table-striped width_initial">
+                                              <apex:column >
+                                                <apex:selectlist value="{!item.conditions_WID}"  size="1" styleclass="checkwid{!rowNumCheckout}" onchange="widchange('{!rowNumCheckout}');">
+                                                  <apex:selectOptions value="{!showCheckoutConditionsWID}" />
+                                                </apex:selectlist>
+                                              </apex:column>
+                                              <apex:column >
+                                                <apex:outputPanel styleClass="requiredInput" layout="block">
+                                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                <apex:inputText value="{!item.WIDValue}"  maxlength="100" styleClass="auto_check{!rowNumCheckout}"/>
+                                                </apex:outputPanel>
+                                              </apex:column>
+                                                <apex:inputHidden value="{!item.RecordIdCheckout}"/>
+                                              <apex:column >
+                                                <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delcheckoutWID('{!JSENCODE(rowNumCheckout)}','{!JSENCODE(item.RecordIdCheckout)}');"><i class="icon-trash"></i></a></div>
+                                                <!-- <apex:commandButton value="Delete" action="{!delcheckoutWID}"  reRender="RefreshcheckoutBlock" status="statusIdForDeleteCheck">
+                                                                                               <apex:param name="contIdParamCheck" value="{!rowNumCheckout}" assignTo="{!DeleteIdCheckout}"/>
+                                                                                               <apex:param name="contIdParam1check" value="{!item.RecordIdCheckout}" assignTo="{!DeleteFromObjectIdcheckout}"/>
+                                                                                             </apex:commandButton>-->
+                                                <apex:actionstatus id="statusIdForDeleteCheck" startText="Please wait..">
+                                                  <apex:facet name="stop"/>
+                                                </apex:actionstatus>
+                                                 <apex:variable var="rowNumCheckout" value="{!VALUE(rowNumCheckout) + 1}"/>
+                                                 </apex:column>
+                                               
+                                            </apex:dataTable>
+                                                                                         
+                                    <input type="hidden" value="{!rowNumCheckout}" class="rowvaluesCheck" name="rowvaluesCheck"/>                                                                                    
+                                     <!-- <apex:commandButton action="{!addItemCheckout}"  value="Add New" reRender="RefreshcheckoutBlock" status="NextRowStatusCheck" />
+                                        <apex:actionstatus id="NextRowStatusCheck" startText="Please wait....">                                
+                                                                        <apex:facet name="stop"/>                                                    
+                                        </apex:actionstatus>  -->
+                                         <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0);" onclick="addItemCheckoutProcess();"><i class="icon-plus-sign"></i> Add New</a></div>
+                                    </apex:outputPanel>                                           
+                                 </apex:pageBlockSectionItem>
+                                 
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="(AND) SKU"></apex:outputLabel>
+                                            <apex:outputPanel id="RefreshSKUBlock">  
+                                            <apex:outputLabel value="Condition " rendered="{!if(SKUListValues.size > 0,true,false)}">
+                                                 <apex:selectList value="{!autores.CnP_PaaS__SKU_Math_Condition__c}" size="1" >
+                                                     <apex:selectOptions value="{!MathCondition}"></apex:selectOptions>                                             
+                                                 </apex:selectList>
+                                            </apex:outputLabel>
+                                              
+                                            <apex:variable value="0" var="rowNumSKU"/>
+                                            
+                                                <apex:dataTable columns="3" value="{!SKUListValues}" var="item" styleClass="table table-bordered table-striped width_initial">
+                                                  <apex:column >
+                                                    <apex:selectlist value="{!item.conditions_SKU}"  size="1">
+                                                      <apex:selectOptions value="{!showSKUConditions}" />
+                                                    </apex:selectlist>
+                                                  </apex:column>
+                                                  <apex:column >
+                                                    <apex:outputPanel styleClass="requiredInput" layout="block">
+                                                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                    <apex:inputText value="{!item.SKUValue}"  maxlength="100" styleClass="auto_sku{!rowNumSKU}"/>
+                                                    </apex:outputPanel>
+                                                  </apex:column>
+                                                    <apex:inputHidden value="{!item.RecordIdSKU}"/>
+                                                  <apex:column >
+                                                    <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delSKU('{!JSENCODE(rowNumSKU)}','{!JSENCODE(item.RecordIdSKU)}');"><i class="icon-trash"></i></a></div>
+                                                    <!-- <apex:commandButton value="Delete" action="{!delSKU}"  reRender="RefreshSKUBlock" status="statusIdForDeleteSKU">
+                                                                                                       <apex:param name="contIdParamSKU" value="{!rowNumSKU}" assignTo="{!DeleteIdSKU}"/>
+                                                                                                       <apex:param name="contIdParam1SKU" value="{!item.RecordIdSKU}" assignTo="{!DeleteFromObjectIdSKU}"/>
+                                                                                                     </apex:commandButton>-->
+                                                    <apex:actionstatus id="statusIdForDeleteSKU" startText="Please wait..">
+                                                      <apex:facet name="stop"/>
+                                                    </apex:actionstatus>
+                                                     <apex:variable var="rowNumSKU" value="{!VALUE(rowNumSKU) + 1}"/>
+                                                     </apex:column>
+                                                   
+                                                </apex:dataTable>
+                                                
+                                                
+                                        <input type="hidden" value="{!rowNumSKU}" class="rowvaluesSKU" name="rowvaluesSKU"/>                                                                                    
+                                         <!-- <apex:commandButton action="{!addItemSKU}"  value="Add New" reRender="RefreshSKUBlock" status="NextRowStatusSKU" />
+                                        <apex:actionstatus id="NextRowStatusSKU" startText="Please wait....">                                
+                                                                        <apex:facet name="stop"/>                                                    
+                                        </apex:actionstatus> -->
+                                         <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0);" onclick="addItemSKUProcess();"><i class="icon-plus-sign"></i> Add New</a></div>    
+                                    </apex:outputPanel>                     
+                                 </apex:pageBlockSectionItem>
+                                 
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="(AND) Payment Amount"></apex:outputLabel>
+                                            <apex:outputPanel id="RefreshPaymentBlock">  
+                                             <apex:outputLabel value="Condition " rendered="{!if(PaymentListValues.size > 0,true,false)}">
+                                                 <apex:selectList value="{!autores.CnP_PaaS__Payment_Math_Condition__c}" size="1" >
+                                                      <apex:selectOptions value="{!MathCondition}"></apex:selectOptions>                                              
+                                                  </apex:selectList>
+                                             </apex:outputLabel>
+                                              
+                                            <apex:variable value="0" var="rowNumPayment"/>
+                                            
+                                            <apex:dataTable columns="3" value="{!PaymentListValues}"  var="item" styleClass="table table-bordered table-striped width_initial">
+                                              <apex:column >
+                                                <apex:selectlist value="{!item.conditions_Payment}"  size="1" style="width:180px">
+                                                  <apex:selectOptions value="{!showPaymentConditions}" />
+                                                </apex:selectlist>
+                                              </apex:column>
+                                              <apex:column >
+                                                <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                <apex:inputText value="{!item.PaymentValue}"  maxlength="11" styleClass="auto_payment{!rowNumPayment}"/>
+                                                </apeX:outputPanel>
+                                              </apex:column>
+                                                <apex:inputHidden value="{!item.RecordIdPayment}"/>
+                                              <apex:column >
+                                                <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delPayment('{!JSENCODE(rowNumPayment)}','{!JSENCODE(item.RecordIdPayment)}');"><i class="icon-trash"></i></a></div>
+                                                <!--  <apex:commandButton value="Delete" action="{!delPayment}"  reRender="RefreshPaymentBlock" status="statusIdForDeletePayment">
+                                                                                               <apex:param name="contIdParamPayment" value="{!rowNumPayment}" assignTo="{!DeleteIdPayment}"/>
+                                                                                               <apex:param name="contIdParam1Payment" value="{!item.RecordIdPayment}" assignTo="{!DeleteFromObjectIdPayment}"/>
+                                                                                             </apex:commandButton>-->
+                                            
+                                                <apex:actionstatus id="statusIdForDeletePayment" startText="Please wait..">
+                                                  <apex:facet name="stop"/>
+                                                </apex:actionstatus>
+                                                 <apex:variable var="rowNumPayment" value="{!VALUE(rowNumPayment) + 1}"/>
+                                                 </apex:column>
+                                               
+                                            </apex:dataTable>
+ 
+                                            
+                                    <input type="hidden" value="{!rowNumPayment}" class="rowvaluesPayment" name="rowvaluesPayment"/>                                                                                    
+                                     <!-- <apex:commandButton action="{!addItemPayment}"  value="Add New" style="margin-left:50px;" reRender="RefreshPaymentBlock" status="NextRowStatusPayment" />
+                                        <apex:actionstatus id="NextRowStatusPayment" startText="Please wait....">                                
+                                                                        <apex:facet name="stop"/>                                                    
+                                        </apex:actionstatus> -->
+                                        <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0);" onclick="addItemPaymentProcess();"><i class="icon-plus-sign"></i> Add New</a></div>  
+                                    </apex:outputPanel>             
+                                 </apex:pageBlockSectionItem>
+                                 
+                                 <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="(AND) Custom Questions"></apex:outputLabel>
+                                            <apex:outputPanel id="RefreshQuestionBlock">  
+                                            <apex:outputLabel value="Condition " rendered="{!if(QuestionListValues.size > 0,true,false)}">
+                                                  <apex:selectList value="{!autores.CnP_PaaS__Question_Math_Condition__c}" size="1" >
+                                                     <apex:selectOptions value="{!MathCondition}"></apex:selectOptions>                                              
+                                                  </apex:selectList>
+                                             </apex:outputLabel>
+                                            <apex:variable value="0" var="rowNumQuestion"/>
+                                            
+                                                <apex:dataTable columns="5" value="{!QuestionListValues}"  var="item" styleClass="table table-bordered table-striped width_initial">
+                                                  <apex:column headerValue="" width="110">
+                                                    <apex:outputText value="The answer to"/>
+                                                  </apex:column>
+                                                  <apex:column headerValue="Question">
+                                                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                                    <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                                                    <apex:inputText value="{!item.Question}"  maxlength="200" styleClass="auto_question{!rowNumQuestion}"/>
+                                                    </apex:outputPanel>
+                                                  </apex:column>
+                                                  <apex:column width="110">
+                                                    <apex:selectlist value="{!item.conditions_Question}"  size="1">
+                                                      <apex:selectOptions value="{!showQuestionConditionsAutoRes}" />
+                                                    </apex:selectlist>
+                                                     </apex:column>
+                                                  <apex:column headerValue="Answer">
+                                                    <apex:outputPanel styleClass="requiredInput" layout="block" >
+                                                    <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                    <apex:inputText value="{!item.Answer}"  maxlength="255" styleClass="auto_answer{!rowNumQuestion}"/>
+                                                    </apex:outputPanel>
+                                                  </apex:column>
+                                                    <apex:inputHidden value="{!item.RecordIdQuestion}"/>
+                                                  <apex:column headerValue=" ">
+                                                    <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delQuestion('{!JSENCODE(rowNumQuestion)}','{!JSENCODE(item.RecordIdQuestion)}');"><i class="icon-trash"></i></a></div>
+                                                    <!--  <apex:commandButton value="Delete" action="{!delQuestion}"  reRender="RefreshQuestionBlock" status="statusIdForDeleteQuestion">
+                                                                                                       <apex:param name="contIdParamQuestion" value="{!rowNumQuestion}" assignTo="{!DeleteIdQuestion}"/>
+                                                                                                       <apex:param name="contIdParam1Question" value="{!item.RecordIdQuestion}" assignTo="{!DeleteFromObjectIdQuestion}"/>
+                                                                                                     </apex:commandButton>-->
+                                                    <apex:actionstatus id="statusIdForDeleteQuestion" startText="Please wait..">
+                                                      <apex:facet name="stop"/>
+                                                    </apex:actionstatus>
+                                                     <apex:variable var="rowNumQuestion" value="{!VALUE(rowNumQuestion) + 1}"/>
+                                                     </apex:column>
+                                                   
+                                                </apex:dataTable>
+
+                                    
+                                    <input type="hidden" value="{!rowNumQuestion}" class="rowvaluesQuestion" name="rowvaluesQuestion"/>                                                                                    
+                                    <!--  <apex:commandButton action="{!addItemQuestion}"  value="Add New" reRender="RefreshQuestionBlock" status="NextRowStatusQuestion" />
+                                        <apex:actionstatus id="NextRowStatusQuestion" startText="Please wait....">                                
+                                                                        <apex:facet name="stop"/>                                                    
+                                        </apex:actionstatus> -->
+                                         <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0);" onclick="addItemQuestionProcess();"><i class="icon-plus-sign"></i> Add New</a></div> 
+                                    </apex:outputPanel>       
+                                 </apex:pageBlockSectionItem>                                 
+                             </apex:pageBlockSection>
+                             
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                              
+                             
+                             
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Mail Policies</h5>
+                      </div>
+                      <div class="widget-content">                             
+                             <apex:pageBlockSection collapsible="false" columns="1">
+                                        <apex:pageBlockSectionItem >
+                                                  <apex:outputLabel value="Log Retention"></apex:outputLabel>
+                                                   <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                  <apex:outputPanel >
+                                                  <apex:inputText style="width:35px;" value="{!autores.CnP_PaaS__Log_Archive__c}" maxlength="4" styleClass="log_archive"/>&nbsp;&nbsp; day(s).
+                                                  </apex:outputPanel>
+                                                  </apex:outputPanel>
+                                        </apex:pageBlockSectionItem>
+                                        <apex:pageBlockSectionItem >
+                                                  <apex:outputLabel value="Stop delivery after"></apex:outputLabel>
+                                                   <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                     <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                                  <apex:outputPanel >
+                                                  <apex:inputText style="width:35px;" value="{!autores.CnP_PaaS__Stop_dele__c}" maxlength="2" styleClass="stop_deliver"/>&nbsp;&nbsp; failed attempts.
+                                                  </apex:outputPanel>
+                                                  </apex:outputPanel>
+                                        </apex:pageBlockSectionItem>
+                             </apex:pageBlockSection>
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                             
+                             
+
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Send Option</h5>
+                      </div>
+                      <div class="widget-content">                             
+                             <apex:pageBlockSection collapsible="false" columns="1" >                                   
+                                        <apex:selectRadio value="{!sendoption}" styleClass="sendoption">
+                                           <apex:actionSupport event="onchange" reRender="selectoption"/>
+                                            <apex:selectOption itemLabel="Immediately" itemValue="immediately" ></apex:selectOption>
+                                            <apex:selectOption itemLabel="Delayed" itemValue="delayed"></apex:selectOption>
+                                            <apex:selectOption itemLabel="On a specific date & time" itemValue="specificdate"></apex:selectOption>
+                                        </apex:selectRadio>
+                             </apex:pageBlockSection>
+                             <apex:pageBlockSection collapsible="true" columns="1" > 
+                                        <apex:pageBlockSectionItem >             
+                                        <apex:outputPanel id="selectoption" style="margin-left:75px;">                                               
+                                               <apex:outputPanel rendered="{!IF(sendoption=='delayed',true,false)}">
+                                                          Send Message &nbsp;&nbsp;<apex:inputtext value="{!autores.CnP_PaaS__Delayed_day__c}" maxlength="4" styleClass="delayed" style="width:35px;"/>&nbsp;&nbsp; day(s) after transaction at &nbsp;&nbsp;
+                                                          <apex:selectList size="1" value="{!autores.CnP_PaaS__hour__c}" >
+                                                              <apex:selectOptions value="{!hour}"></apex:selectOptions>                                                     
+                                                                                                                      
+                                                          </apex:selectList>&nbsp;&nbsp;  hr. and &nbsp;&nbsp; 
+                                                          <apex:selectList size="1" value="{!autores.CnP_PaaS__minute__c}">
+                                                              <apex:selectOptions value="{!minute}"></apex:selectOptions>
+                                                          </apex:selectList>&nbsp;&nbsp;  min.
+                                               </apex:outputPanel>
+                                               <apex:outputPanel rendered="{!IF(sendoption=='specificdate',true,false)}">
+                                                          Date &nbsp;&nbsp;<apex:inputField value="{!autores.CnP_PaaS__Specific_date_and_time__c}" styleClass="specificdate"/> 
+                                               </apex:outputPanel>
+                                        </apex:outputPanel>
+                                        </apex:pageBlockSectionItem>
+                                        <apex:pageBlockSectionItem labelStyleClass="compliancebccemailenable" dataStyleClass="compliancebccemailenable" >
+                                              <apex:outputPanel >
+                                               <apex:outputLabel value="Internal Notifications" style="font-weight:bold;"></apex:outputLabel>
+                                               <input type="hidden" class="compliancebccemail" value="{!ComplianceBccEmail}"/>
+                                               </apex:outputPanel> 
+                                       </apex:pageBlockSectionItem> 
+                                       <apex:pageBlockSectionItem labelStyleClass="compliancebccemailenable" dataStyleClass="compliancebccemailenable" > 
+                                               
+                                                    <apex:outputLabel value="BCC the following email addresses when the message goes out (type email addresses separated by semicolon) "></apex:outputLabel>
+                                                    <apex:inputtextarea value="{!autores.CnP_PaaS__BCC_Email_Address__c}" rows="5" cols="50" styleClass="bcc_email" onkeypress="return imposeMaxLength(event, this, 255);" onkeyup="return imposeMaxLength(event, this, 255);"/>
+                                                   
+                                        </apex:pageBlockSectionItem>
+                             </apex:pageBlockSection>
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                              
+                             
+                             
+                          <!--   <div align="center">
+                                      <apex:commandButton action="{!saveautoresponce}" value="Save" styleClass="saveautoresponce" onclick="return Autorespondervalidation();"  />
+                                      <apex:commandButton action="{!Cancel_AutoResponder}" value="Cancel" />
+                             </div>-->
+                             
+                             
+                           <div class="btn-block pagination-centered">
+                              <a class="btn btn-primary" href="javascript:void(0)" onclick="Autorespondervalidation();" ><i class="icon-ok icon-white"></i> Save</a>
+                              <a class="btn btn-primary" href="javascript:void(0)" onclick="Cancel_AutoResponder();" ><i class="icon-remove icon-white"></i> Cancel</a>
+                           </div> 
+                           
+                        </apex:outputPanel>
+                         <!-- End Here -->
+                    </apex:outputPanel>
+                    
+</apex:pageBlock>   
+             <apex:outputPanel id="javascriptload">
+                 <script>
+                     $(document).ready(function(){
+                           $('.datatables').dataTable({
+                                "bJQueryUI": true,
+                                "iDisplayLength"    : 25, 
+                                aoColumnDefs: [
+                                  { aTargets: [0], bSortable: true}] 
+                            });
+                     })
+                 </script>
+             </apex:outputPanel>
+    
+</div>    
+</apex:form>   
+
+</apex:page>

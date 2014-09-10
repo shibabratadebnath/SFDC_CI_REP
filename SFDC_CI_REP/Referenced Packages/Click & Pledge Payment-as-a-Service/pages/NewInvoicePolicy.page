@@ -1,0 +1,1869 @@
+<apex:page standardcontroller="CnP_PaaS__Invoice_Policy__c" extensions="CnP_PaaS.InvoicePolicycontroller"  action="{!loadhelpcontent}">
+ <script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script>
+<!-- <apex:includeScript value="{!URLFOR($Resource.jquery)}"/> -->
+ <!-- <script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script> -->
+<!--<link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/bootstrap.min.css"/>
+                     <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/bootstrap-responsive.min.css"/>
+                     <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/main.css"/>
+                     <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/grey.css"/>-->
+<style>
+.items {
+    font-size:13px;
+    color:#000;
+    width: 850px;
+    text-align: left;
+    border-collapse: collapse;a
+    box-shadow: 0 0 5px #CCC;
+    border: 1px solid #666;
+  }
+.items thead {
+     background:#999;
+}
+.items th {
+        font-size: 12px;
+        background:#999;
+        background-repeat:repeat-x;
+        padding:6px 6px 0px 6px;
+        font-weight:600;
+        color:#FFF;
+}
+.items td {
+    padding:10px 10px 0px 10px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #CCC;
+    color:#666;
+}
+.items tbody td {
+  height:20px;
+  padding-bottom:2px;
+
+}
+.items .requiredInput .requiredBlock{
+  bottom:1px;
+}
+.items .btn {
+ padding:0px;
+}
+</style>
+<script type="text/javascript">
+// jQuery=$.noConflict();
+function DynamicDatePicker(d_id){
+    DatePicker.pickDate(false,d_id.id,false);
+}
+function invoice(){
+   var condition = 0;
+    var reg_name=/^([a-zA-Z0-9\.\,\#\&\-\'\ ])+$/;
+    var name = jQuery.trim(jQuery(".name").val());
+    var quantity = jQuery.trim(jQuery(".quantity").val());
+    var invoicesubject=jQuery.trim(jQuery(".invoicesubject").val());
+    var regqty  = /^([0-9])+$/;
+    //var status = jQuery(".status").is(':selected');   
+    var selectemailtemplate = jQuery.trim(jQuery(".selectemailtemplate").val());
+    var selectwebtemplate = jQuery.trim(jQuery(".selectwebtemplate").val());
+    if(name==''){
+        condition=1;
+        alert("Enter a Name");
+       jQuery(".name").focus();
+       return false;
+    }
+    else if(name!='' && !reg_name.test(name)){
+        condition=1;
+       alert("Enter a Valid Name");   
+       jQuery(".name").focus();
+       return false;
+    }
+    if(quantity==''){
+      condition=1;
+      alert("Enter Net Days");
+      jQuery(".quantity").focus();
+      return false;
+    }
+    else if((quantity!='' && parseInt(quantity)<=0) || (quantity != '' && !regqty.test(quantity))){
+        condition=1;
+        alert("Please Enter integer values only in Net days");
+        jQuery(".quantity").focus();
+        return false;
+ 
+    }
+   if(invoicesubject==''){
+        condition=1;
+        alert("Enter Subject");
+       jQuery(".invoicesubject").focus();
+       return false;
+    }
+  /*  else if(invoicesubject!='' && !reg_name.test(invoicesubject)){
+        condition=1;
+       alert("Enter a Valid Subject");   
+       jQuery(".invoicesubject").focus();
+       return false;
+    }*/
+    if(selectemailtemplate =='' ){
+        condition = 1;
+        alert("Please Select Email Template");
+        jQuery(".selectemailtemplate").focus();
+        return false;
+    }
+    
+    if(selectwebtemplate == ''){
+        condition = 1;
+        alert("Please Select Web Template");
+        jQuery(".selectwebtemplate").focus();
+        return false;
+    }
+    
+    
+    var rowNumval = jQuery(".rowvalues4").val();
+
+
+    for(var i=0;i<rowNumval;i++){
+     var senddays =  jQuery(".senddays"+i).val();
+        if((senddays!='' && parseInt(senddays)<0) || (senddays!= '' && !regqty.test(senddays))){
+            condition=1;
+            alert("Please Enter integer values only in Sent days");
+            jQuery(".senddays"+i).focus();
+            return false;
+     }
+    }
+ 
+    var re;    
+     jQuery(".alert").each(function(){
+         re = jQuery(this).attr("checked");
+     });   
+
+     if(re == 'checked'){         
+         var emaildays = $(".emaildays").val();
+         var sendto = $(".sendto").val();
+      //   var reg_email = /^([A-Za-z0-9_\+\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+         var reg_email = /^([A-Za-z0-9_\-\+\&\.\!\#\$\%\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9\-\.])+\.([A-Za-z]{2,4})$/; // remove ; and _ adding &
+         var seloption = $(".seloption").val();
+         var alertsubject=trim($(".alertsubject").val());
+          if(emaildays==''){
+             condition = 1;
+             alert("Enter no. of days");
+             $(".emaildays").focus();
+             return false;
+         }
+         if(isNaN(emaildays)){
+             condition = 1;
+             alert("Enter Numbers Only");
+             $(".emaildays").focus();
+             return false;
+         }
+         if(sendto =='' ){
+             condition = 1;
+             alert("Enter a Valid Email Address");
+             $(".sendto").focus();
+             return false;
+         }
+         if(sendto !='' && !reg_email.test(sendto) ){        
+             condition = 1;
+             alert("Enter a Valid Email Address");
+             $(".sendto").focus();
+             return false;
+         }
+         if(alertsubject=='' ){        
+             condition = 1;
+             alert("Enter Subject");
+             $(".alertsubject").focus();
+             return false;
+         }
+        /* if(alertsubject!='' && !reg_name.test(alertsubject) ){        
+             condition = 1;
+             alert("Enter a Valid subject");
+             $(".alertsubject").focus();
+             return false;
+         }*/
+        if(seloption == ''){
+             condition = 1;
+             alert("Select a value for Invoice due date");
+             $(".seloption").focus();
+             return false;
+         }
+         
+     } 
+     
+     /**************Additional Payment *****************/
+       var addpayment;
+     jQuery(".addpayment").each(function(){
+         addpayment= jQuery(this).attr("checked");
+     });
+     if(addpayment == 'checked'){
+        var rowvalues3= $(".rowvalues3").val();
+        for(var i=0;i<rowvalues3;i++){
+            var paymentname = $.trim($(".paymentname"+i).val());
+             if(paymentname == ''){
+                condition=1;
+                alert("Please save a record when additional payment is allowed");
+                $(".paymentname"+i).focus();
+                return false;
+             }
+        } 
+     }
+     
+     
+     
+     
+     
+     
+     
+   /*****************Additional Payment Ends ***************/  
+     
+     var allowpartial;
+     jQuery(".partialpay").each(function(){
+         allowpartial = jQuery(this).attr("checked");
+     });
+     if(allowpartial == 'checked'){
+      var enddate = jQuery(".enddate").val();
+     var period = jQuery.trim(jQuery(".period").val());
+        var partialamount = $(".partialAmount").val();
+        var reg_num = /^([0-9])+\.[0-9]+$/;
+
+        var twoweek = $(".twoweek").is(':checked');
+        var month = $(".month").is(':checked');
+        var twomonth = $(".twomonth").is(':checked');
+        var quarter = $(".quarter").is(':checked');
+        var sixmonth = $(".sixmonth").is(':checked');
+        var year = $(".year").is(':checked');
+       
+        if(partialamount == '' || partialamount==0.0 || partialamount==0){
+            condition=1;
+            alert("Enter a value in Amount & should be greater than '0'");
+            $(".partialAmount").focus();
+            return false;
+        }else if(partialamount !='' && (!reg_num.test(partialamount) && isNaN(partialamount))){
+            condition=1;
+            alert("Enter only Numbers in Amount Field");
+            $(".partialAmount").focus();
+            return false;
+        }
+        
+        if(period == '' && enddate ==''){
+         condition=1;
+         $(".period").focus();
+         alert("Please select either Period or Enddate");
+         return false;
+       }
+        if(twoweek == false && month==false && twomonth==false && quarter==false && sixmonth==false && year==false){
+             condition=1;
+            alert("Select atleast one value to repeat");
+            $(".twoweek").focus();
+            return false;
+        }
+     }
+          
+          var Creditcard =$(".Credit_card").is(':checked');
+          var Visa=$(".visa").is(':checked');
+           
+          var master=$(".master").is(':checked');
+          var Discover=$(".Discover").is(':checked');
+          var AmericanEx=$(".AmericanEx").is(':checked');
+          var echeck=$(".echeck").is(':checked');
+          var custom=$(".cuspay").is(':checked');
+          var PurchaseOrder=$(".po").is(':checked');
+
+          if(Creditcard ==false && PurchaseOrder==false && echeck==false && custom==false){
+           condition=1;
+              alert("Please select payment options");
+                      $(".Credit_card").focus();
+                      return false; 
+          }
+
+         /*  if(Creditcard==true){
+
+         
+              if(Visa==false && master==false && AmericanEx==false && Discover==false){
+                      condition=1;
+                       alert("Please select Credit Card options");
+                      $(".Credit_card").focus();
+                      return false; 
+              
+              }          
+          }*/
+          
+       /****************Custom payment name **************/
+        var rowCustom      = $(".rowCustom").val();
+     var reg_cusname=/^([a-zA-Z0-9\.\,\#\-\'\ ])+$/;
+     
+     for(var i=0;i<rowCustom;i++){
+        var cuspaymentname = $.trim($(".cuspaymentname"+i).val());
+         if(cuspaymentname == ''){
+              alert("Please Enter data in Custom Payment Name");
+                      $(".cuspaymentname"+i).focus();
+                      return false;
+        
+     
+     }
+        if(cuspaymentname !="" &&!reg_cusname.test(cuspaymentname)){
+              alert("Please Enter valid data in Custom Payment Name");
+                      $(".cuspaymentname"+i).focus();
+                      return false;
+      } else if(cuspaymentname!="" && cuspaymentname.length >50){
+              alert("Custom Payment Name should not exceed 50 Characters");
+                $(".cuspaymentname"+i).focus();
+                 return false;
+     }
+     }
+        
+/*******************Custom payment name end ***************/
+     var check1 = calculate1();
+     if(check1==false){
+       condition = 1;
+       return false;
+     }
+     
+    var check2 = calculate2();
+     if(check2 == false){
+        condition = 1;
+        return false;
+     }
+    
+     var check3 = calculate3();
+     if(check3 == false){
+        condition = 1;
+        return false;
+     }
+    
+     var check4 = calculate4();
+     if(check4 == false){
+        condition = 1;
+        return false;
+     }
+  
+   //  return false;
+   
+   /****************Opportunity stage(Define New Stage) ***************/
+  
+   var issuedinvoice= jQuery(".issuedinvoice").val();
+   var paidinvoice= $(".paidinvoice").val();
+   var pastinvoice= $(".pastinvoice").val();
+   var declinedinvoice= $(".declinedinvoice").val();
+   
+   if(issuedinvoice=='')
+   {
+     condition=1;
+                       alert("Please select Issued Invoice");
+                     jQuery(".issuedinvoice").focus();
+                      return false; 
+     }
+  if(paidinvoice=='')
+   {
+     condition=1;
+                       alert("Please select Paid Invoice");
+                      $(".paidinvoice").focus();
+                      return false; 
+    }
+   if(pastinvoice=='')
+    {
+     condition=1;
+                       alert("Please select Past Due Invoice");
+                      $(".pastinvoice").focus();
+                      return false; 
+     }
+   if(declinedinvoice=='')
+     {
+      condition=1;
+                       alert("Please select Declined Invoice");
+                      $(".declinedinvoice").focus();
+                      return false; 
+     }
+     
+   
+   /****************Opportunity stage(Define New Stage) End***************/
+   
+   /************SMTP Settings*************/
+   
+  var mailfromname=jQuery.trim(jQuery(".mailfromname").val());
+  var mailfromaddress=jQuery.trim(jQuery(".mailfromaddress").val());
+  var replytoaddress=jQuery.trim(jQuery(".replytoaddress").val());
+  var smtpsender=jQuery.trim(jQuery(".smtpsender").val());
+  
+ //  var reg_email = /^([A-Za-z0-9_\+\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+  var reg_email = /^([A-Za-z0-9_\-\+\&\.\!\#\$\%\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9\-\.])+\.([A-Za-z]{2,4})$/; // remove ; and _ adding &
+  if(smtpsender!='salesforce' && smtpsender=='ClickandPledge')
+  {
+  if(mailfromname=='')
+  {
+  condition=1;
+        alert("Enter a Mail From Name");
+       jQuery(".mailfromname").focus();
+       return false;
+  }
+  else if(mailfromname!='' &&!reg_name.test( mailfromname))
+  {
+  alert("Enter a Valid Mail From Name");
+       jQuery(".mailfromname").focus();
+       return false;
+  }
+  if(mailfromaddress=='')
+  {
+  condition=1;
+        alert("Enter a Mail From Address");
+       jQuery(".mailfromaddress").focus();
+       return false;
+  }
+  else if(mailfromaddress!='' &&!reg_email.test( mailfromaddress))
+  {
+  alert("Enter a Valid Mail From Address");
+       jQuery(".mailfromaddress").focus();
+       return false;
+  }
+  }
+  if(replytoaddress=='')
+  {
+  condition=1;
+        alert("Enter a Reply To Address");
+       jQuery(".replytoaddress").focus();
+       return false;
+  }
+  else if(replytoaddress!='' &&!reg_email.test(replytoaddress))
+  {
+  alert("Enter a Valid Reply To Address");
+       jQuery(".replytoaddress").focus();
+       return false;
+  }
+   
+   /**************SMTP Settings End**********/
+     
+     if(condition == 0){
+        countryprocess();
+        return true;
+     }else{
+        return false;
+     }
+    
+} 
+
+function newinvoicepolicypage(){
+    countryprocess();
+    resetCkEditorsOnLoad();
+    newinvoicepolicy();    
+    return true;
+}
+  function countryprocess(){
+           $("#light1").attr('style','display:block');
+           $("#fade1").attr('style','display:block');
+           return true;
+    }     
+    
+   function processcomplete(){   
+           $("#light1").attr('style','display:none');
+           $("#fade1").attr('style','display:none');           
+    }  
+    function tabhide(){
+     var enddate = $(".enddate").val();
+     var period = $.trim($(".period").val());           
+     if(period != '' && isNaN(period) ){
+         alert("Enter a Number greater than 1 in period");
+         $(".period").focus();
+         return false;
+     } 
+     
+     if(period != '' && !isNaN(period) && period<2){
+         alert("Enter a Number greater than 1 in period");
+         $(".period").focus();
+         return false;
+     } 
+     if(period==''){
+         jQuery(".enddate").attr('disabled',false);
+     }else{
+         jQuery(".enddate").attr('disabled',true);
+     }
+     if(enddate==''){
+         jQuery(".period").attr('disabled',false);
+     }else{
+         jQuery(".period").attr('disabled',true);
+     }
+}
+
+ function calculate1()
+ {
+  var condition=0;
+  var rowvalues1= $(".rowvalues1").val();
+
+for(var i=0;i<rowvalues1;i++)
+ {
+
+ var discounte=trim($(".discount"+i).val());
+ 
+ var amounte=trim($(".amount"+i).val());
+ 
+ var dayse=trim($(".days"+i).val());
+  var reg_dis=/^([0-9.])+$/; 
+   var reg_days=/^([0-9])+$/; 
+ 
+     if(isNaN(discounte)){
+            condition=1;
+           alert("Please Enter a Number in Early Payment Discount %");
+           $(".discount"+i).focus();
+           return false;
+        }else if(discounte!='' && !reg_dis.test(discounte)){
+          condition=1;
+           alert(" Early Payment Discount % must be positive values only");
+           $(".discount"+i).focus();
+           return false;
+         } 
+ if(discounte != '' && (parseFloat(discounte)<0 || parseFloat(discounte)>100)){
+   condition=1;
+           alert("Please Enter Discount % greater than 0 and less than 100");
+           $(".discount"+i).focus();
+           return false;
+ 
+ }
+ 
+ 
+ if(isNaN(amounte)){
+          condition=1;
+           alert("Please Enter a Number in Early Payment Discount ");
+           $(".amount"+i).focus();
+           return false;
+ }
+ if(amounte != '' && (amounte<0 ||amounte<0.0))
+        {
+           condition=1;
+           alert("Please Enter positive values only in Early Payment Discount");
+           $(".amount"+i).focus();
+           return false;
+        } 
+ if(amounte == '' && discounte==''){
+      condition = 1;
+     alert("Enter either % or amount in Early Payment Discount");
+       $(".discount"+i).focus();
+           return false;
+ }  
+ 
+  if(parseFloat(discounte) == 0 && parseFloat(amounte) == 0){
+    condition = 1;
+     alert("Enter either % or amount in Early Payment Discount");
+       $(".discount"+i).focus();
+           return false;
+     
+ }     
+ 
+  /*if(discounte!='' && parseInt(discounte)> 99){ 
+
+         condition = 1;
+         alert("Enter either % value below 100");
+           $(".discount"+i).focus();
+           return false;
+   }*/
+ if(dayse==null || dayse==''){
+     condition = 1;
+     alert('Enter no. of days');
+       $(".days"+i).focus();
+           return false;
+ }
+ 
+ if(dayse!='' && !reg_days.test(dayse))
+  {
+     condition=1;
+           alert("Please Enter integer values only in Early Payment Discount Days");
+           $(".days"+i).focus();
+           return false;
+   }
+   var quantity = $('.quantity').val(); 
+   if(dayse!='' && parseInt(dayse)>parseInt(quantity)){
+           condition =1;
+           alert("Early Payment Discount Days not more than net days");
+           $(".days"+i).focus();
+           return false;
+   }
+
+}
+ if(condition == 0)
+  {
+   //countryprocess();
+    return true;
+  }
+ else
+  {
+    return false;
+  }
+}
+function calculate2()
+{
+var condition=0;
+var rowvalues2 = $(".rowvalues2").val();
+
+for(var i=0;i<rowvalues2;i++)
+{
+
+var latesku=$.trim($(".latesku"+i).val());
+var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+var extrafee=$.trim($(".extrafee"+i).val());
+ var amountlate=$.trim($(".amountlate"+i).val());
+ var dayslate=$.trim($(".dayslate"+i).val());
+ var reg_days=/^([0-9])+$/; 
+ var latecampaign = $.trim($(".latecampaign"+i).val());
+  var latecampaignid = $.trim($(".latecampaignid"+i).val());
+ 
+ // var reg_campaign=/^([a-zA-Z0-9\ ])+$/;
+  if(latesku!='' && !reg_sku.test(latesku)){
+                  condition=1;
+                 alert("Please Enter a valid data (Alphanumerics,-,_,:,space) in SKU ");
+                 $(".latesku"+i).focus();
+                 return false;
+            }
+            if(latecampaign=='')
+            { 
+               latecampaignid = $(".latecampaignid"+i).val('');
+            }
+            latecampaignid =$(".latecampaignid"+i).val();
+  if((latecampaign != '' && latecampaignid == '')|| (latecampaign == '' && latecampaignid != '')){
+     condition=1;
+                 alert("Please Enter proper Campaign");
+                 $(".latecampaign"+i).focus();
+                 return false;
+    }   
+            
+            
+               
+  if(isNaN(extrafee))
+        {
+            condition=1;
+           alert("Please Enter a Number in Rate %");
+           $(".extrafee"+i).focus();
+           return false;
+        } 
+ 
+ if(isNaN(amountlate))
+        {
+           condition=1;
+           alert("Please Enter a Number in Flat Fee");
+           $(".amountlate"+i).focus();
+           return false;
+        } 
+   if(amountlate == '' && extrafee==''){
+      condition = 1;
+      alert("Enter either Rate % or Flat Fee in Late fee Policy");
+      $(".extrafee"+i).focus();     
+      return false;
+ } 
+    
+   if(extrafee!='' && !isNaN(extrafee) && (extrafee > 100 || extrafee <0)){ 
+         condition = 1;
+         alert("Enter either % value below 100 or above 0");
+          $(".extrafee"+i).focus();
+           return false;
+   }
+ if(dayslate==''){
+     condition = 1;
+     alert("Enter no. of days in Late fee Policy");
+     $(".dayslate"+i).focus();
+     return false;
+ }
+ 
+ if(dayslate!='' && !reg_days.test(dayslate))
+  {
+           condition=1;
+           alert("Please Enter integer values only in  Days After Due Date");
+           $(".dayslate"+i).focus();
+           return false;
+   }
+}
+
+ if(condition == 0)
+  {
+ //   countryprocess();
+    return true;
+  }
+ else
+  {
+    return false;
+  }
+ }
+ function DeleteOption(value){    
+     if(value!='0'){
+         $(".deleteoption"+value).show();
+     }
+ }
+ function calculate3()
+{
+var condition=0;
+var rowvalues3= $(".rowvalues3").val();
+
+for(var i=0;i<rowvalues3;i++)
+{
+var paymentname = $.trim($(".paymentname"+i).val());
+var sku =$.trim($(".sku"+i).val());
+var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+var paytax=($(".paytax"+i).val());
+var taxdeductible=($(".taxdeductible"+i).val());
+var reg_name=/^([a-zA-Z0-9\.\,\#\&\-\'\ ])+$/;
+ var campaignadditional  = ($(".campaignadditional"+i).val());
+ var campaignadditionalid= ($(".campaignadditionalid"+i).val());
+ 
+// var reg_campaignadditional=/^([a-zA-Z0-9\ ])+$/;
+
+    if(paymentname == ''){
+        condition=1;
+        alert("Enter a Name for Additional Payment");
+        $(".paymentname"+i).focus();
+        return false;
+    }else if(paymentname !='' && !reg_name.test(paymentname)){
+        condition=1;
+        alert("Enter a Valid Name in additional Payment");
+        $(".paymentname"+i).focus();
+        return false;
+    }
+      if(sku!='' && !reg_sku.test(sku)){
+                  condition=1;
+                 alert("Please Enter a valid data (Alphanumerics,-,_,:,space) in SKU ");
+                 $(".sku"+i).focus();
+                 return false;
+            }    
+
+            
+        if((campaignadditional != '' && campaignadditionalid == '')|| (campaignadditional == '' && campaignadditionalid != '')){
+             condition=1;
+                 alert("Please Enter proper Campaign");
+                 $(".campaignadditional"+i).focus();
+                 return false;
+    }       
+  if(isNaN(paytax))
+        {
+            condition=1;
+           alert("Please Enter a Number  in  Tax %");
+           $(".paytax"+i).focus();
+           return false;
+        }
+        if(paytax!='' && !isNaN(paytax) && (paytax> 100 || paytax<0)){ 
+         condition = 1;
+         alert("Enter either % value below 100 or above 0");
+           $(".paytax"+i).focus();
+           return false;
+   } 
+ 
+ if(isNaN(taxdeductible))
+        {
+           condition=1;
+           alert("Please Enter a Number  in Tax Deductible %");
+           $(".taxdeductible"+i).focus();
+           return false;
+        } 
+ 
+ if(paytax!='' && !isNaN(paytax) && paytax > 100){ 
+          condition = 1;
+          alert("Enter Tax % value less than 100");
+           $(".paytax"+i).focus();
+           return false;
+ }
+ if(taxdeductible!='' && !isNaN(taxdeductible) && (taxdeductible > 100 || taxdeductible <0)){ 
+          condition = 1;
+           alert("Enter Tax Deductible % value less than 100");
+           $(".taxdeductible"+i).focus();
+           return false;
+ }
+ 
+}
+ if(condition == 0)
+  {
+  //  countryprocess();
+    return true;
+  }
+ else
+  {
+    return false;
+  }
+ }
+ function calculate4(){
+     var condition = 0;
+     var rowvalues4 = $(".rowvalues4").val();
+     for(var i=0;i<rowvalues4;i++){
+        var senddays = ($(".senddays"+i).val()); 
+        var template = ($(".template"+i).val());
+        var templatedays = ($(".templatedays"+i).val());
+        var regqty  = /^([0-9])+$/;
+       var remindersubject=trim($(".remindersubject"+i).val());
+       var reg_name=/^([a-zA-Z0-9\.\,\#\&\-\'\ ])+$/;
+        if(template == ''){
+            condition = 1;
+            alert("Enter a Value in Template");
+            $(".template"+i).focus();
+            return false;
+        }
+
+        if((senddays!='' && parseInt(senddays)< 0) || (senddays!= '' && !regqty.test(senddays))){
+            condition=1;
+            alert("Please Enter integer values only in Sent days");
+            jQuery(".senddays"+i).focus();
+            return false;
+     }
+  
+  /*      if(senddays == ''){
+            condition = 1;
+            alert("Enter Only Numbers");
+            $(".senddays"+i).focus();
+            return false;
+        }else if(isNaN(senddays)){
+            condition = 1;
+            alert("Enter Only Numbers");
+            $(".senddays"+i).focus();
+            return false;
+        }*/
+        
+        if(templatedays == ''){
+            condition = 1;
+            alert("Please Select Before/After due date");
+            $(".templatedays"+i).focus();
+            return false;
+        }
+         if(remindersubject== ''){
+            condition = 1;
+            alert("Please Enter Subject");
+            $(".remindersubject"+i).focus();
+            return false;
+        }
+       /* else if(remindersubject!='' && !reg_name.test(remindersubject))
+        {
+          condition = 1;
+            alert("Please Enter Valid Subject");
+            $(".remindersubject"+i).focus();
+            return false;
+        }*/
+     }
+     if(condition == 0){
+       //  countryprocess();
+         return true;
+     }else{
+         return false;
+     }    
+ }
+ function Edit_Invoicepolicy(value){
+      resetCkEditorsOnLoad();
+      countryprocess();      
+      EditInvoice(value); 
+ }
+ 
+ function Delete_Invoicepolicy(value)
+ {
+        if(confirm("Are you sure you want to permanently delete this record?")==true){  
+           countryprocess();
+           DeleteInvoice(value);
+        }         
+ }
+ 
+ function View_Invoicepolicy(value){
+       
+       $('#invoice_policy').addClass('active');
+       $("#create_invoice").removeClass('active');
+       countryprocess();
+       ViewInvoice(value); 
+ }
+ 
+ function Cancelprocess(){    
+    countryprocess();
+    Cancel(); 
+ }
+ 
+ </script>
+ <apex:form > 
+     <!-------------help text content ------->
+ <div width="100%">
+    <div style="float:right">
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['Invoice']['Invoice Policy'].display=='true'}">  
+            <Apex:outputLabel value="C&P Help for this Page" style="margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo]').css('display','block');"/>      
+            <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo]').css('display','block');" />                    
+      </apex:outputLink>
+      <apex:outputPanel id="Foo" styleClass="video"  >   
+        <ul style="padding-left:4px;" > {!subTab['Invoice']['Invoice Policy'].description} <br/> <br/>
+             <Apex:outputPanel rendered="{!subTab['Invoice']['Invoice Policy'].ActiveLink=='true'}">
+               <li><a href="{!subTab['Invoice']['Invoice Policy'].link}" target="_blank" >{!subTab['Invoice']['Invoice Policy'].strlink}</a> <br/></li></Apex:outputPanel>
+             <Apex:outputPanel rendered="{!subTab['Invoice']['Invoice Policy'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['Invoice']['Invoice Policy'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Invoice']['Invoice Policy'].strVideo}</a></li></Apex:outputPanel>
+        </ul>
+      </apex:outputPanel>
+     </div>
+    </div>
+    <!-------------help text content ------->
+    <apex:pageBlock id="invoicepolicy" mode="maindetail">
+              <div id="light1" class="white_content">   
+                <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="width:32px;"  /><br/>               
+              </div>
+
+         <div id="fade1" class="black_overlay"></div>
+ 
+    <div class="row-fluid">
+       <apex:actionFunction action="{!Invoicepolicy_format}" name="Invoicepolicy" reRender="invoicepolicy,JavaScriptBlock,javascripteditor"/>
+       
+       <apex:actionFunction reRender="invoicepolicy" name="EditInvoice" action="{!EditInvoice}" oncomplete="processcomplete();">
+           <apex:param value="" name="invoiceid" assignTo="{!invoiceid}" />
+       </apex:actionFunction>
+       
+       <apex:actionFunction reRender="invoicepolicy,JavaScriptBlock,javascripteditor" name="DeleteInvoice" action="{!DeleteInvoice}" oncomplete="processcomplete();">
+           <apex:param value="" name="deleteinvoicepol" assignTo="{!deleteinvoicepol}" />
+       </apex:actionFunction>
+       <apex:actionFunction name="ViewInvoice" action="{!ViewInvoice}" reRender="invoicepolicy" oncomplete="processcomplete();">
+             <apex:param value="" name="invoiceid" assignTo="{!invoiceid}" />
+       </apex:actionFunction>
+       <apex:actionFunction name="Cancel" action="{!CancelInvoicepolicy}" reRender="invoicepolicy,JavaScriptBlock,javascripteditor" oncomplete="processcomplete();" />
+       <apex:actionFunction name="newinvoicepolicy" action="{!newinvoicepolicy}" reRender="invoicepolicy" oncomplete="processcomplete();"/>
+       
+       <apex:outputPanel rendered="{!IF(newinvoiceboolean==false && viewinvoiceboolean==false,true,false)}">
+       
+            <div class="btn-block pagination-centered">
+               
+                  <a class="btn btn-primary" href="javascript:void(0);" onclick="newinvoicepolicypage();" ><i class="icon-plus-sign icon-white"></i> New</a>
+            </div>
+            
+            <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Invoice Policy List</h5>
+              </div>
+              <div class="widget-content"> 
+
+                <apex:pageBlockTable value="{!invoicepolicylist}" var="inpol" styleClass="datatables detailList"> 
+                          
+                    <apex:column headerValue="Invoice Policy Name"><a href="javascript:void(0)" onclick="View_Invoicepolicy('{!inpol.Id}')"><apex:outputText value="{!inpol.Name}"></apex:outputText></a></apex:column>
+                     <apex:column headerValue="Net Days"><apeX:outputText value="{!inpol.CnP_PaaS__Net__c}"/></apex:column>
+                     <apex:column headerValue="Policy Status"><apeX:outputText value="{!inpol.CnP_PaaS__Policy_Status__c}"/></apex:column>
+                     <apex:column headerValue="Invoice Email Template"><apex:outputLink value="/{!inpol.CnP_PaaS__Email_Template__c}">{!inpol.Email_Template__r.Name}</apex:outputLink> </apex:column>
+                     <apex:column headerValue="Invoice Web Template"><apex:outputLink value="/{!inpol.CnP_PaaS__Web_Template__c}">{!inpol.Web_Template__r.Name}</apex:outputLink></apex:column>
+                     <!--<apex:column headerValue="Transaction Date"><apeX:outputText value="{!inpol.transcation_date__c }"/></apex:column>-->
+                     <apex:column headerValue="Action">
+                         <div class="btn-group"> 
+                                      <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-cog"></i><span class="caret"></span></a>
+                                      <ul class="dropdown-menu">
+                                         <li><a href="javascript:void(0)" onclick="View_Invoicepolicy('{!inpol.Id}')"><i class="icon-list"></i><apex:outputText value="View"></apex:outputText></a></li>
+                                        <!-- <li><a href="javascript:void(0)" onclick="Edit_Invoicepolicy('{!inpol.Id}')"><i class="icon-edit"></i><apex:outputText value="Edit"></apex:outputText></a></li> -->
+                                         <li><a href="javascript:void(0)" onclick="Delete_Invoicepolicy('{!inpol.Id}')"><i class="icon-trash"></i><apex:outputText value="Delete"></apex:outputText></a></li>
+                                      </ul>
+                         </div>   
+                   </apex:column>
+                </apex:pageBlockTable>
+                
+            </div><!-- widget-content -->
+           </div><!-- widget-box -->
+           
+            <div class="btn-block pagination-centered">
+                  <!--<apex:commandButton action="{!newinvoicepolicy}" reRender="invoicepolicy" value="New"/> -->
+                  <a class="btn btn-primary" href="javascript:void(0);" onclick="newinvoicepolicy();" ><i class="icon-plus-sign icon-white"></i> New</a>
+            </div>           
+           
+       </apex:outputPanel> 
+             
+<apex:pageMessages />
+       
+       <!-- Invoice View Details ---------->
+       <apex:outputPanel rendered="{!IF(newinvoiceboolean==false && viewinvoiceboolean==true,true,false)}">
+      
+         <div class="btn-block pagination-centered">                
+                      <a style="display:{!IF(inv_exist==true,'none !important','')}" href="javascript:void(0);" class="btn btn-primary" onclick="Edit_Invoicepolicy('{!viewinvoice.Id}')"> <i class="icon-pencil icon-white"></i> Edit </a>
+                      <a href="javascript:void(0);" class="btn btn-primary" onclick="Delete_Invoicepolicy('{!viewinvoice.Id}')"> <i class="icon-trash icon-white"></i> Delete</a>
+                      <a href="javascript:void(0);" class="btn btn-primary" onclick="Cancelprocess();"> <i class="icon-remove icon-white"></i> Back </a>       
+           </div>
+           
+           <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Invoice Details</h5>
+              </div>
+              <div class="widget-content"> 
+              
+                   <apex:pageblockSection collapsible="false" columns="1" showheader="false">
+                          <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Policy Name" />
+                                <apex:outputText value="{!viewinvoice.Name}"></apex:outputText>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Net"></apex:outputLabel>
+                                <apex:outputPanel >
+                                    <apex:outputText value="{!viewinvoice.CnP_PaaS__Net__c}"></apex:outputText>&nbsp;<apex:outputlabel value="days" /> 
+                                </apex:outputPanel>
+                          </apex:pageBlockSectionItem>
+                           <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Subject"></apex:outputLabel>
+                                <apex:outputText value="{!viewinvoice.CnP_PaaS__Invoice_Subject__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                <apex:outputLabel value="Invoice Email Template"></apex:outputLabel>
+                                   <apex:outputLink value="/{!viewinvoice.CnP_PaaS__Email_Template__c}">{!viewinvoice.Email_Template__r.Name}</apex:outputLink> 
+                               <!-- <apex:outputText value="{!viewinvoice.Email_Template__r.Name}"></apex:outputText>-->
+                          </apex:pageBlockSectionItem>
+                          <apex:pageblockSectionItem >                             
+                                 <apex:outputlabel value="Invoice Web Template"/>
+                                  <apex:outputLink value="/{!viewinvoice.CnP_PaaS__Web_Template__c}">{!viewinvoice.Web_Template__r.Name}</apex:outputLink> 
+                               <!-- <apex:outputText value="{!viewinvoice.Web_Template__r.Name}"></apex:outputText>-->
+                          </apex:pageblockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Policy Status"></apex:outputLabel>
+                                 <apex:outputText value="{!viewinvoice.CnP_PaaS__Policy_Status__c}"></apex:outputText>
+                          </apex:pageBlockSectionItem> 
+                   </apex:pageblockSection>
+
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->           
+           
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Early Payment Discount</h5>
+              </div>
+              <div class="widget-content">
+
+                         <apex:repeat value="{!Earlypaymentvalues}" var="item"  >
+                               <apex:outputlabel value="Early Payment Discount" style="margin-right:5px;display:inline;"></apex:outputlabel>
+                               <apex:outputText value="{!item.Discount}"></apex:outputText><strong>%&nbsp;&nbsp;+&nbsp;$</strong>
+                               <apex:outputText value=""><strong>&nbsp;{!item.Amount} &nbsp;</strong> discount for paying &nbsp;&nbsp;</apex:outputText>
+                               <apex:outputText value="{!item.days}" /> &nbsp;
+                               <apex:outputLabel value="days before due date" style="margin-right:5px;display:inline;"/>  
+                               <br/>                      
+                         </apex:repeat>
+
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->           
+           
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Late Fee Policy</h5>
+              </div>
+              <div class="widget-content">
+
+                            <apex:pageBlockTable value="{!Latefeevalues}" var="item" styleClass="table table-bordered table-hover">
+                                <apex:column headerValue="SKU" value="{!item.latesku}"/>
+                                <apex:column headerValue="Campaign" value="{!item.latecampaign}" />
+                                <apex:column headerValue="Rate (%)" value="{!item.Extrafee}"/>
+                                <apex:column headerValue="Flat Fee ($)" value="{!item.lateamount}"/>
+                                <apex:column headerValue="Days After Due Date" value="{!item.Latedays}"/>
+                            </apex:pageBlockTable>
+
+               </div><!-- widget-content -->
+           </div><!-- widget-box --> 
+                              
+        <div class="widget-box" >
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Additional Payment</h5>
+              </div>
+              <div class="widget-content">
+
+                               <!-- <apex:outputLabel value="Allow for Additional Payment" style="display:inline;"></apex:outputLabel> &nbsp;
+                                <strong><apex:outputText value="{!IF(additionalPaymentVal.size>0,True,False)}" ></apex:outputText></strong>
+                                <br/>-->
+                                <apex:outputLabel value="Allow for Additional Payment" style="display:inline;"/>
+                                <apex:outputField value="{!viewinvoice.CnP_PaaS__Additional_Payment__c}"/>
+                                <apex:pageBlockTable value="{!additionalPaymentVal}" var="item" styleClass="table table-bordered table-hover" rendered="{!IF(viewinvoice.CnP_PaaS__Additional_Payment__c == true,true,false)}">
+                                    <apex:column headerValue="Item Name" value="{!item.payName}"/>
+                                    <apex:column headerValue="SKU" value="{!item.sku}"/>
+                                    <apex:column headerValue="Campaign" value="{!item.campaign}"/>
+                                    <apex:column headerValue="Tax %" value="{!item.payTax}"/>
+                                    <apex:column headerValue="Tax Deductible %" value="{!item.taxdeductible}"/>
+                                </apex:pageBlockTable>
+
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->                    
+
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Payment Policies</h5>
+              </div>
+              <div class="widget-content">
+                                 
+                   <apex:pageBlockSection collapsible="false" columns="2" showHeader="false">
+                          <apex:pageBlockSectionItem dataStyle="width:15%;">
+                               <apex:outputLabel value="Online Options"></apex:outputLabel>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem dataStyle="width:85%;">
+                               <apex:outputPanel >
+                                       <!--<apex:outputLabel value="Credit Card"/>-->
+                                       <apex:outputpanel id="CreditCardOptions" >
+                                                <apex:outputpanel >
+                                                    <Apex:outputField value="{!viewinvoice.CnP_PaaS__Visa__c}"/> &nbsp;<apex:outputLabel value="Credit Card" style="display:inline;"/><br />
+                                                    <!--<Apex:outputField value="{!viewinvoice.Master_Card__c}"/> &nbsp;<apex:outputLabel value="Master Card" style="display:inline;"/><br />
+                                                    <Apex:outputField value="{!viewinvoice.Discover__c}"/> &nbsp;<apex:outputLabel value="Discover" style="display:inline;"/><br />
+                                                    <Apex:outputField value="{!viewinvoice.American_Express__c}"/> &nbsp;<apex:outputLabel value="American Express" style="display:inline;"/><br />
+                                                    <Apex:outputField value="{!viewinvoice.JCB__c}"/> &nbsp;<apex:outputLabel value="JCB" style="display:inline;"/><br />-->
+                                                    
+                                                </apex:outputPanel>
+                                       </apex:outputPanel>
+                                       <Apex:outputField value="{!viewinvoice.CnP_PaaS__echeck__c}"/> &nbsp;<apex:outputLabel value="eCheck" style="display:inline;"/><br />
+                                       <Apex:outputField value="{!viewinvoice.CnP_PaaS__Purchase_Order__c}"/> &nbsp;<apex:outputLabel value="Purchase Order" style="display:inline;"/><br />
+                                       <Apex:outputField value="{!viewinvoice.CnP_PaaS__Custom_Payment_Type__c}"/> &nbsp;<apex:outputLabel value="Custom Payment Type" style="display:inline;"/><br />
+                                       <apex:outputLabel value="Custom Payment Type Names:" style="display:inline;" rendered="{!viewinvoice.CnP_PaaS__Custom_Payment_Type__c}"/><br/>
+                                       <Apex:outputField value="{!viewinvoice.CnP_PaaS__Custom_Payment_Options__c}" rendered="{!viewinvoice.CnP_PaaS__Custom_Payment_Type__c}" /> <br />
+                               </apex:outputPanel>
+                          </apex:pageBlockSectionItem>
+                   </apex:pageBlockSection>
+                   
+               </div><!-- widget-content -->
+           </div><!-- widget-box --> 
+           
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Terms &amp; Conditions</h5>
+              </div>
+              <div class="widget-content">                              
+                   
+                   <apex:pageBlockSection collapsible="false" columns="1" showHeader="false">
+                   <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Thank you Message"></apex:outputLabel>
+                                 <apex:outputText value="{!viewinvoice.CnP_PaaS__Thank_you__c}" escape="false"></apex:outputText>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Decline Message"></apex:outputLabel>
+                                 <apex:outputText value="{!viewinvoice.CnP_PaaS__Decline__c}" escape="false"></apex:outputText>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Terms & Conditions Text (the following HTML tags are allowed: <P></P><BR /><OL></OL><LI></LI><UL></UL>)"></apex:outputLabel>
+                                 <apex:outputText value="{!viewinvoice.CnP_PaaS__Terms_Conditions__c}" escape="false"></apex:outputText>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                 <apex:outputField value="{!viewinvoice.CnP_PaaS__Acknowledgment__c}"/>
+                                 <apex:outputLabel value="Acknowledgement Mandatory"></apex:outputLabel>
+                          </apex:pageBlockSectionItem>
+                           <apex:pageBlockSectionItem >
+                                 <apex:outputField value="{!viewinvoice.CnP_PaaS__Internal_Alerts__c}"/>
+                                 <apex:outputLabel value="Internal Alerts"></apex:outputLabel>
+                          </apex:pageBlockSectionItem>                         
+                   </apex:pageBlockSection>
+                   <apex:outputpanel >
+                         <apex:outputpanel rendered="{!viewinvoice.CnP_PaaS__Internal_Alerts__c == true}"> 
+                         <div class="btn-block pagination-centered">
+                         <br/>                               
+                               <apex:outputPanel >
+                                   <apex:outputlabel value="Send Email " style="display:inline;"></apex:outputlabel>
+                                   <apex:outputText value="{!viewinvoice.CnP_PaaS__Send_Email__c}" styleClass="emaildays" style="width:40px;" /> 
+                                   <apex:outputLabel value="Days " style="margin-left:20px;display:inline;" ></apex:outputLabel>
+                               </apex:outputPanel>                                
+                               <apex:outputText styleclass="seloption" style="width:100px;" value="{!viewinvoice.CnP_PaaS__Email_Alerts__c}"></apex:outputText>                          
+                               
+                               <Apex:outputlabel value=" Invoice due date." style="margin-right:10px;display:inline;"></Apex:outputlabel>
+
+                               <Apex:outputlabel value="Send To " style="display:inline;" ></Apex:outputlabel>
+                              <apex:outputtext value="{!viewinvoice.CnP_PaaS__Send_To__c}"  styleclass="sendto"/> &nbsp;&nbsp;
+                              <Apex:outputlabel value="Subject " style="display:inline;" ></Apex:outputlabel>
+                              <apex:outputtext value="{!viewinvoice.CnP_PaaS__CnP_Alert_Subject__c}" /> 
+                          </div>                                        
+                         </apex:outputpanel>
+                      </apex:outputpanel>
+                      
+                   
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->                    
+                   
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Opportunity Stage (Define New Stage)</h5>
+              </div>
+              <div class="widget-content">
+                                 
+                   <apex:pageBlockSection columns="1"  collapsible="false">
+                          <apex:pageBlockSectionItem >
+                               <Apex:outputLabel value="Issued Invoice"></Apex:outputLabel>
+                               <apex:outputText value="{!viewinvoice.CnP_PaaS__Issued__c}"></apex:outputText>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Paid Invoice"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoice.CnP_PaaS__Paid_Invoice__c}"></apex:outputText>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Past Due Invoice"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoice.CnP_PaaS__Past_Due_Invoice__c}"></apex:outputText>
+                          </apex:pageBlockSectionItem>
+                           <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Declined Invoice"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoice.CnP_PaaS__Declined_Invoice_Stage__c}"></apex:outputText>
+                          </apex:pageBlockSectionItem>
+                   </apex:pageBlockSection>
+                   
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->
+                              
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Reminders</h5>
+              </div>
+              <div class="widget-content">
+                                 
+                            <apex:pageBlockTable value="{!reminder}" var="item" styleClass="table table-bordered table-hover">
+                                <apex:column headerValue="Select Template" value="{!item.template1}"/>
+                                <apex:column headerValue="Send" value="{!item.sendin}"/>
+                                <apex:column headerValue="Days " value="{!item.days}"/> 
+                                <apex:column headerValue="Subject" value="{!item.remindersubject}">                                      
+                                </apex:column>                           
+                            </apex:pageBlockTable>
+               
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->
+               <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>SMTP Settings</h5>
+              </div>
+              <div class="widget-content">
+                                  <apex:pageblockSection collapsible="false" columns="1" showheader="false"> 
+                            <apex:pageblockSectionItem >
+                            <apex:outputLabel value="SMTP Sender"/>
+                            <apex:outputpanel >
+                            <apex:outputText value="{!viewinvoice.SMTP_settings__r.name}" rendered="{!if(viewinvoice.CnP_PaaS__SMTP_settings__c!=null,true,false)}"/>
+                            <apex:outputText value="{!if(viewinvoice.CnP_PaaS__ClickandPledge_SMTP__c!=null,viewinvoice.CnP_PaaS__ClickandPledge_SMTP__c,'Salesforce')}" rendered="{!if(viewinvoice.CnP_PaaS__ClickandPledge_SMTP__c!=null,true,false)}"/>
+                            <apex:outputText value="{!if(viewinvoice.CnP_PaaS__ClickandPledge_SMTP__c!=null,viewinvoice.CnP_PaaS__ClickandPledge_SMTP__c,'Salesforce')}" rendered="{!if(viewinvoice.CnP_PaaS__ClickandPledge_SMTP__c==null && viewinvoice.CnP_PaaS__SMTP_settings__c==null,true,false)}"/>
+                            </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                           <apex:pageblockSectionItem rendered="{!if(viewinvoice.CnP_PaaS__SMTP_settings__c!=null || viewinvoice.CnP_PaaS__ClickandPledge_SMTP__c!=null,true,false )}">
+                            <apex:outputLabel value="C&P Account Number"/>
+                            <apex:outputText value="{!viewinvoice.CnP_API_Settings__r.CnP_PaaS__CnP_Account_Number__c}"></apex:outputText>
+                            </apex:pageblockSectionItem>
+                            <apex:pageblockSectionItem rendered="{!if(viewinvoice.CnP_PaaS__SMTP_settings__c!=null || viewinvoice.CnP_PaaS__ClickandPledge_SMTP__c!=null,true,false )}">
+                            <apex:outputLabel value="Mail From Name"/>
+                            <apex:outputText value="{!viewinvoice.CnP_PaaS__CnP_Mail_From_Name__c}"></apex:outputText>
+                            </apex:pageblockSectionItem>
+                            <apex:pageblockSectionItem rendered="{!if(viewinvoice.CnP_PaaS__SMTP_settings__c!=null || viewinvoice.CnP_PaaS__ClickandPledge_SMTP__c!=null,true,false )}">
+                            <apex:outputLabel value="Mail From Address"/>
+                            <apex:outputText value="{!viewinvoice.CnP_PaaS__Mail_From_Address__c}"></apex:outputText>
+                             </apex:pageblockSectionItem>
+                          <apex:pageblockSectionItem >
+                            <apex:outputLabel value="Reply To Address"/>
+                            <apex:outputText value="{!viewinvoice.CnP_PaaS__C_P_Replay_To_Address__c}"></apex:outputText>
+                            </apex:pageblockSectionItem>
+                            </apex:pageBlocksection>
+               
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->
+                
+           <div class="btn-block pagination-centered">
+                      <a style="display:{!IF(inv_exist==true,'none !important','')}" href="javascript:void(0);" class="btn btn-primary" onclick="Edit_Invoicepolicy('{!viewinvoice.Id}')"> <i  class="icon-pencil icon-white"></i> Edit </a>
+                      <a href="javascript:void(0);" class="btn btn-primary" onclick="Delete_Invoicepolicy('{!viewinvoice.Id}')"> <i  class="icon-trash icon-white"></i> Delete</a>
+                      <a href="javascript:void(0);" class="btn btn-primary" onclick="Cancelprocess();"> <i  class="icon-remove icon-white"></i> Back </a>
+           </div>
+       </apex:outputPanel>
+       <!---- End here ----->
+       
+       
+       <!-- create new invoice ---------->
+       <apex:outputPanel rendered="{!IF(newinvoiceboolean==true && viewinvoiceboolean==false,true,false)}">
+      
+             
+       <div class="btn-block pagination-centered">
+       <apex:commandButton value="Save" action="{!SaveInvoicepolicy}" styleClass="btn btn-primary" onclick="if(!invoice()){return false;}" rendered="{!newinvoiceboolean}" reRender="invoicepolicy,JavaScriptBlock,javascripteditor" oncomplete="processcomplete();"/> 
+       <apex:commandButton value="Cancel" action="{!CancelInvoicepolicy}" onclick="countryprocess();"  styleClass="btn btn-primary" rendered="{!newinvoiceboolean }" oncomplete="processcomplete();" reRender="invoicepolicy,JavaScriptBlock,javascripteditor" immediate="true"/> 
+       </div>      
+      
+       <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Invoice Details</h5>
+              </div>
+              <div class="widget-content"> 
+              
+                   <apex:pageblockSection collapsible="false" columns="1" showheader="false" rendered="{!newinvoiceboolean}">
+                       <Apex:pageblocksectionItem >
+                           <apex:outputLabel value="Policy Name"></apex:outputLabel>
+                           <apex:outputPanel styleclass="requiredInput" layout="block">
+                           <apex:outputpanel styleclass="requiredBlock" layout="block"/>
+                               <apex:inputtext value="{!Invoice.Name}" styleclass="name" maxlength="80"/> 
+                           </apex:outputPanel>
+                       </Apex:pageblocksectionItem>        
+                       <apex:pageblocksectionItem >
+                          <apex:outputLabel value="Net"></apex:outputLabel>
+                            <apex:outputpanel styleClass="requiredInput" layout="block">
+                            <apex:outputpanel styleclass="requiredBlock" layout="block"/>
+                                  <apex:inputtext value="{!Invoice.CnP_PaaS__Net__c}" size="10" styleclass="quantity" style="display:inline;" maxlength="5"/> &nbsp;<apex:outputlabel value="days" style="display:inline;" /> 
+                             </apex:outputpanel>   
+                       </apex:pageblocksectionItem> 
+                       <apex:pageblocksectionItem >
+                          <apex:outputLabel value="Subject"></apex:outputLabel>
+                            <apex:outputpanel styleClass="requiredInput" layout="block">
+                            <apex:outputpanel styleclass="requiredBlock" layout="block"/>
+                                  <apex:inputtext value="{!Invoice.CnP_PaaS__Invoice_Subject__c}"  styleclass="invoicesubject" style="display:inline;" maxlength="255" /> 
+                             </apex:outputpanel>   
+                       </apex:pageblocksectionItem>  
+                        
+                       <apex:pageblockSectionItem >
+                             <apex:outputlabel value="Invoice Email Template"/> 
+                               <apex:outputpanel >
+                                   <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                  <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                     <apex:selectlist value="{!Invoice.CnP_PaaS__Email_Template__c}" size="1" styleclass="selectemailtemplate">
+                             <apex:selectoptions value="{!tempname}" />
+                             </apex:selectlist>
+                             <apex:outputLink value="/apex/emaildesigner?type=email" styleClass="btn btn-small">Create new Design</apex:outputLink>
+                            </apex:outputPanel> 
+                            </apex:outputpanel>  
+                        </apex:pageblockSectionItem>  
+                        <apex:pageblockSectionItem >
+                             <apex:outputlabel value="Invoice Web Template"/> 
+                               <apex:outputpanel >
+                                   <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                  <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                     <apex:selectlist value="{!Invoice.CnP_PaaS__Web_Template__c}" size="1" styleclass="selectwebtemplate">
+                                     <apex:selectoptions value="{!webtempname}" />
+                              </apex:selectlist>
+                               <apex:outputLink value="/apex/emaildesigner?type=web" styleClass="btn btn-small" >Create new Design</apex:outputLink>
+                            </apex:outputPanel> 
+                            </apex:outputpanel>  
+                          </apex:pageblockSectionItem>  
+                         <apex:pageblocksectionItem >
+                           <apex:outputlabel Value="Policy Status"/>                     
+                             <apex:selectradio value="{!invoice.CnP_PaaS__Policy_Status__c}" styleclass="status tabletabs no_border" >
+                                <apex:selectOptions value="{!statusvalues}" /> 
+                             </apex:selectradio>
+                         </apex:pageblocksectionItem>                    
+                    </apex:pageblocksection> 
+                    
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->         
+        
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Early Payment Discount</h5>
+              </div>
+              <div class="widget-content">                      
+                   
+                  <apex:outputpanel id="RefreshPage" rendered="{!newinvoiceboolean}">
+                   <apex:variable value="0" var="rowNum1"/>  
+                   <apex:pageblocktable value="{!Earlypaymentvalues}" var="item" styleClass="detailList">  
+
+                       <apex:inputhidden value="{!item.RecordId}"/>
+                       <apex:column headerClass="display_none">                    
+                       <apex:outputlabel value="Early Payment Discount" style="margin-right:5px;display:inline;"></apex:outputlabel>                           
+                       <strong>%</strong> <apex:inputtext value="{!item.Discount}" size="7" style="width:45px;" styleclass="discount{!rowNum1}" maxlength="5"/> + Fixed discount
+                       <apex:inputtext value="{!item.Amount}" size="10" style="margin-right:5px;width:65px" styleclass="amount{!rowNum1}" maxlength="9" /> If paid
+                       <apex:inputText value="{!item.days}" size="5" maxlength="5" style="width:45px;" styleClass="days{!rowNum1}"/> 
+                       <apex:outputLabel value="days before due date" style="margin:0px 5px;display:inline;"/>                      
+                           <apex:commandButton value="Delete" action="{!delcont}" styleClass="Delete" reRender="RefreshPage" status="statusIdForDelete" >
+                           <apex:param name="contIdParam" value="{!rowNum1}" assignTo="{!DeleteId}"/>
+                           <apex:param name="contIdParam1" value="{!item.RecordId}" assignTo="{!DeleteFromObjectId}"/>
+                           </apex:commandButton>
+                           <apex:actionStatus id="statusIdForDelete" startText="Deleting...">
+                             <apex:facet name="stop"></apex:facet>
+                           </apex:actionStatus>                          
+                           <apex:variable value="{!Value(rowNum1)+1}" var="rowNum1"/>                                         
+                        </apex:column>
+
+                     </apex:pageblocktable>
+                     
+                     <input type="Hidden" value="{!rowNum1}" class="rowvalues1" name="rowvalues1"/>
+                     <br/>
+                         <div class="btn-block pagination-centered">
+                         <apex:commandbutton value="Add" styleClass="btn" action="{!addfield}" rerender="RefreshPage" status="nextrowstatus" />       
+                            <apex:actionstatus id="nextrowstatus" Starttext="Please Wait....">
+                                <apex:facet name="Stop"></apex:facet>
+                            </apex:actionstatus>
+                        <!--  <apex:commandButton action="{!Saveearly}" styleClass="btn" reRender="RefreshPage" value="Save" status="savingvalues"  onclick="if(!calculate1()){return false;}" oncomplete="processcomplete();"/>
+                              <apex:actionstatus id="savingvalues" starttext="Collecting Values....">
+                                 <apex:facet name="stop"></apex:facet>                  
+                              </apex:actionstatus> -->
+                          </div>  
+                  </apex:outputpanel>    
+                    
+                 
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->                  
+
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Late fee Policy</h5>
+              </div>
+              <div class="widget-content">
+                   
+
+                  <apex:outputpanel id="RefreshBlock" rendered="{!newinvoiceboolean}" >
+                       <apex:variable value="0" var="rowNum2"/>    
+                      <apex:pageblocktable value="{!Latefeevalues}" var="item" styleclass="detailList"> 
+                            
+                            <apex:inputHidden value="{!item.RecordId}"/>
+                            <apex:inputHidden value="{!item.latepay}"/>       
+                            
+                            <apex:column headervalue="SKU" >
+                               <Apex:inputText value="{!item.latesku}" styleclass="latesku{!rowNum2} " size="15"  maxlength="100" style="width:80px;"/>     
+                            </apex:column>
+                            <apex:column headervalue="Campaign">
+                                 <Apex:inputText value="{!item.latecampaign}" styleclass="latecampaign{!rowNum2} " size="15">  
+                                        <c:PaymentAutoCompleteSettings objecttype="campaign" autocomplete_textbox="latecampaign{!rowNum2}" autocomplete_id="latecampaignid{!rowNum2}" autocomplete_process="2" />   
+                                 </apex:inputText>
+                            </apex:column>
+                        
+                           <apex:column headerValue="Rate (%)">
+                              <apex:inputtext value="{!item.Extrafee}" size="7" maxlength="5" styleclass="extrafee{!rowNum2} span12"/> 
+                            </apex:column>
+                             <apex:column headerValue="Flat Fee">
+                                 <apex:inputtext value="{!item.lateamount}" size="7" styleclass="amountlate{!rowNum2} " maxlength="7"/> 
+                             </apex:column>        
+                             <apex:column headerValue="Days After Due Date">
+                                 <apex:inputText value="{!item.Latedays}" size="5" styleClass="dayslate{!rowNum2}" style="width:60px;" maxlength="5"/>
+                             </apex:column>   
+                       
+                             <apex:column >  
+                             <apex:commandButton value="Delete" action="{!delpayment}" styleClass="Delete" reRender="RefreshBlock" status="statusIdForDelete" style="margin-left:30px;" >
+                                <apex:param name="contIdParam" value="{!rowNum2}" assignTo="{!DeletelateId}"/>             
+                                <apex:param name="contIdParam1" value="{!item.RecordId}" assignTo="{!DeleteFromObjectlateId}"/>
+                           </apex:commandButton>
+                         
+                           <apex:actionStatus id="statusIdForDelete" startText="Deleting...">
+                               <apex:facet name="stop"></apex:facet>
+                           </apex:actionStatus>
+                           </apex:column>
+                        <apex:column >
+                            <apex:inputText value="{!item.latecampaignid}" styleClass="latecampaignid{!rowNum2}" style="display:none;" />
+                            <apex:variable value="{!Value(rowNum2)+1}" var="rowNum2"/>   
+                       </apex:column>     
+                       
+
+                   </apex:pageblocktable>
+                   <br/>
+                   <input type="Hidden" value="{!rowNum2}" class="rowvalues2" name="rowvalues2"/>
+                   
+                       <div class="btn-block pagination-centered">
+                         <apex:commandbutton styleClass="btn" value="Add" action="{!additem}" rerender="RefreshBlock" status="nextrowstatusid" />       
+                         <apex:actionstatus id="nextrowstatusid" Starttext="Please Wait....">
+                            <apex:facet name="Stop"></apex:facet>
+                         </apex:actionstatus>
+                      <!--   <apex:commandButton styleClass="btn" action="{!Save_late}" reRender="RefreshBlock" value="Save" status="savinglatevalues" onclick="if(!calculate2()){return false;}" oncomplete="processcomplete();"/>
+                          <apex:actionstatus id="savinglatevalues" starttext="Collecting Values....">
+                             <apex:facet name="stop"></apex:facet>                  
+                          </apex:actionstatus> -->
+                        </div>
+                        
+                    </apex:outputpanel>
+
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->          
+         
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Additional Payment</h5>
+              </div>
+              <div class="widget-content">
+                     
+                 <apex:pageblocksection collapsible="false" columns="1" showHeader="false" rendered="{!newinvoiceboolean}"> 
+                     <apex:pageblocksectionItem >
+                         <Apex:outputlabel value="Allow for Additional Payment"></Apex:outputlabel>    
+                          <apex:outputpanel >
+                               <apex:inputcheckbox value="{!addpayment}" styleclass="addpayment"  >
+                                   <Apex:actionSupport event="onchange" rerender="selectadd" action="{!additionalpay}"/>
+                                 </apex:inputcheckbox>  
+                          </apex:outputpanel>
+                       </apex:pageblocksectionItem>
+                  </apex:pageblocksection> 
+                  
+                      <apex:outputpanel id="selectadd">
+                      <apex:outputpanel rendered="{!addpayment == true}">
+                       
+                        <apex:outputpanel id="RefreshPay">
+                           <apex:variable value="0" var="rowNumName"/>       
+                             <apex:pageblocktable value="{!additionalPaymentVal}" var="item" styleclass="detailList">
+                          
+                             <apex:column >
+                                 <apex:inputHidden value="{!item.RecordId}"/></apex:column>
+                                   <apex:column headerValue="Item Name"><!--<apex:outputLabel value="Payment Name"/> -->
+                                   <apex:inputtext value="{!item.payName}" styleclass="paymentname{!rowNumName} " /> </apex:column>
+                                   <apex:column headervalue="SKU"><!--<apex:outputLabel value="SKU"/> -->
+                                   <apex:inputtext value="{!item.sku}" styleclass="sku{!rowNumName} " maxlength="100"/></apex:column> 
+                                   <apex:column headervalue="Campaign"><!--<apex:outputLabel value="Campaign"/> -->
+                                       <apex:inputtext value="{!item.campaign}" styleclass="campaignadditional{!rowNumName} ">
+                                        <c:PaymentAutoCompleteSettings objecttype="campaign" autocomplete_textbox="campaignadditional{!rowNumName}" autocomplete_id="campaignadditionalid{!rowNumName}" autocomplete_process="2" />
+                                       </apex:inputText>
+                                   </apex:column>
+                                    <apex:column headervalue="Tax % "> <!--<apex:outputLabel value="Tax % "/>-->
+                                     <apex:inputtext value="{!item.payTax}" size="5" styleclass="paytax{!rowNumName} " maxlength="3"/>  </apex:column>
+                                     <apex:column headervalue="Tax Deductible % "><!--<apex:outputLabel value="Tax Deductible %  "/> -->
+                                         <apex:inputText value="{!item.taxdeductible}" styleClass="taxdeductible{!rowNumName} " size="7" maxlength="3"/>
+                                     </apex:column>
+                                    <Apex:column >
+                                        <apex:inputText value="{!item.campaignid}" styleClass="campaignadditionalid{!rowNumName}" style="display:none"/>
+                                       </apex:column>
+                                     <apex:column >                                            
+                                       <apex:commandButton value="Delete" action="{!deladditional}" styleClass="deleteoption{!rowNumName}" reRender="RefreshPay"  status="statusIdForDeletepay" style="margin-left:30px;display:none" >
+                                            <apex:param name="contIdParam" value="{!rowNumName}" assignTo="{!DeleteaddId}"/>             
+                                            <apex:param name="contIdParam1" value="{!item.RecordId}" assignTo="{!DeleteFromaddId}"/>
+                                       </apex:commandButton> 
+                                        <script>DeleteOption('{!rowNumName}');</script>                                      
+                                       <apex:actionStatus id="statusIdForDeletepay" startText="Deleting...">
+                                         <apex:facet name="stop"></apex:facet>
+                                       </apex:actionStatus>
+                                        <apex:variable value="{!Value(rowNumName)+1}" var="rowNumName"/>
+                                     </apex:column>
+                               
+                                
+                              
+                            
+                           </apex:pageblocktable>  
+                           <br/>
+                          <input type="Hidden" value="{!rowNumName}" class="rowvalues3" name="rowvalues3"/>
+                          <div class="btn-block pagination-centered"> 
+                             <apex:commandbutton styleClass="btn" value="Add" action="{!additionalpay}" rerender="RefreshPay" status="nextrowstatuspay" />       
+                                <apex:actionstatus id="nextrowstatuspay" Starttext="Please Wait....">
+                                    <apex:facet name="Stop"></apex:facet>
+                                </apex:actionstatus> 
+                                
+                            <!--  <apex:commandButton styleClass="btn" action="{!Save_additional}" reRender="RefreshPay" value="Save" status="savingvaluespay" onclick="if(!calculate3()){return false;}" oncomplete="processcomplete();"/>
+                                  <apex:actionstatus id="savingvaluespay" starttext="Collecting Values....">
+                                     <apex:facet name="stop"></apex:facet>                  
+                                  </apex:actionstatus>-->
+                          </div>
+                          </apex:outputpanel>    
+                           
+                  </apex:outputpanel>
+                   </apex:outputpanel> 
+                  
+                 
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->         
+
+      
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Payment Policies</h5>
+              </div>
+              <div class="widget-content">      
+      
+                        <apex:pageblockSection collapsible="false" showHeader="false" rendered="{!newinvoiceboolean}">
+                           <apex:pageblocksectionItem id="CreditCardItem" dataStyle="width:15%;">
+                                         <apex:outputLabel value="Online Options"/>
+                           </apex:pageBlockSectionItem>              
+                           <apex:pageBlockSectionItem dataStyle="width:85%;">
+                                         <apex:outputpanel >                                         
+                                                <apex:inputCheckbox value="{!CreditCard}" id="Credit_card"   styleclass="Credit_card"></apex:inputCheckbox> &nbsp;
+                                                <apex:outputLabel value="Credit Card" style="display:inline;"/><br />
+                                               <!-- <apex:outputpanel id="CreditCardOptions" style="position:relative;left:30px;">
+                                                <apex:outputpanel>
+                                                    <apex:inputCheckbox value="{!Visa}" id="Visa_card"  styleClass="visa" /> &nbsp;
+                                                    <apex:outputLabel value="Visa" style="display:inline;"/><br />
+                                                    <apex:inputCheckbox value="{!Master}" id="Master_card"  styleClass="master"/> &nbsp;
+                                                    <apex:outputLabel value="Master Card" style="display:inline;" /><br />
+                                                    <apex:inputCheckbox value="{!Discover}" id="Discover" styleClass="Discover"/> &nbsp;
+                                                    <apex:outputLabel value="Discover" style="display:inline;" /><br />
+                                                    <apex:inputCheckbox value="{!American}" id="AmericanEx" styleClass="AmericanEx"/> &nbsp;
+                                                    <apex:outputLabel value="American Express" style="display:inline;" /><br />
+                                                     <apex:inputCheckbox value="{!jcb}" id="jcb" styleClass="jcb"/> &nbsp;
+                                                    <apex:outputLabel value="JCB" style="display:inline;" /><br />
+                                                </apex:outputpanel>
+                                                </apex:outputpanel> -->                                       
+                                                    <apex:inputCheckbox value="{!echeck}" id="echeck" styleClass="echeck" /> &nbsp;
+                                                    <apex:outputLabel value="eCheck" style="display:inline;" /><br />
+                                                    <apex:inputCheckbox value="{!PO}" id="PurchaseOrder" styleClass="po" /> &nbsp;
+                                                    <apex:outputLabel value="Purchase Order" style="display:inline;" /><br />
+                                                    <apex:inputCheckbox value="{!custompayment}" id="cuspay" styleClass="cuspay" >
+                                                       <apex:actionSupport event="onchange" reRender="custompay"/>
+                                                       </apex:inputCheckbox>&nbsp;
+                                                    <apex:outputLabel value="Custom Payment Type" style="display:inline;" /><br />
+                                                    <apex:outputpanel id="custompay" >                      
+                                                            <apex:outputPanel rendered="{!custompayment}">
+                                                                  <apex:outputPanel id="thebtn" >
+                                                                        <apex:variable value="0" var="rowCustom"/>
+                                                                          <apex:repeat value="{!customValues}" var="cus" >      
+                                                                          <apex:inputhidden value="{!cus.RecordId}"/>                                                                    
+                                                                             <apex:outputLabel value="Name :" />
+                                                                              <apex:inputText value="{!cus.strname}"  styleClass="cuspaymentname{!rowCustom}" maxlength="50" onblur="trimvalue(this.value,'cuspaymentname{!rowCustom}')"/>
+                                                                               <apex:commandbutton value="Delete" action="{!delcustompay}" rerender="thebtn">
+                                                                              <apex:param name="deleteCustom" value="{!rowCustom}" assignTo="{!DelCustomId}"/>             
+                                                                             
+                                                                         </apex:commandbutton> <br/>
+                                                                           <apex:variable var="rowCustom" value="{!VALUE(rowCustom) + 1}" />
+                                                                       </apex:repeat>  
+                                                                       <input type="hidden" value="{!rowCustom}" class="rowCustom" name="rowCustom"/>
+                                                                       <apex:commandbutton value="Add" action="{!add}"  rerender="thebtn"/><br/>
+                                                                 </apex:outputPanel>
+                                                            </apex:outputPanel>                 
+                                                    </apex:outputpanel>          
+                                               </apex:outputpanel>                         
+                                 </apex:pageblocksectionItem>  
+                                 
+                               <!------- Custom Payment Options ---------->
+                                 <!-------------------Custom payment type Additionals ------------------>
+               
+                         
+                                 <!-------------------Custom Payment type Additionals End ------------->
+       
+                       </apex:pageblockSection> 
+                       
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->
+           
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Terms &amp; Conditions </h5>
+              </div>
+              <div class="widget-content">
+                                 
+                   <apex:pageblockSection collapsible="false" columns="1" showHeader="false" rendered="{!newinvoiceboolean}">
+                      <apex:pageBlockSectionItem dataStyleClass="align_top">
+                          <apex:outputLabel value="Thank you Message" > </apex:outputLabel>
+                          <apex:inputtextarea value="{!Invoice.CnP_PaaS__Thank_you__c}" id="thnQ" rows="5" styleClass="span11 thnQ" />
+                       </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem dataStyleClass="align_top">
+                          <apex:outputLabel value="Decline Message" > </apex:outputLabel>
+                          <apex:inputtextarea value="{!Invoice.CnP_PaaS__Decline__c}" id="decl" rows="5"   styleClass="span11 decl" />
+                       </apex:pageBlockSectionItem>
+                       <apex:pageBlockSectionItem dataStyleClass="align_top">
+                          <apex:outputLabel value="Terms & Conditions Text (the following HTML tags are allowed: <P></P><BR /><OL></OL><LI></LI><UL></UL>)" > </apex:outputLabel>
+                          <apex:inputtextarea value="{!Invoice.CnP_PaaS__Terms_Conditions__c}" id="term" rows="5" styleClass="span11 term" />
+                       </apex:pageBlockSectionItem>
+                       <apex:pageBlockSectionItem >
+                          <apex:inputCheckbox value="{!Invoice.CnP_PaaS__Acknowledgment__c}"/>
+                          <apex:outputlabel value="Acknowledgement Mandatory"></apex:outputlabel>
+                       </apex:pageBlockSectionItem>           
+                       <apex:pageBlockSectionItem >
+                            <apex:inputCheckbox value="{!invoice.CnP_PaaS__Internal_Alerts__c}" styleClass="alert">
+                                <apex:actionSupport event="onclick" rerender="alerts"/>
+                            </apex:inputcheckbox>    
+                            <apex:outputlabel value="Internal Alerts"></apex:outputlabel>
+                       </apex:pageBlockSectionItem>
+                   </apex:pageBlockSection>                     
+                      
+                      
+                       <apex:outputpanel id="alerts">
+                         <apex:outputpanel rendered="{!invoice.CnP_PaaS__Internal_Alerts__c == true}"> 
+                         <div class="btn-block pagination-centered">
+                         <br/>                               
+                               <apex:outputPanel >
+                                   <apex:outputlabel value="Send Email " style="display:inline;"></apex:outputlabel>
+                                   <apex:inputText value="{!invoice.CnP_PaaS__Send_Email__c}" size="4" styleClass="emaildays" style="width:40px;" maxlength="5"/> 
+                                   <apex:outputLabel value="Days " style="margin-left:20px;display:inline;" ></apex:outputLabel>
+                               </apex:outputPanel>                                
+
+                                <apex:selectlist value="{!invoice.CnP_PaaS__Email_Alerts__c}" size="1" styleclass="seloption" style="width:100px;">
+                            <!--  <apex:selectlist value="{!alertdays}" size="1" styleclass="seloption" >     -->
+                                          
+                                 <apex:selectoptions value="{!Alerts}"></apex:selectoptions>
+                               </apex:selectlist>
+                               <Apex:outputlabel value=" Invoice due date." style="margin-right:10px;display:inline;"></Apex:outputlabel>
+
+                               <Apex:outputlabel value="Send To " style="display:inline;" ></Apex:outputlabel>
+                              <apex:inputtext value="{!Invoice.CnP_PaaS__Send_To__c}" size="25" styleclass="sendto"/> 
+                               <apex:outputLabel value="Subject"/>
+                                <apex:inputtext value="{!Invoice.CnP_PaaS__CnP_Alert_Subject__c}" styleclass="alertsubject" maxlength="255"/> 
+                               </div>                                        
+                         </apex:outputpanel>
+                      </apex:outputpanel>
+                      
+                   
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->                   
+                   
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Opportunity Stage (Define New Stage)</h5>
+              </div>
+              <div class="widget-content">
+                                 
+                 <apex:pageblockSection collapsible="false" columns="1" showHeader="false" rendered="{!newinvoiceboolean}">
+                      <apex:pageblocksectionItem >
+                        <apex:outputlabel value="Issued Invoice"/>
+                        <apex:selectlist value="{!issuedstage}" size="1" styleclass="issuedinvoice">
+                        <apex:selectoptions value="{!oppstages}"/>
+                        </apex:selectlist>
+                      </apex:pageblocksectionItem>
+                      <apex:pageblocksectionItem >
+                         <apex:outputlabel value="Paid Invoice"/>
+                         <apex:selectlist value="{!paidstage}" size="1" styleclass="paidinvoice">
+                         <apex:selectoptions value="{!oppstages}"/>
+                       </apex:selectlist>
+                      </apex:pageblocksectionItem>
+                      <apex:pageblocksectionItem >
+                         <apex:outputlabel value="Past Due Invoice"/>
+                         <apex:selectlist value="{!paststage}" size="1" styleclass="pastinvoice">
+                         <apex:selectoptions value="{!oppstages}"/>
+                       </apex:selectlist>
+                      </apex:pageblocksectionItem>
+                       <apex:pageblocksectionItem >
+                         <apex:outputlabel value="Declined Invoice"/>
+                         <apex:selectlist value="{!declinedstage}" size="1" styleclass="declinedinvoice">
+                         <apex:selectoptions value="{!oppstages}"/>
+                       </apex:selectlist>
+                      </apex:pageblocksectionItem>
+                   </apex:pageblockSection>
+                   
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->        
+ 
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Reminders</h5>
+              </div>
+              <div class="widget-content">
+
+                                         
+                                         
+                     <apex:outputpanel id="RefreshRemind" >
+                       <apex:variable value="0" var="rowNumval"/>
+                       
+                       <apex:pageblocktable value="{!reminder}" var="item">
+                            <!--  <apex:repeat value="{!reminder}" var="item"> -->
+                                        
+                                          <apex:inputHidden value="{!item.RecordId}"/>
+                                          <apex:inputHidden value="{!item.remind}"/>       
+                                        
+                                        <apex:column headervalue="Select Template"><!--     <apex:outputlabel value="Select Template" style="display:inline;"/> -->
+                                          <apex:selectlist value="{!item.template}" size="1" styleclass="template{!rowNumval}">
+                                          <apex:selectoption itemvalue="" itemlabel="----None----"/>
+                                          <apex:selectoptions value="{!selecttemp}"></apex:selectoptions>
+                                          </apex:selectlist>
+                                        </apex:column>
+                                        <apex:column headervalue="Sent days "><!--    <apex:outputlabel value="Send " style="margin-left:30px;display:inline;"/>-->
+                                            <apex:inputtext value="{!item.sendin}" size="5" styleclass="senddays{!rowNumval}" maxlength="4" style="width: 50px;"/> 
+                                        </apex:column>
+
+                                        <apex:column headervalue="Before / After due date">
+                                          <apex:selectlist value="{!item.days}" size="1" style="width: 100px;" styleclass="templatedays{!rowNumval}" >
+                                     
+                                          <apex:selectoptions value="{!Alerts}"></apex:selectoptions>
+                                          </apex:selectlist>
+                                        </apex:column>
+                                        <apex:column headervalue="Subject">
+                                        <apex:inputtext value="{!item.remindersubject}" styleclass="remindersubject{!rowNumval}" maxlength="255"/> 
+                                        </apex:column>
+                                        <!-- &nbsp;Invoice due Date-->
+                                        <apex:column styleClass="align_center">
+                                            <apex:commandButton value="Delete" action="{!delremind}" styleClass="Delete" reRender="RefreshRemind" status="statusIdForDelete" >
+                                            <apex:param name="contIdParam" value="{!rowNumval}" assignTo="{!DeleteremId}"/>             
+                                            <apex:param name="contIdParam1" value="{!item.RecordId}" assignTo="{!DeleteFromremId}"/>
+                                            </apex:commandButton>                                        
+                                            <apex:actionStatus id="statusIdForDelete" startText="Deleting...">
+                                            <apex:facet name="stop"></apex:facet>
+                                            </apex:actionStatus> 
+                                            <apex:variable value="{!Value(rowNumval)+1}" var="rowNumval"/>
+                                        </apex:column>                                       
+                         <!--  </apex:repeat>-->
+                      </apex:pageblocktable>     
+                                 <input type="Hidden" value="{!rowNumval}" class="rowvalues4" name="rowvalues4"/>
+                          
+                          <br/>
+                          
+                          <div class="btn-block pagination-centered">       
+                                 <apex:commandbutton value="Add" styleClass="btn" action="{!addrem}" rerender="RefreshRemind" status="nextrowstatusid1" />       
+                                 <apex:actionstatus id="nextrowstatusid1" Starttext="Please Wait....">
+                                    <apex:facet name="Stop"></apex:facet>
+                                 </apex:actionstatus>
+                               <!-- <apex:commandButton action="{!Save_Remind}" styleClass="btn" reRender="RefreshRemind" value="Save" status="savinglatevalues1" onclick="if(!calculate4()){return false;}" oncomplete="processcomplete();"/>
+                                  <apex:actionstatus id="savinglatevalues1" starttext="Collecting Values....">
+                                     <apex:facet name="stop"></apex:facet>                  
+                                  </apex:actionstatus>-->
+                          </div>                     
+                   </apex:outputpanel>
+               
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->               
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>SMTP Settings</h5>
+              </div>
+              <div class="widget-content">
+  <script>
+   jQuery(document).ready( function () {
+     
+  function checksmtp() {
+  
+    smtpval = jQuery(".smtpsender").val() ;
+       
+  if(jQuery(".smtpsender").val() == "salesforce")
+  {
+     jQuery(".cnpaccount, .mailfromadd, .mailfrmname").attr("style","display:none;");
+     jQuery(".cnpaccount input, .mailfromadd input, .mailfrmname input").attr("disabled","disabled");
+  }
+ if(jQuery(".smtpsender").val() != "salesforce")
+  {
+     jQuery(".cnpaccount input, .mailfromadd input, .mailfrmname input").removeAttr("disabled");
+     jQuery(".cnpaccount, .mailfromadd, .mailfrmname").attr("style","display:tabel-cell;");
+     
+  }
+  
+
+  }
+  
+  
+  jQuery(".smtpsender").change( function() {
+  checksmtp();
+  });
+ 
+  checksmtp();
+  
+});
+</script>   
+                    <apex:actionFunction action="{!SMTPType}" name="smtptype" reRender="mailfrommail_render,mailfromname_render"/>
+                   <apex:pageblock >
+                   <apex:pageblocksection columns="1" collapsible="false" >
+                   <apex:pageblocksectionItem >
+                   <apex:outputlabel value="SMTP Sender"/>
+                   <apex:outputPanel styleclass="requiredInput" layout="block">
+                   <apex:outputpanel styleclass="requiredBlock" layout="block"/>
+                   <apex:selectList value="{!smtpvalue}" size="1"  styleClass="smtpsender" onchange="smtptype();" >
+                   <apex:selectOptions value="{!smtp}"/>
+                   </apex:selectList>
+                   </apex:outputpanel>
+                   </apex:pageblocksectionItem>
+                   <apex:pageblocksectionitem labelStyleClass="cnpaccount" dataStyleClass="cnpaccount" >
+                   <apex:outputlabel value="C&P Account Number"/>
+                   <apex:outputPanel styleclass="requiredInput" layout="block">
+                   <apex:outputpanel styleclass="requiredBlock" layout="block"/>
+                   <apex:selectList value="{!invoice.CnP_PaaS__CnP_API_Settings__c}" size="1" styleclass="cnpaccountnumber">
+                   <apex:selectOptions value="{!cnpaccount}"></apex:selectOptions>
+                   </apex:selectList>
+                   </apex:outputpanel>
+                   </apex:pageblocksectionitem>
+                   <apex:pageblockSectionItem labelStyleClass="mailfrmname" dataStyleClass="mailfrmname">
+                   <apex:outputlabel value="Mail From Name" />
+                   <apex:outputPanel styleclass="requiredInput" layout="block">
+                   <apex:outputpanel styleclass="requiredBlock" layout="block"/>
+                    <apex:outputPanel id="mailfromname_render"> 
+                   <apex:inputtext value="{!invoice.CnP_PaaS__CnP_Mail_From_Name__c}" rendered="{!IF(smtpvalue!='Salesforce' && smtpvalue=='ClickandPledge',true,false )}" styleclass="mailfromname" maxlength="250" />
+                   <apex:outputtext value="{!invoice.CnP_PaaS__CnP_Mail_From_Name__c}" rendered="{!IF(smtpvalue!='Salesforce' && smtpvalue!='ClickandPledge',true,false )}" styleclass="mailfromname"/>
+                  </apex:outputpanel>
+                   </apex:outputpanel>
+                   </apex:pageblocksectionitem>
+                   <Apex:pageBlockSectionItem labelStyleClass="mailfromadd" dataStyleClass="mailfromadd" >
+                    <apex:outputLabel value="Mail From Address"/>
+                    <apex:outputPanel styleclass="requiredInput" layout="block">
+                   <apex:outputpanel styleclass="requiredBlock" layout="block"/>
+                    <apex:outputPanel id="mailfrommail_render">
+                   <apex:inputtext value="{!invoice.CnP_PaaS__Mail_From_Address__c}"  rendered="{!IF(smtpvalue!='Salesforce' && smtpvalue=='ClickandPledge',true,false )}"  styleclass="mailfromaddress"/>
+                   <apex:outputtext value="{!invoice.CnP_PaaS__Mail_From_Address__c}"  rendered="{!IF(smtpvalue!='Salesforce' && smtpvalue!='ClickandPledge',true,false )}"  styleclass="mailfromaddress"/>
+                  </apex:outputpanel>
+                  </apex:outputpanel>
+                  </Apex:pageBlockSectionItem>
+                   <Apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Reply To Address"/>
+                   <apex:outputPanel styleclass="requiredInput" layout="block">
+                   <apex:outputpanel styleclass="requiredBlock" layout="block"/>
+                   <apex:inputtext value="{!invoice.CnP_PaaS__C_P_Replay_To_Address__c}" styleclass="replytoaddress"/>
+                   </apex:outputpanel>
+                    </Apex:pageBlockSectionItem>
+                    </Apex:pageBlockSection>
+                   </apex:pageblock>                   
+                                      
+                   
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->                           
+       <div class="btn-block pagination-centered">
+       <apex:commandButton value="Save" action="{!SaveInvoicepolicy}" styleClass="btn btn-primary" onclick="if(!invoice()){return false;}" rendered="{!newinvoiceboolean}" reRender="invoicepolicy,JavaScriptBlock" /> 
+       <apex:commandButton value="Cancel" action="{!CancelInvoicepolicy}" onclick="countryprocess();"  styleClass="btn btn-primary" rendered="{!newinvoiceboolean }" oncomplete="processcomplete();" reRender="invoicepolicy,JavaScriptBlock,javascripteditor" immediate="true"/> 
+       </div>
+       
+               
+       </apex:outputPanel> 
+       <apex:outputPanel id="javascripteditor">
+        <apex:outputPanel rendered="{!IF(newinvoiceboolean==true && viewinvoiceboolean==false,true,false)}">
+          
+        <script>
+           
+            instance = CKEDITOR.currentInstance;
+            CKEDITOR.replace($(".thnQ").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+            CKEDITOR.replace($(".decl").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});    
+            CKEDITOR.replace($(".term").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});        
+           // CKEDITOR.replace($(".emailbody").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}}});    
+            CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+            CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+            CKEDITOR.config.contentsCss= ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+            CKEDITOR.config.language = 'en-us';  
+            CKEDITOR.config.customConfig = '{!$Resource.CnP_PaaS__ckconfig}';
+            CKEDITOR.config.toolbar='Custome'; 
+            CKEDITOR.config.height='150';
+        </script>  
+        </apex:outputPanel>
+       
+       </apex:outputPanel>
+       <!---- End here ------->
+       
+       </div> <!-- row-fluid -->
+    
+    
+    </apex:pageBlock>
+     
+    <script> 
+    tabhide();
+    $(this).find('.detailList').addClass('table table-bordered table-hover');
+    function resetCkEditorsOnLoad(){
+                   for(var i in CKEDITOR.instances) {                   
+                       editor = CKEDITOR.instances[i];
+                           editor.destroy(true);
+                           editor = null;
+                   }
+     }
+    </script>
+  </apex:form>
+</apex:page>

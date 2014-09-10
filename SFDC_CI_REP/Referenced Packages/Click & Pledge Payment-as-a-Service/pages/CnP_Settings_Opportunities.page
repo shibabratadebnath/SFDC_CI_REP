@@ -1,0 +1,1144 @@
+<apex:page controller="CnP_PaaS.SettingsController"  action="{!loadhelpContent}">
+  <!-- <apex:includeScript value="{!URLFOR($Resource.jquery)}"/> -->
+<style>
+.Stages input{
+    margin-top: 0px;
+}
+.Stages label{
+    display:inline;
+    margin-left:5px;
+}
+</style>
+
+<script type="text/javascript">
+function recurringcheck(classvalue){
+       var conditions = $(".conditions"+classvalue).val();
+      
+       if(conditions == 'Is Recurring' || conditions=='any SKU' || conditions=='Fundraiser'){
+          $(".sku"+classvalue).attr('disabled',true); 
+          $(".sku"+classvalue).val(''); 
+
+       }else{
+          $(".sku"+classvalue).attr('disabled',false);
+          
+       }       
+}
+
+function recurringcheckpro(classvalue){
+       var conditions = $(".conditionspro"+classvalue).val();
+      
+       if(conditions == 'Is Recurring' || conditions=='Any WID' || conditions=='Fundraiser'){
+          $(".skupro"+classvalue).attr('disabled',true); 
+          $(".skupro"+classvalue).val(''); 
+
+       }else{
+          $(".skupro"+classvalue).attr('disabled',false);
+          
+       }
+}
+
+function recurringcheckoppname(classvalue){
+       var conditionsoppname = $(".conditionsoppname"+classvalue).val();
+      
+       if(conditionsoppname == 'Is Recurring' ||conditionsoppname =='any SKU' || conditionsoppname=='Fundraiser' ){
+          $(".skuname"+classvalue).attr('disabled',true); 
+          $(".skuname"+classvalue).val(''); 
+
+       }else{
+          $(".skuname"+classvalue).attr('disabled',false);
+       }
+}
+
+function recurringcheckcontactrole(classvalue){
+       var conditionsrole= $(".conditionsrole"+classvalue).val();
+   
+       if(conditionsrole== 'Is Recurring' ||conditionsrole=='any SKU' ){
+        
+          $(".skurole"+classvalue).val(''); 
+          $(".skurole"+classvalue).attr('disabled',true);        
+
+       }else if(conditionsrole == 'Fundraiser'){
+           $(".skurole"+classvalue).val('');
+                 
+           $(".roleidsku"+classvalue).val('');          
+           $(".skurole"+classvalue).prop('disabled', 'disabled');
+           $(".roleidsku"+classvalue).prop('disabled', 'disabled');
+       
+       }else{
+          $(".skurole"+classvalue).attr('disabled',false);
+          $(".roleidsku"+classvalue).attr('disabled',false);
+       }
+}
+
+function recurringproductcheck(classvalue){
+
+       var prodconditions = $(".prodconditions"+classvalue).val();
+       if(prodconditions == 'Is Recurring' || prodconditions == 'any SKU' || prodconditions =='Fundraiser'){
+       
+          $(".prodsku"+classvalue).attr('disabled',true);
+          $(".prodsku"+classvalue).val('');   
+       }else{
+         $(".prodsku"+classvalue).attr('disabled',false);  
+       }
+}
+function recurringcampcheck(classvalue){
+
+       var campconditions = $(".campconditions"+classvalue).val();
+      
+       if(campconditions == 'Is Recurring' || campconditions == 'any SKU'  || campconditions == 'Fundraiser'){
+     
+         $(".Campsku"+classvalue).attr('disabled',true); 
+         $(".Campsku"+classvalue).val(''); 
+       }else{
+        $(".Campsku"+classvalue).attr('disabled',false);  
+       }      
+}
+function settingvalue(){
+ 
+  var t=0;
+   var rowvaluesOppName = $(".rowvaluesOppName").val();
+   var rowNumrole = $(".rowNumrole").val();
+   var reg_sku=/^([a-zA-Z0-9\_\:\-\ ])+$/;
+  var Opp_Name  = /^([a-zA-Z0-9\.\#\,\'\_\:\-\+\(\)\{\}\[\]\/]|[a-zA-Z0-9\.\#\,\'\_\:\-\+\(\)\{\}\[\]\/]{%20}|{%20})+$/;
+
+ for(var i=0;i<rowNumrole;i++){
+   var skurole= $(".skurole"+i).val();
+   var conditionsrole = $(".conditionsrole"+i).val();
+   var roleidsku = $(".roleidsku"+i).val();
+   var roles = $(".roles"+i).val();
+   var primary = $(".primary"+i).val();
+   
+     if(skurole!="" && !reg_sku.test(skurole)){
+                     alert("Please enter only Alphanumeric _ - : and space for SKU");
+                      t=t+1;
+                      $(".skurole"+i).focus();
+                      return false;
+                  } 
+          if(skurole == "" && conditionsrole!= 'IS' && conditionsrole!= 'Is' && conditionsrole!="Is Recurring" && conditionsrole!= "any SKU"  && conditionsrole!='Fundraiser' ){
+                      alert("Please enter valid SKU when condition is 'Starts With' or 'Ends With' or 'Includes' ");
+                      $(".skurole"+i).focus();
+                      return false;
+                  }
+                
+        for(var j=i+1;j<rowNumrole;j++){
+                var skurole_dup= $.trim($(".skurole"+j).val());
+                var conditionsrole_dup= $.trim($(".conditionsrole"+j).val());
+                var roleidsku_dup = $.trim($(".roleidsku"+j).val());
+                var roles_dup = $.trim($(".roles"+j).val());
+                var primary_dup = $.trim($(".roles"+j).val());
+                if(skurole== skurole_dup && conditionsrole == conditionsrole_dup&& roleidsku == roleidsku_dup && roles ==  roles_dup)
+                {
+                     t=t+1;
+                     alert("Error:  Duplicate values found at contact roles! ");
+                     $(".skurole"+j).focus();
+                     return false;
+                } 
+          }  
+  } 
+
+  
+    for(var i=0;i<rowvaluesOppName;i++){
+        var skuname= $(".skuname"+i).val();
+        var conditionsoppname= $(".conditionsoppname"+i).val();
+        var text1 = $.trim($(".skutext1"+i).val());
+        var field1 = $.trim($(".skufield1"+i).val());
+        var text2 = $.trim($(".skutext2"+i).val());
+        var field2 = $.trim($(".skufield2"+i).val());
+        var text3 = $.trim($(".skutext3"+i).val());
+        var field3 = $.trim($(".skufield3"+i).val());
+        var text4 = $.trim($(".skutext4"+i).val());
+         
+         if(conditionsoppname != '' && (text1 == '' && field1== '' && text2 == '' && field2 == ''&& text3 == '' && field3== '' && text4 == '')){
+             alert("Please Enter Opportunity Name to Customize");
+             $(".skutext1"+i).focus();
+             return false;
+         }
+        if(skuname!="" && !reg_sku.test(skuname))
+                  {
+                //  alert("Allowed Characters Alphanumeric , . # - ' _ / + ( ) { } [ ] use {%20} for blank space");
+                     alert("Please enter only Alphanumeric _ - : and space for SKU");
+                      t=t+1;
+                      $(".skuname"+i).focus();
+                      return false;
+                  }
+                  
+        if(text1!="" && !Opp_Name.test(text1))
+                  {
+                  alert("Allowed Characters Alphanumeric , . # - ' _ / + ( ) { } [ ] use {%20} for blank space");
+                    // alert("Please enter only Alphanumeric _ - : and space for SKU");
+                      t=t+1;
+                      $(".skutext1"+i).focus();
+                      return false;
+                  }
+                  if(text2!="" && !Opp_Name.test(text2))
+                  {
+                  alert("Allowed Characters Alphanumeric , . # - ' _ / + ( ) { } [ ] use {%20} for blank space");
+                    // alert("Please enter only Alphanumeric _ - : and space for SKU");
+                      t=t+1;
+                      $(".skutext2"+i).focus();
+                      return false;
+                  }
+                  if(text3!="" && !Opp_Name.test(text3))
+                  {
+                  alert("Allowed Characters Alphanumeric , . # - ' _ / + ( ) { } [ ] use {%20} for blank space");
+                    // alert("Please enter only Alphanumeric _ - : and space for SKU");
+                      t=t+1;
+                      $(".skutext3"+i).focus();
+                      return false;
+                  }
+                
+                  if(text4!="" && !Opp_Name.test(text4))
+                  {
+                  alert("Allowed Characters Alphanumeric , . # - ' _ / + ( ) { } [ ] use {%20} for blank space");
+                    // alert("Please enter only Alphanumeric _ - : and space for SKU");
+                      t=t+1;
+                      $(".skutext4"+i).focus();
+                      return false;
+                  }
+        if(skuname == "" && conditionsoppname != 'IS' && conditionsoppname != 'Is' && conditionsoppname !="Is Recurring" && conditionsoppname != "any SKU" && conditionsoppname!='Fundraiser'){
+                      alert("Please enter valid SKU when condition is 'Starts With' or 'Ends With' or 'Includes' ");
+                      t= t+1;
+                      $(".skuname"+i).focus();
+                      return false;
+                  }
+
+          for(var j=i+1;j<rowvaluesOppName;j++){
+                var skuname_dup= $.trim($(".skuname"+j).val());
+                var conditionsoppname_dup= $.trim($(".conditionsoppname"+j).val());
+                if(skuname== skuname_dup && conditionsoppname == conditionsoppname_dup)
+                {
+                     t=t+1;
+                     alert("Error:  Duplicate SKU found! " + skuname+ ',' + skuname_dup);
+                     $(".skuname"+j).focus();
+                     return false;
+                } 
+          }  
+       }
+ 
+ 
+    var rowvalue=$(".rowvalues").val();
+
+      for(var i=0;i<rowvalue;i++){
+
+        var LabelName  = $(".LabelName"+i).val();
+             var LabelName_wid = /^([0-9])+$/;
+        var recordtype= $(".recordtype"+i).val();
+        var conditionwid = $(".conditionswid"+i).val();
+     
+        if(LabelName!="" && !LabelName_wid.test(LabelName))
+                  {
+                      alert("Please enter only Numeric digits for WID");
+                      $(".LabelName"+i).focus();
+                      return false;
+                  }
+       
+        if(recordtype == null){
+          alert("Please Select at least one recordtype");
+         return false;
+        }
+      
+          for(var j=i+1;j<rowvalue;j++){
+                var label_dup = $(".LabelName"+j).val();
+                var condition_wid = $(".conditionswid"+j).val();
+                 if(LabelName == label_dup && conditionwid==condition_wid ){
+                     t=t+1;
+                     alert("Error:  Duplicate WID found! " + LabelName + ',' + label_dup);
+                     $(".LabelName"+j).focus();
+                     return false;
+                } 
+                
+          }  
+       }
+ 
+ 
+ var rowvalueOpp = $(".rowvaluesOpp").val();
+  var reg_sku=/^([a-zA-Z0-9\_\:\-\ ])+$/;
+   for(var i=0;i<rowvalueOpp;i++){
+        var sku= $.trim($(".sku"+i).val());
+         var conditions= $(".conditions"+i).val();
+        var record = $(".record"+i).val();
+        if(record == null){
+ 
+           alert("Please Select at least one record type");
+            return false;
+        }
+       if(sku!="" && !reg_sku.test(sku))
+                  {
+                      alert("Please enter only Alphanumeric _ - : and space for SKU");
+                      $(".sku"+i).focus();
+                      return false;
+                  }
+
+                  if(sku == "" && conditions != 'IS' && conditions != 'Is' && conditions!="Is Recurring" && conditions!= "any SKU" && conditions!= "Fundraiser"){
+                      alert("Please enter valid SKU when condition is 'Starts With' or 'Ends With' or 'Includes' ");
+                      $(".sku"+i).focus();
+                      return false;
+                  }
+          for(var j=i+1;j<rowvalueOpp;j++){
+                var sku_dup = $.trim($(".sku"+j).val());
+                var condition_dup = $.trim($(".conditions"+j).val());
+               
+                if(sku== sku_dup && conditions == condition_dup )
+                {
+                     t=t+1;
+                     alert("Error:  Duplicate SKU found! " + sku+ ',' + sku_dup);                    
+                     $(".sku"+j).focus();
+                     return false;
+                } 
+          }  
+       }
+ 
+  var rowvalueOpppro = $(".rowvaluesOpppro").val();
+  var reg_skupro=/^([0-9])+$/;;
+   for(var i=0;i<rowvalueOpppro;i++){
+        var skupro= $.trim($(".skupro"+i).val());
+         var conditionspro= $(".conditionspro"+i).val();
+        var recordpro = $(".recordpro"+i).val();
+        if(recordpro == null){
+            
+            
+           alert("Please Select at least one record type");
+            return false;
+        }
+       if(skupro!="" && !reg_skupro.test(skupro))
+                  {
+                      alert("Please enter only Numeric digits for WID");
+                      $(".skupro"+i).focus();
+                      return false;
+                  }
+              
+          for(var j=i+1;j<rowvalueOpppro;j++){
+                var skupro_dup = $.trim($(".skupro"+j).val());
+                var conditionpro_dup = $.trim($(".conditionspro"+j).val());
+               
+                if(skupro== skupro_dup && conditionspro == conditionpro_dup )
+                {
+                     t=t+1;
+                     alert("Error:  Duplicate WID found! " + skupro+ ',' + skupro_dup);                    
+                     $(".skupro"+j).focus();
+                     return false;
+                } 
+          }  
+       }
+  
+  
+   var rowvalueProd = $(".rowvaluesProd").val();
+     
+      var prod_sku = /^([a-zA-Z0-9\_\:\-\ ])+$/;
+       for(var i=0;i<rowvalueProd;i++){
+        var prodsku= $.trim($(".prodsku"+i).val());
+        var prodconditions = $(".prodconditions"+i).val();
+        if(prodsku!="" && !prod_sku.test(prodsku))
+                  {
+                      alert("Please enter only Alphanumeric _ - : and space for SKU");
+                      $(".prodsku"+i).focus();
+                      return false;
+                  }
+                  
+                     if(prodsku == "" && prodconditions != 'IS' && prodconditions != 'Is' && prodconditions !='Is Recurring' && prodconditions != "any SKU"  && prodconditions !='Fundraiser'){
+                      alert("Please enter valid SKU when condition is 'Starts With' or 'Ends With' or 'Includes' ");
+                      $(".prodsku"+i).focus();
+                      return false;
+                  }
+                  
+                  
+       for(var j=i+1;j<rowvalueProd;j++){
+                var prodsku_dup = $.trim($(".prodsku"+j).val());
+                var prodconditions_dup = $.trim($(".prodconditions"+j).val());
+                if(prodsku== prodsku_dup && prodconditions == prodconditions_dup)
+                {
+                     t=t+1;
+                     alert("Error:  Duplicate SKU found! " + prodsku+ ',' + prodsku_dup);
+                     $(".prodsku"+j).focus();
+                     return false;
+                } 
+          }  
+       }
+   var rowvalueCamp = $(".rowvaluesCamp").val();
+  
+      var Camp_sku = /^([a-zA-Z0-9\_\:\-\ ])+$/;
+      
+       for(var i=0;i<rowvalueCamp;i++){
+        var Campsku= $.trim($(".Campsku"+i).val());
+        var Campidsku= $(".Campidsku"+i).val();
+       
+        var campconditions= $(".campconditions"+i).val();
+        var campexist= $(".campexist"+i).val();
+     
+        if(Campsku!="" && !Camp_sku.test(Campsku))
+                  {
+                      t=t+1;
+                      alert("Please enter only Alphanumeric _ - : and space for SKU");
+                      $(".Campsku"+i).focus();
+                      return false;
+                  }
+
+           if(Campidsku == "")
+           {
+                     t=t+1;
+                      alert("Please enter Campaign ID");
+                      $(".Campidsku"+i).focus();
+                      return false;
+           }
+    
+              if(campconditions == 'Is Recurring' && Campidsku == "" ){
+              
+                   t=t+1;
+                   alert("Please enter Campaign ID for Recurring");
+                      $(".Campidsku"+i).focus();
+                      return false;
+                  
+              }
+              
+              
+                if(Campsku == "" && campconditions!='Is Recurring' && campconditions!='any SKU' && campconditions !='Fundraiser' && campconditions != 'IS' && campconditions != 'Is'){
+                      t=t+1; 
+                      alert("Please enter valid SKU when condition is 'Starts With' or 'Ends With' or 'Includes' ");
+                      $(".Campsku"+i).focus();
+                      return false;
+                  }
+
+          for(var j=i+1;j<rowvalueCamp;j++){
+                var Campsku_dup= $.trim($(".Campsku"+j).val());
+                var campconditions_dup = $.trim($(".campconditions"+j).val());
+                if(Campsku== Campsku_dup && campconditions == campconditions_dup)
+                {
+                     t=t+1;
+                     alert("Error:  Duplicate SKU found! " + Campsku+ ',' + Campsku_dup);
+                     $(".Campsku"+j).focus();
+                     return false;
+                } 
+               
+          }  
+       }      
+       
+       if(t==0)
+       {
+          processstart();
+          savemethod();
+          return true;
+       }else{
+          return false;
+       }
+       //return true;
+}
+function addItemroleprocess(){
+    processstart();
+    addItemrole();
+}
+function addItemOppprocess(){
+    processstart();
+    addItemOpp();
+}
+function addItemOppNameprocess(){
+   processstart();
+   addItemOppName();
+}
+
+function addItemOppProprocess(){
+   processstart();
+   addItemOppPro();
+}
+
+
+function addItemProdprocess(){
+    processstart();
+    addItemProd();
+}
+
+function addItemCampprocess(){
+    processstart();
+    addItemCamp();
+}
+function delControleprocess(val1,val2){
+    if(confirm("Are you sure you want to delete this record?")==true){
+         processstart();
+         delControle(val1,val2);
+    }
+}
+
+function delOppNameprocess(val1,val2){
+     if(confirm("Are you sure you want to delete this record?")==true){
+         processstart();
+         delOppName(val1,val2);
+     }
+}
+
+function delContoppprocess(val1,val2){
+     if(confirm("Are you sure you want to delete this record?")==true){
+         processstart();
+         delContopp(val1,val2);
+     }
+}
+function delContprodprocess(val1,val2){
+     if(confirm("Are you sure you want to delete this record?")==true){
+          processstart();
+          delContprod(val1,val2);
+     }
+}
+
+function delContOppProprocess(val1,val2){
+     if(confirm("Are you sure you want to delete this record?")==true){
+          processstart();
+          delContOppPro(val1,val2);
+     }
+}
+
+function delContCampprocess(val1,val2){
+     if(confirm("Are you sure you want to delete this record?")==true){
+         processstart();
+         delContCamp(val1,val2);
+     }
+}
+</script>
+
+    <div class="padding_5" style="float:right;">
+     <apex:outputLink styleClass="helpLink align_right" rendered="{!subTab['Settings']['Opportunity'].display=='true'}"   > 
+       <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo1]').css('display','block');" />
+         <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo1]').css('display','block');" style="display:inline;" />
+     </apex:outputLink>
+    
+     <apex:outputPanel id="Foo1" styleClass="video">
+       <ul style="padding-left:5px;" >
+        {!subTab['Settings']['Opportunity'].description} <br/>
+          <apex:outputpanel rendered="{!subTab['Settings']['Opportunity'].ActiveLink=='true'}">
+            <li><a href="{!subTab['Settings']['Opportunity'].link}" target="_blank" >{!subTab['Settings']['Opportunity'].strlink}</a> <br/></li></apex:outputpanel>
+             <apex:outputpanel rendered="{!subTab['Settings']['Opportunity'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['Settings']['Opportunity'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['Opportunity'].strvideo}</a></li></apex:outputpanel>
+       </ul>
+     </apex:outputPanel>  
+     </div>
+      
+<apex:form >
+         <div id="content-header">
+               <h1><img alt="Opportunity" title="Opportunity" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/opportunities_icon.png" style="display:inline;vertical-align:top;" width="25" /> Opportunities</h1>                                    
+         </div>
+         <div class="container-fluid"> 
+          
+               <apex:pageBlock id="oppblock" mode="maindetail">
+               
+                 <apex:actionFunction action="{!save}" name="savemethod" id="savemethod" rerender="oppblock" status="SavingStatus" oncomplete="processcomplete();"/>
+                 <apex:actionFunction action="{!addItemrole}" name="addItemrole" id="addItemrole" reRender="RefreshBlock_role" oncomplete="processcomplete();"/>
+                 <apex:actionFunction action="{!addItemOppName}" name="addItemOppName" id="addItemOppName" reRender="customname" oncomplete="processcomplete();"/>
+                 <apex:actionFunction action="{!addItemOpp}" name="addItemOpp" id="addItemOpp" reRender="RefreshBlockOpp" oncomplete="processcomplete();"/>
+                 <apex:actionFunction action="{!addItemOppPro}" name="addItemOppPro" id="addItemOppPro" reRender="RefreshBlockOppPro"  oncomplete="processcomplete();"/>
+                 <apex:actionFunction action="{!addItemProd}" name="addItemProd" id="addItemProd" reRender="RefreshBlockProd" oncomplete="processcomplete();"/>
+                 <apex:actionFunction action="{!addItemCamp}" name="addItemCamp" id="addItemCamp" reRender="RefreshBlockCamp"  oncomplete="processcomplete();"/>
+                 <apex:actionFunction action="{!delControle}" name="delControle" id="delControle" reRender="RefreshBlock_role" oncomplete="processcomplete();" >
+                     <apex:param name="DeleteIdrole" value="" assignTo="{!DeleteIdrole}"/>
+                     <apex:param name="DeleteFromObjectIdrole" value="" assignTo="{!DeleteFromObjectIdrole}"/>
+                 </apex:actionFunction>
+                 <apex:actionFunction action="{!delOppName}" name="delOppName" id="delOppName" reRender="customname" oncomplete="processcomplete();">
+                     <apex:param name="DeleteIdName" value="" assignTo="{!DeleteIdName}"/>
+                     <apex:param name="DeleteFromObjectIdName" value="" assignTo="{!DeleteFromObjectIdName}"/>
+                 </apex:actionFunction>
+                 
+                 <apex:actionFunction action="{!delContopp}" name="delContopp" id="delContopp" reRender="RefreshBlockOpp"  oncomplete="processcomplete();">
+                     <apex:param name="DeleteIdOpp" value="" assignTo="{!DeleteIdOpp}"/>
+                     <apex:param name="DeleteFromObjectIdOpp" value="" assignTo="{!DeleteFromObjectIdOpp}"/>
+                 </apex:actionFunction>
+                 <apex:actionFunction action="{!delContprod}" name="delContprod" id="delContprod" reRender="RefreshBlockProd"  oncomplete="processcomplete();">
+                      <apex:param name="contIdParamProd" value="" assignTo="{!DeleteIdProd}"/>
+                      <apex:param name="contIdParam1Prod" value="" assignTo="{!DeleteFromObjectIdProd}"/>
+                 </apex:actionFunction>
+                 <apex:actionFunction action="{!delContOppPro}" name="delContOppPro" id="delContOppPro" reRender="RefreshBlockOppPro"  oncomplete="processcomplete();">
+                      <apex:param name="DeleteIdOppPro" value="" assignTo="{!DeleteIdOppPro}"/>
+                      <apex:param name="DeleteFromObjectIdOppPro" value="" assignTo="{!DeleteFromObjectIdOppPro}"/>
+                 </apex:actionFunction>
+                 <apex:actionFunction action="{!delContCamp}" name="delContCamp" id="delContCamp"  reRender="RefreshBlockCamp" oncomplete="processcomplete();">
+                      <apex:param name="DeleteIdCamp" value="" assignTo="{!DeleteIdCamp}"/>
+                      <apex:param name="DeleteFromObjectIdCamp" value="" assignTo="{!DeleteFromObjectIdCamp}"/>
+                 </apex:actionFunction>
+              
+              
+              
+                    <div class="btn-block pagination-centered">
+                      <a class="btn btn-primary" href="javascript:void(0)" onclick="settingvalue();" ><i class="icon-edit icon-white"></i> Update Settings</a>                                                        
+                    </div> 
+                    
+                   <apex:pagemessages /> 
+                    
+                      <div class="alert alert-info">  
+                       <strong>* In the absence of Opportunity no Autoresponder will be sent. Autoresponder requires creation of opportunity.</strong>
+                      </div>
+                      
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Opportunities</h5>
+                      </div>
+                      <div class="widget-content"> 
+
+                      <apex:outputPanel >
+                           <apex:inputCheckbox value="{!oppvalue}" >             
+                               <apex:actionSupport event="onchange" reRender="{!product}" action="{!HideOppor}"/>           
+                           </apex:inputCheckbox>  Create an Opportunity for the following transaction types:
+                      </apex:outputPanel> 
+                      
+                      <!----------- 8.0 Code ------------->             
+                             <apex:outputPanel rendered="{!oppvalue}" style="margin-left:40px;display:block" styleclass="Stages">
+                                   <apex:inputCheckbox value="{!authorizevalue}" styleClass="authorizevalue"/>
+                                   <apex:outputLabel value="Authorized"></apex:outputLabel><br/>
+                                   <apex:inputCheckbox value="{!declinevalue}" styleClass="declinevalue" />
+                                   <apex:outputLabel value="Declined"></apex:outputLabel><br/>
+                                   <apex:inputCheckbox value="{!invoicevalue}" />
+                                   <apex:outputLabel value="Invoice"></apex:outputLabel><br/>
+                                   <apex:inputCheckbox value="{!purchaseordervalue}" />
+                                   <apex:outputLabel value="Purchase Order"></apex:outputLabel><br/> 
+                                   <apex:inputCheckbox value="{!custompaymentvalue}" />
+                                   <apex:outputLabel value="Custom Payment Type"></apex:outputLabel>   
+                           </apex:outputPanel> <br/>               
+                       <apex:outputtext value="Create a separate opportunity for each of the following fees (should not be zero)." rendered="{!oppvalue}" style="padding-left:20px;" />
+                      <apex:outputPanel rendered="{!oppvalue}" style="margin-left:40px;display:block" styleClass="Stages">
+                            <apex:inputCheckbox value="{!taxoppvalue}"/>
+                            <apex:outputLabel value="Tax"></apex:outputLabel><br/> 
+                            <apex:inputCheckbox value="{!discountoppvalue}"/>
+                            <apex:outputLabel value="Discount (Negative)"></apex:outputLabel><br/> 
+                            <apex:inputCheckbox value="{!shipoppvalue}"/>
+                            <apex:outputLabel value="Shipping"></apex:outputLabel><br/>  
+                            <apex:inputCheckbox value="{!convenienceoppvalue}"/>
+                             <apex:outputLabel value="Convenience Fee"></apex:outputLabel><br/>
+                     </apeX:outputPanel>
+                      
+                      <!----------8.0 Code End ---------->
+                  
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                  
+                  
+
+
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Opportunity Products</h5>
+                      </div>
+                      <div class="widget-content"> 
+                                        
+                        <apex:outputPanel rendered="{!oppvalue==true}">
+                          <div class="alert alert-info"> <strong>* Please Enable Setup > Customize > Opportunities > Settings > Prompt users to add products to opportunities checkbox to work with Opportunity Products</strong> </div>
+
+                            <apex:outputPanel >
+                              <apex:outputPanel id="product" rendered="{!oppvalue==true}">
+                                <apex:inputCheckbox value="{!prodvalue}" styleClass="checkbox">
+                                  <apex:actionSupport event="onchange" reRender="campidcheck,opprecordtypecheck,Settlements"/>
+                                </apeX:inputCheckbox>
+                                Use Products for each item in an Opportunity </apex:outputPanel>
+                              <br/>
+                            </apex:outputPanel>
+                         </apex:outputPanel>    
+                  </div><!-- widget-content -->
+                  </div><!-- widget-box -->                        
+                         
+                         
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Contact Roles</h5>
+                      </div>
+                      <div class="widget-content"> 
+                                               
+                        <apex:outputPanel rendered="{!oppvalue==true}">
+                              <apex:outputPanel id="contactrole" rendered="{!if(oppvalue==true && npspexist==true,true,false) }">
+                              
+                                <apex:inputCheckbox value="{!contactrolevalue}" styleClass="checkbox" styleclass="contactroleselect">
+                                <apex:actionSupport event="onchange" reRender="contactrecordtype"/>
+                                </apex:inputCheckbox>                                
+                                Create Contact Role for each Opportunity
+                                <br/><br/>
+                                <!--   <apex:inputField value="{!ocrrole.Role}" required="false" /></apex:outputPanel><br/>--> 
+                                
+                                <!---------------------------------Contact rolessssssss----------------->
+                                
+                                <apex:outputPanel id="contactrecordtype">
+                                  <apex:outputPanel rendered="{!contactrolevalue==true}">
+                                    <apex:actionstatus id="statusId" startText="Please wait....">
+                                      <apex:facet name="stop">
+                                      
+                                        <apex:outputPanel id="ShowBlockItemrole">
+                                          <apex:outputPanel id="RefreshBlock_role">
+                                            <apex:variable value="0" var="rowNumrole"/>
+                                            
+                                            <div class="overflow_x">
+                                            <apex:dataTable columns="12" value="{!FieldValueslistrole}" var="item" styleclass="table table-bordered table-striped">
+                                                <apex:inputhidden value="{!item.contactrole}" />
+                                              <apex:column style="white-space:nowrap;text-align:center;">
+                                                <apex:outputLabel value="If"></apex:outputLabel>
+                                              </apex:column>
+                                              <apex:column headerValue="Condition">
+                                                <apex:selectlist value="{!item.conditions_skurole}"  size="1" style="width:130px" onchange="recurringcheckcontactrole('{!rowNumrole}');" styleclass="conditionsrole{!rowNumrole}">
+                                                  <apex:selectOptions value="{!showConditionsOppName}" />
+                                                </apex:selectlist>
+                                              </apex:column>
+                                              <apex:column headerValue="SKU "   >
+                                                <apex:inputText value="{!item.SKUcondition}" style="width:100px;" styleClass="skurole{!rowNumrole}" maxlength="100"/>
+                                                <script>
+                                                            recurringcheckcontactrole('{!rowNumrole}');
+                                                         </script> 
+                                              </apex:column>
+                                              <apex:column style="white-space:nowrap;text-align:center;">
+                                                <apex:outputLabel value="assign "></apex:outputLabel>
+                                              </apex:column>
+                                              <apex:column headerValue="* Contact ID (18 Digits ID)">
+                                                <apex:inputText value="{!item.Field_mapping_role}" styleClass="roleidsku{!rowNumrole}" size="25">
+                                                  <c:PaymentAutoCompleteSettings objecttype="contact" autocomplete_textbox="roleidsku{!rowNumrole}" autocomplete_id="{!rowNumrole}" autocomplete_process="0" />
+                                                </apex:inputText>
+                                              </apex:column>
+                                              <apex:column style="white-space:nowrap;text-align:center;">
+                                                <apex:outputLabel value="as" ></apex:outputLabel>
+                                              </apex:column>
+                                              
+                                                <apex:inputHidden value="{!item.RecordIdrole}"/>
+                                              
+                                              <apex:column headerValue="Contact Role">
+                                                <apex:selectList value="{!item.Fieldrolename}" size="1" styleclass="roles{!rowNumrole}">
+                                                  <apex:selectOptions value="{!getShowRoleName}"/>
+                                                </apex:selectList>
+                                              </apex:column>
+                                              <apex:column headerValue="Primary" style="white-space:nowrap;text-align:center;">
+                                                <apex:inputCheckbox value="{!item.primary}" styleClass="primary"/>
+                                              </apex:column>
+                                              <apex:column headerValue="Action" style="white-space:nowrap;text-align:center;">                                              
+                                                <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delControleprocess('{!JSENCODE(rowNumrole)}','{!JSENCODE(item.RecordIdrole)}');"><i class="icon-trash"></i></a></div>
+                                                <apex:actionstatus id="statusIdForDeleterole" startText="Please wait.."> </apex:actionstatus>
+                                              </apex:column>   
+                                              <apex:column >                                           
+                                                <apex:variable var="rowNumrole" value="{!VALUE(rowNumrole) + 1}"/>                                            
+                                                </apex:column>
+                                            </apex:dataTable>
+                                            </div>
+                                            
+                                            <input type="hidden" value="{!rowNumrole}" class="rowNumrole" name="rowvaluesrole"/>
+                                            
+                                            <div class="alert alert-info"> <strong>* If blank Payee will be assigned as the contact</strong> </div>
+                                            
+                                            <div class="btn-block pagination-centered"> <a class="btn" href="javascript:void(0)" onclick="addItemroleprocess();" ><i class="icon-plus-sign"></i> Add New Role</a></div>
+                                            
+                                            <!--<apex:commandButton action="{!addItemrole}" style="margin-left:50px;"  value="Add New Role" reRender="RefreshBlock_role" status="NextRowStatusrole"  onclick="if(!CheckSaveData()) return false;"/>-->
+                                            <apex:actionstatus id="NextRowStatusrole" startText="Please wait...."> </apex:actionstatus>
+                                          </apex:outputPanel>
+                                        </apex:outputPanel>
+                                        
+                                      </apex:facet>
+                                    </apex:actionstatus>
+                                  </apex:outputPanel>
+                                </apex:outputPanel>
+                                
+                                <!--------------------------------Contact roles Endddd------------------->
+                                </apex:outputPanel>
+
+                              </apex:outputPanel>
+
+                        
+                  </div><!-- widget-content -->
+                  </div><!-- widget-box -->                         
+                        
+                        
+                        
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Customize Name</h5>
+                      </div>
+                      <div class="widget-content">                        
+
+                                <apex:outputPanel rendered="{!oppvalue==true}">
+                                  
+                                  <!--------------- customize name --------------->
+                                  
+                                  <apex:outputPanel rendered="{!if(oppvalue==true,true,false) }">
+                                    <apex:inputCheckbox value="{!customname}" styleClass="checkboxname">
+                                      <apex:actionSupport event="onchange" reRender="customname"   />
+                                    </apex:inputCheckbox>
+                                    Opportunity > Customize Name (Truncated to 120 characters) --> Name will be set as the first satisfied condition </apex:outputPanel>
+                                  <br/><br/>
+                                  <!------------Anu Code Starts Here ---------------->
+                                  
+                                  <apex:outputPanel id="customname">
+                                    <apex:outputPanel rendered="{!if(customname == true,true,false)}">
+                                      <apex:variable value="0" var="rowNumOppname"/>
+                                      
+                                      <div class="overflow_x">
+                                      <apex:dataTable columns="15" value="{!FieldValueslistOppCustomName}"  var="item" styleclass="table table-bordered table-striped">
+                                        <apex:column style="white-space:nowrap;text-align:center;">
+                                          <apex:outputLabel value="If"></apex:outputLabel>
+                                        </apex:column>
+                                        <apex:column headerValue="Condition">
+                                          <apex:selectlist value="{!item.conditions_name_sku}"  size="1" style="width:130px"  styleclass="conditionsoppname{!rowNumOppname}" onchange="recurringcheckoppname('{!rowNumOppname}');">
+                                            <apex:selectOptions value="{!showConditionsOppName}" />
+                                          </apex:selectlist>
+                                        </apex:column>
+                                        <apex:column headerValue="SKU"  >
+                                          <apex:inputText value="{!item.Namesku}" styleClass="skuname{!rowNumOppname}" size="6" maxlength="100" style="width: 100px;"/>
+                                          <script>
+                                          recurringcheckoppname('{!rowNumOppname}');
+                                          </script> 
+                                        </apex:column>
+                                        <apex:column style="white-space:nowrap;text-align:center;">
+                                          <apex:outputLabel value=">>"></apex:outputLabel>
+                                        </apex:column>
+                                        <apex:column headerValue="Text*">
+                                          <apex:inputText value="{!item.firstnameseparator1}" styleClass="skutext1{!rowNumOppname}" size="6" maxlength="120" style="width: 100px;"/>
+                                        </apex:column>
+                                        <apex:column headerValue="Field">
+                                          <apex:selectlist value="{!item.firstnameprefix1}"  size="1"  styleClass="skufield1{!rowNumOppname}" style="width: 130px;">
+                                            <apex:selectOptions value="{!showFieldsOppFirstPrefixName}" />
+                                          </apex:selectlist>
+                                        </apex:column>
+                                        <apex:column headerValue="Text*">
+                                          <apex:inputText value="{!item.secondnameseparator1}" styleClass="skutext2{!rowNumOppname}" size="6" maxlength="120" style="width: 100px;"/>
+                                        </apex:column>
+                                        <apex:column headerValue="Field">
+                                          <apex:selectlist value="{!item.secondnameprefix1}"  size="1" styleClass="skufield2{!rowNumOppname}" style="width: 130px;">
+                                            <apex:selectOptions value="{!showFieldsOppFirstPrefixName}" />
+                                          </apex:selectlist>
+                                        </apex:column>
+                                        <apex:column headerValue="Text*">
+                                          <apex:inputText value="{!item.thirdnameseparator1}" styleClass="skutext3{!rowNumOppname}" size="6" maxlength="120" style="width: 100px;"/>
+                                        </apex:column>
+                                        <apex:column headerValue="Field">
+                                          <apex:selectlist value="{!item.thirdnameprefix1}"  size="1" styleClass="skufield3{!rowNumOppname}" style="width: 130px;">
+                                            <apex:selectOptions value="{!showFieldsOppFirstPrefixName}" />
+                                          </apex:selectlist>
+                                        </apex:column>
+                                        <apex:column headerValue="Text*" >
+                                          <apex:inputText value="{!item.customtext}" styleClass="skutext4{!rowNumOppname}" size="6" maxlength="120" style="width: 100px;"/>
+                                        </apex:column>
+                                          <apex:inputHidden value="{!item.RecordIdOppName}"/>
+                                          <apex:inputhidden value="{!item.OppName}"/>
+                                        <apex:column headerValue="Action" style="white-space:nowrap;text-align:center;">
+                                          <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delOppNameprocess('{!JSENCODE(rowNumOppname)}','{!JSENCODE(item.RecordIdOppName)}');"><i class="icon-trash"></i></a></div>
+                                          <apex:actionstatus id="statusIdForDeleteAOppName" startText="Please wait..">
+                                            <apex:facet name="stop"/>
+                                          </apex:actionstatus>
+                                        </apex:column>
+                                        <apex:column >
+                                          <apex:variable var="rowNumOppname" value="{!VALUE(rowNumOppname) + 1}"/>
+                                          </apex:column>
+                                      </apex:dataTable>
+                                      </div>
+                                      
+                                      <input type="hidden" value="{!rowNumOppname}" class="rowvaluesOppName" name="rowvaluesOppName"/>
+                                      
+                                      <div class="alert alert-info"> <strong> * Allowed Characters Alphanumeric , . # - ' _ / + ( ) { } [ ] use {%20} for blank space.</strong> </div>
+                                      
+                                      <div class="btn-block pagination-centered"> <a class="btn" href="javascript:void(0)" onclick="addItemOppNameprocess();" ><i class="icon-plus-sign"></i> Add New Name</a></div>
+                                      
+                                      <!--<apex:commandButton action="{!addItemOppName}"  value="Add New" style="margin-left:50px;" reRender="customname" status="NextRowStatusOppName" />--> 
+                                      
+                                    </apex:outputPanel>
+                                  </apex:outputPanel>
+                                  <!----------- Anu Code Ends Here ---------------> 
+                                  
+                                  <!--------------- customize name End  ----------> 
+                                  
+                                </apex:outputPanel>
+
+                  </div><!-- widget-content -->
+                  </div><!-- widget-box -->
+                          
+                          
+                          
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Stage</h5>
+                      </div>
+                      <div class="widget-content">
+                      
+                                <apex:pageBlockSection columns="1" rendered="{!oppvalue==true}">
+                                  <apex:pageBlockSectionItem >
+                                    <apex:outputLabel value="Authorized Transactions:" style="position:relative;"></apex:outputLabel>
+                                    <apex:inputField value="{!OppField.StageName}" required="false" />
+                                  </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem > Declined Transactions:
+                                    <apex:inputField value="{!DeclinedField.StageName}" required="false"/>
+                                  </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem > Invoice Transactions:
+                                    <apex:inputField value="{!InvoiceField.StageName}" required="false"/>
+                                  </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem > Purchase Order Transactions:
+                                    <apex:inputField value="{!POField.StageName}" required="false"/>
+                                  </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem > Custom Payment Type Transactions:
+                                    <apex:inputField value="{!custompaymenttype.StageName}" required="false"/>
+                                  </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem > Free Invoice/Custom Payment Transactions:
+                                    <apex:inputField value="{!FreeOption.StageName}" required="false"/>
+                                  </apex:pageBlockSectionItem>
+                                  <apex:pageBlockSectionItem > Pre-Authorized Transactions:
+                                    <apex:inputField value="{!futuretransaction.StageName}" required="false"/>
+                                  </apex:pageBlockSectionItem>
+                                </apex:pageBlockSection>
+
+                  </div><!-- widget-content -->
+                  </div><!-- widget-box -->                  
+                  
+
+                  <apex:outputPanel id="Settlements" rendered="{!IF(prodvalue==false && oppvalue == true,true,false)}" ><!--  -->
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Opportunity Settlements</h5>
+                      </div>
+                      <div class="widget-content">                  
+                                
+                                <div class="alert alert-info"> <strong>Include the following stages with probability of less than 100% and not included in any C&amp;P Transactions.</strong> </div>
+                                    <apex:outputLabel value="Stages:" style="font-weight:bold;"/>
+                                    <apex:outputPanel style="margin-left:20px;display:block;">
+                                      <apex:selectCheckboxes value="{!ManualOppField}" required="false"  layout="pageDirection" styleClass="Stages">
+                                        <apex:selectOptions value="{!stages}" />
+                                      </apex:selectcheckboxes>
+                                    </apex:outputPanel>
+
+                  </div><!-- widget-content -->
+                  </div><!-- widget-box -->
+                  </apex:outputPanel>
+                  
+                  
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Default Lead Source</h5>
+                      </div>
+                      <div class="widget-content">             
+                                    <apex:pageBlockSection columns="1" rendered="{!oppvalue==true}" >
+                                      <apex:pageBlockSectionItem > Default Lead Source :
+                                        <apex:inputField value="{!LeadField.LeadSource}" required="false"/>
+                                      </apex:pageBlockSectionItem>                                      
+                                    </apex:pageBlockSection>
+                                    <br/>
+                                    <div class="alert alert-info"><strong>* Lead source may be customized per SKU in the Custom Question Mapping tab.</strong></div>
+                  </div><!-- widget-content -->
+                  </div><!-- widget-box -->             
+             
+
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Record Types</h5>
+                      </div>
+                      <div class="widget-content">             
+                                <apex:outputPanel id="opprecordtypecheck" rendered="{!oppvalue}">                                  
+                                    <!---------------------------Opportunities ------------------------>
+                                    
+                                    <apex:outputPanel id="ShowOppItem" rendered="{!IF(prodvalue==false,true,false)}">
+                                      <apex:outputPanel id="RefreshBlockOpp" rendered="{!IF(prodvalue==false,true,false)}">
+                                        <apex:outputLabel style="font-weight:bold;" > New Opportunities</apex:outputLabel>
+                                        <apex:variable value="0" var="rowNumOpp"/>
+                                        
+                                        <apex:dataTable columns="9" value="{!FieldValueslistOpp}" var="item" cellspacing="-10px" styleclass="table table-bordered table-striped">
+                                          <apex:column style="white-space:nowrap;text-align:center;">
+                                            <apex:outputLabel value="If"></apex:outputLabel>
+                                          </apex:column>
+                                          <apex:column headerValue="Condition">
+                                            <apex:selectlist value="{!item.conditions_sku}"  size="1" style="width:130px" onchange="recurringcheck('{!rowNumOpp}');" styleclass="conditions{!rowNumOpp}"> 
+                                              <!--   <apex:selectOptions value="{!showConditionWID}" rendered="{!IF(prodvalue==true,true,false)}"/> -->
+                                              <apex:selectOptions value="{!showConditionsOppName}" rendered="{!IF(prodvalue==false,true,false)}"/>
+                                            </apex:selectlist>
+                                          </apex:column>
+                                          <apex:column headerValue="SKU " headerClass="skualg" >
+                                            <apex:inputText value="{!item.sku}" style="width:150px;" styleClass="sku{!rowNumOpp}"  maxlength="100"/>
+                                             <script>recurringcheck('{!rowNumOpp}');</script> 
+                                          </apex:column>
+                                          <apex:column style="white-space:nowrap;text-align:center;">
+                                            <apex:outputLabel value=">>"></apex:outputLabel>
+                                          </apex:column>
+                                            <apex:inputHidden value="{!item.RecordIdOpp}"/>
+                                            <apex:inputhidden value="{!item.opp}"/>
+                                          <apex:column headerValue="Record Type">
+                                            <apex:selectlist value="{!item.Field_mapping_sku}"  size="1"  styleClass="record{!rowNumOpp}">
+                                              <apex:selectOptions value="{!showFieldsOpp}" />
+                                            </apex:selectlist>
+                                          </apex:column>
+                                          <apex:column headerValue="Action" style="white-space:nowrap;text-align:center;">
+                                            <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delContoppprocess('{!JSENCODE(rowNumOpp)}','{!JSENCODE(item.RecordIdOpp)}');"><i class="icon-trash"></i></a></div>
+                                            <!--<apex:commandButton value="Delete" action="{!delContopp}" reRender="RefreshBlockOpp" status="statusIdForDeleteAOpp">
+                                                                   <apex:param name="contIdParamOpp" value="{!rowNumOpp}" assignTo="{!DeleteIdOpp}"/>
+                                                                   <apex:param name="contIdParam1Opp" value="{!item.RecordIdOpp}" assignTo="{!DeleteFromObjectIdOpp}"/>
+                                                                 </apex:commandButton><br />--> 
+                                            
+                                          </apex:column>
+                                          <apex:column >
+                                            <apex:variable var="rowNumOpp" value="{!VALUE(rowNumOpp) + 1}"/>
+                                          </apex:column>
+                                        </apex:dataTable>
+                                        
+                                        <input type="hidden" value="{!rowNumOpp}" class="rowvaluesOpp" name="rowvaluesOpp"/>
+                                        <div class="btn-block pagination-centered">
+                                        <a class="btn" href="javascript:void(0)" onclick="addItemOppprocess();" ><i class="icon-plus-sign"></i> Add New</a>
+                                        </div>
+                                        <!-- <apex:commandButton action="{!addItemOpp}"  value="Add New" style="margin-left:50px;" reRender="RefreshBlockOpp" status="NextRowStatusOpp" onclick="if(!CheckSaveDataOpp()) return false;"/>--> 
+                                        
+                                      </apex:outputPanel>
+                                    </apex:outputPanel>
+                                    
+                                    <!---------------------------Opportunities End ------------------------>
+                                    <apex:outputPanel id="ShowOppProItem" rendered="{!IF(prodvalue==true,true,false)}">
+                                      <apex:outputPanel id="RefreshBlockOppPro" rendered="{!IF(prodvalue==true,true,false)}">
+                                        <apex:outputLabel style="line-height:40px;font-weight:bold;" > New Opportunities</apex:outputLabel>
+                                        <apex:variable value="0" var="rowNumOpp"/>
+                                        
+                                        <apex:dataTable columns="9" value="{!FieldValueslistOppPro}" var="item" styleclass="table table-bordered table-striped">
+                                          <apex:column style="white-space:nowrap;text-align:center;">
+                                            <apex:outputLabel value="If"></apex:outputLabel>
+                                          </apex:column>
+                                          <apex:column headerValue="Condition">
+                                            <apex:selectlist value="{!item.conditions_sku}"  size="1" style="width:130px" onchange="recurringcheckpro('{!rowNumOpp}');" styleclass="conditionspro{!rowNumOpp}">
+                                              <apex:selectOptions value="{!showConditionWIDOpp}" />
+                                            </apex:selectlist>
+                                          </apex:column>
+                                          <apex:column headerValue="WID " headerClass="skualg" >
+                                            <apex:inputText value="{!item.sku}" style="width:150px;" styleClass="skupro{!rowNumOpp}"  maxlength="10"/> 
+                                            <script>recurringcheckpro('{!rowNumOpp}');</script> 
+                                          </apex:column>
+                                          <apex:column style="white-space:nowrap;text-align:center;">
+                                            <apex:outputLabel value=">>"></apex:outputLabel>
+                                          </apex:column>
+                                            <apex:inputHidden value="{!item.RecordIdOpp}"/>
+                                            <apex:inputhidden value="{!item.opp}"/>
+                                          <apex:column headerValue="Record Type">
+                                            <apex:selectlist value="{!item.Field_mapping_sku}"  size="1"  styleClass="recordpro{!rowNumOpp}">
+                                              <apex:selectOptions value="{!showFieldsOpp}" />
+                                            </apex:selectlist>
+                                          </apex:column>
+                                          <apex:column headerValue="Action" style="white-space:nowrap;text-align:center;">
+                                            <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delContOppProprocess('{!JSENCODE(rowNumOpp)}','{!JSENCODE(item.RecordIdOpp)}');"><i class="icon-trash"></i></a></div>
+                                          </apex:column>
+                                          <apex:column >  
+                                            <apex:variable var="rowNumOpp" value="{!VALUE(rowNumOpp) + 1}"/>
+                                          </apex:column>
+                                        </apex:dataTable>
+                                        <input type="hidden" value="{!rowNumOpp}" class="rowvaluesOpppro" name="rowvaluesOpp"/>
+                                        <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0)" onclick="addItemOppProprocess()" ><i class="icon-plus-sign"></i> Add New</a></div>
+                                        <!-- <apex:commandButton action="{!addItemOppPro}"  value="Add New" style="margin-left:50px;" reRender="RefreshBlockOppPro" status="NextRowStatusOppPro" onclick="if(!CheckSaveDataOppPro()) return false;"/>--> 
+                                        
+                                      </apex:outputPanel>
+                                    </apex:outputPanel>
+
+                                    
+                                    <!--------- For Products anustart ------------->
+                                    <apex:outputPanel rendered="{!prodvalue}">
+                                      <apex:outputPanel id="ShowProdItem" rendered="{!prodvalue}">
+                                        <apex:outputPanel id="RefreshBlockProd">
+                                          <apex:outputLabel style="font-weight:bold;"> New Products</apex:outputLabel>
+                                          <apex:variable value="0" var="rowNumProd"/>
+                                          
+                                          <apex:dataTable columns="9" value="{!FieldValueslistProd}" var="item" styleclass="Products table table-bordered table-striped">>
+                                          <apex:column style="white-space:nowrap;text-align:center;">
+                                            <apex:outputLabel value="If"></apex:outputLabel>
+                                          </apex:column>
+                                          <apex:column headerValue="Condition">
+                                            <apex:selectlist value="{!item.conditions_prod_sku}"  size="1" style="width:130px" onchange="recurringproductcheck('{!rowNumProd}');" styleclass="prodconditions{!rowNumProd}">
+                                              <apex:selectOptions value="{!showConditionsOppName}" />
+                                            </apex:selectlist>
+                                          </apex:column>
+                                          <apex:column headerValue="SKU " headerClass="skualg">
+                                            <apex:inputText value="{!item.prodsku}"    style="width:150px;" styleClass="prodsku{!rowNumProd}" maxlength="100"/>
+                                            <script>recurringproductcheck('{!rowNumProd}');</script> 
+                                          </apex:column>
+                                          <apex:column style="white-space:nowrap;text-align:center;">
+                                            <apex:outputLabel value=">>"></apex:outputLabel>
+                                          </apex:column>
+                                            <apex:inputHidden value="{!item.RecordIdProd}"/>
+                                            <apex:inputhidden value="{!item.prod}"/>
+                                          <apex:column headerValue="Record Type">
+                                            <apex:selectlist value="{!item.Field_mapping_prod_sku}"  size="1" >
+                                              <apex:selectOptions value="{!showFieldsProd}" />
+                                            </apex:selectlist>
+                                          </apex:column>
+                                          <apex:column headerValue="Action" style="white-space:nowrap;text-align:center;">
+                                            <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delContprodprocess('{!JSENCODE(rowNumProd)}','{!JSENCODE(item.RecordIdProd)}');"><i class="icon-trash"></i></a></div>
+                                            <!-- <apex:commandButton value="Delete" action="{!delContprod}" reRender="RefreshBlockProd" status="statusIdForDeleteAProd">
+                                                                   <apex:param name="contIdParamProd" value="{!rowNumProd}" assignTo="{!DeleteIdProd}"/>
+                                                                   <apex:param name="contIdParam1Prod" value="{!item.RecordIdProd}" assignTo="{!DeleteFromObjectIdProd}"/>
+                                                                 </apex:commandButton><br /> --> 
+                                            
+                                          </apex:column>
+                                          <apex:column >
+                                            <apex:variable var="rowNumProd" value="{!VALUE(rowNumProd) + 1}"/>
+                                           </apex:column> 
+                                          </apex:dataTable>
+                                          <input type="hidden" value="{!rowNumProd}" class="rowvaluesProd" name="rowvaluesProd"/>
+                                          <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0)" onclick="addItemProdprocess();" ><i class="icon-plus-sign"></i> Add New</a></div>
+                                          <!--    <apex:commandButton action="{!addItemProd}"  value="Add New"  style="margin-left:40px;" reRender="RefreshBlockProd" status="NextRowStatusProd" onclick="if(!CheckSaveDataProd()) return false;"/>-->
+                                          <apex:actionstatus id="NextRowStatusProd" startText="Please wait....">
+                                            <apex:facet name="stop"/>
+                                          </apex:actionstatus>
+                                        </apex:outputPanel>
+                                      </apex:outputPanel>
+                                    </apex:outputPanel>
+                                </apex:outputPanel>
+                                <!-------- For Products anuend  -------------->  
+                  </div><!-- widget-content -->
+                  </div><!-- widget-box -->                                
+                                     
+                  
+                  <apex:outputPanel id="campidcheck">
+               
+                  <apex:outputPanel rendered="{!IF(prodvalue==false && oppvalue == true,true,false)}" >
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Primary Campaign Source</h5>
+                      </div>
+                      <div class="widget-content">                    
+                                                                 
+                                  <!-------Campaigns SKU Start ------------------------------>
+                                  
+                                  <apex:outputPanel id="xxx"  > <!-- rendered="{!IF(prodvalue==false && oppvalue == true,true,false)}" -->
+                                    <apex:outputPanel id="RefreshBlockCamp">
+                                    <apex:variable value="0" var="rowNumCamp"/>
+                                    
+                                    <apex:dataTable columns="9" value="{!FieldValueslistCamp}"  styleClass="Products table table-bordered table-striped" var="item" >
+                                      <apex:column style="white-space:nowrap;text-align:center;">
+                                        <apex:outputLabel value="If"></apex:outputLabel>
+                                      </apex:column>
+                                      <apex:column headerValue="Condition">
+                                        <apex:selectlist value="{!item.conditions_camp_sku}"  size="1" style="width:130px"   onchange="recurringcampcheck('{!rowNumCamp}');" styleclass="campconditions{!rowNumCamp}">
+                                          <apex:selectOptions value="{!showConditionsOppName}" />
+                                        </apex:selectlist>
+                                      </apex:column>
+                                      <apex:column headerValue="SKU " headerClass="skualg">
+                                        <apex:inputText value="{!item.Campsku}"    style="width:150px;" styleClass="Campsku{!rowNumCamp}"  maxlength="100"/>
+                                        <script>
+                                        recurringcampcheck('{!rowNumCamp}');
+                                        </script> 
+                                      </apex:column>
+                                      <apex:column style="white-space:nowrap;text-align:center;">
+                                        <apex:outputLabel value=">>"></apex:outputLabel>
+                                      </apex:column>
+                                        <apex:inputHidden value="{!item.RecordIdCamp}"/>
+                                        <apex:inputhidden value="{!item.camp}"/>
+                                      <apex:column headerValue="*Campaign ID (18 Digits ID)">
+                                        <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                        <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                        <apex:inputText value="{!item.Field_mapping_camp_sku}" styleClass="Campidsku{!rowNumCamp}" size="25">
+                                          <c:PaymentAutoCompleteSettings objecttype="campaign" autocomplete_textbox="Campidsku{!rowNumCamp}" autocomplete_id="{!rowNumCamp}" autocomplete_process="0" />
+                                        </apex:inputText>
+                                        </apex:outputPanel>
+                                      </apex:column>
+                                      <apex:column headerValue="Action" style="white-space:nowrap;text-align:center;">
+                                        <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delContCampprocess('{!JSENCODE(rowNumCamp)}','{!JSENCODE(item.RecordIdCamp)}');"><i class="icon-trash"></i></a></div>
+                                      </apex:column>
+                                      <apex:column >
+                                        <apex:variable var="rowNumCamp" value="{!VALUE(rowNumCamp) + 1}"/>
+                                        </apex:column>
+                                    </apex:dataTable>
+                                    
+                                    <input type="hidden" value="{!rowNumCamp}" class="rowvaluesCamp" name="rowvaluesCamp"/>
+                                    <div class="alert alert-info">
+                                    <apex:outputLabel ><b>* You may also type the campaign name for automatic lookup</b></apex:outputLabel>
+                                    </div>
+ 
+                                    <div class="btn-block pagination-centered"><a class="btn" href="javascript:void(0)" onclick="addItemCampprocess();" ><i class="icon-plus-sign"></i> Add New</a></div>
+                                    <!--<apex:commandButton action="{!addItemCamp}"  value="Add New"  style="margin-left:40px;" reRender="RefreshBlockCamp" status="NextRowStatusCamp" onclick="if(!CheckSaveDataCamp()) return false;"/>-->
+                                    
+                                    </apex:outputPanel>
+                                  </apex:outputPanel>
+                                  
+                                  <!--------Campaigns SKU End ------------------------> 
+                                  <!-----Test End  ---> 
+                                
+                  </div><!-- widget-content -->
+                  </div><!-- widget-box -->   
+                  </apex:outputPanel>                              
+                  </apex:outputPanel>
+  
+              
+              
+                    
+          </apex:pageBlock> 
+       </div>        
+</apex:form>
+</apex:page>

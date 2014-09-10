@@ -1,0 +1,223 @@
+<apex:page showHeader="false" standardStylesheets="false" controller="CnP_PaaS_EVT.EventRegistration" action="{!GotoPage_3}"> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script>
+$(document).ready(function () { 
+                      var Title=$(".Title").text();
+                      $(".Title").html(Title);
+                      
+                      var titleandinfo=$(".titleandinfo").text();
+                      $(".titleandinfo").html(titleandinfo);
+                      
+                      var t1=$(".t1").text();
+                      $(".t1").html(t1);
+                      
+                      var sectiondesc=$(".sectiondesc").text();
+                      $(".sectiondesc").html(sectiondesc);
+                      
+                      var eventend=$(".eventend").text();
+                      $(".eventend").html(eventend);
+                      
+                      var soldout=$(".soldout").text();
+                      $(".soldout").html(soldout);
+                      
+                      var FooterInfo=$(".FooterInfo").text();
+                      $(".FooterInfo").html(FooterInfo);
+                      
+                      var termsandconditions=$(".termsandconditions").text();
+                      $(".termsandconditions").html(termsandconditions);
+ });
+</script>
+<style>
+     #cnp {
+            line-height:25px;
+            color:#CCC;
+            font-family:Arial, Helvetica, sans-serif;
+            font-size:11px;
+            max-width:700px;
+            text-align:center;
+            margin:0 auto;
+    
+    } 
+
+</style>
+<script>
+            <!-- IE11 hack -->
+            jQuery(window).load(function() {
+            if(navigator.userAgent.match(/Trident.*rv:11\./)) {
+            jQuery('body').addClass('ie11');
+               $('#alertIE11').modal({
+                  show:true,
+                  backdrop: 'static',
+                  keyboard: false
+                  });
+            }
+            if (document.all && (!document.documentMode || (document.documentMode && document.documentMode <= 8))) {
+            jQuery('body').addClass('ie11');
+               $('#alertIE11').modal({
+                  show:true,
+                  backdrop: 'static',
+                  keyboard: false
+                  });
+            }
+
+            });
+        </script>  
+        
+            <style>
+            .modal-backdrop, .modal{
+            display:none;
+            }
+            body.ie11 .modal-backdrop{
+            display:block;
+            opacity: .6;
+            filter: alpha(opacity=60);
+            z-index: 999!important;
+            height:1024px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+            }
+            body.ie11 .modal {
+            display:block;
+            font-family: Arial, sans-serif;
+            z-index: 99999!important;
+            width:400px;
+            left:50%;
+            position: absolute;
+            top: 25%;
+            margin-left:-200px;
+            background-color: #fff;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            }
+            body.ie11 .modal-header{
+            background-color: #efefef;
+            background-image: -webkit-gradient(linear, 0 0%, 0 100%, from(#fdfdfd), to(#eaeaea));
+            background-image: -webkit-linear-gradient(top, #fdfdfd 0%, #eaeaea 100%);
+            background-image: -moz-linear-gradient(top, #fdfdfd 0%, #eaeaea 100%);
+            background-image: -ms-linear-gradient(top, #fdfdfd 0%, #eaeaea 100%);
+            background-image: -o-linear-gradient(top, #fdfdfd 0%, #eaeaea 100%);
+            background-image: -linear-gradient(top, #fdfdfd 0%, #eaeaea 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fdfdfd', endColorstr='#eaeaea',GradientType=0 );
+            border-bottom: 1px solid #CDCDCD;
+            padding: 8px 15px;
+            }
+            body.ie11 .modal-body {
+            padding: 10px;
+            }
+            </style>
+            
+<apex:form >
+ <apex:messages />
+
+<apex:outputPanel id="DisplayPage" rendered="{!levelcheck}">
+<apex:pageBlock rendered="{!if(StyleRec.CnP_PaaS_EVT__Theme_Selection__c=='Standard Theme',true,false)}">
+<apex:include pageName="CnP_PaaS_EVT__EventRegistrationLayout"/>
+<div id="Main">
+ 
+  <div id="Header" style="display:{!IF(StyleRec.CnP_PaaS_EVT__Display_Banner__c==true,'block','none')}">
+    <div id="HeaderLeft"> <span class="Title"><apex:outputtext value="{!StyleRec.CnP_PaaS_EVT__Upload_banner__c}" style="display:none"/></span></div>
+   
+  </div>
+  <div id="ContentArea">
+  <div id="Right">
+    
+     <apex:outputLink value="/servlet/servlet.FileDownload?file={!pdfId}" target="_blank" style="text-decoration:none" title="{!EventRec.CnP_PaaS_EVT__Event_title__c}" >
+     <div align="right" class="DownloadAgenda" id="{!pdfId}" style="display:{!IF(StyleRec.CnP_PaaS_EVT__Show_ajenda__c==true && pdfId!="",'block','none')}">
+         <div style="margin-top:2px;float:left;"><apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__pdf_icon)}" /></div>{!if(EventRec.CnP_PaaS_EVT__Agenda_Display_Name__c!="",EventRec.CnP_PaaS_EVT__Agenda_Display_Name__c,'Download Agenda')}
+        
+     </div>
+     </apex:outputLink>
+  <div id="ContentTop" style="display:{!IF(StyleRec.CnP_PaaS_EVT__Display_Title_Information__c==true,'block','none')}">  
+     <div class="titleandinfo">
+         <apex:outputtext value="{!StyleRec.CnP_PaaS_EVT__Title_and_information__c}" style="display:none" /> 
+          
+     </div>    
+   </div>
+        <div id="ContentBott">
+           <div class="Box">
+                       <div class="Top">
+                                <!-- <div class="T-Left"></div>-->
+                                 <div class="Title1" style="display:{!IF(StyleRec.Display_Title__c==true,'block','none')}">
+                                       <h3 class="t1"><apex:outputtext value="{!StyleRec.CnP_PaaS_EVT__Section_Title__c}" style="display:none"/></h3>
+                                 </div>  
+                                <!-- <div class="T-Right"></div> -->
+                       </div>
+                       <div class="ContMiddle">
+                                <div style="display:{!IF(StyleRec.Display_Description__c==true && timeout==false && eventsoldout==false,'block','none')}">
+                                <div class="sectiondesc">
+                                    <apex:outputtext value="{!StyleRec.CnP_PaaS_EVT__Section_Description__c}" style="display:none" />
+                                </div></div>
+                                <div style="display:{!if(timeout==true,'block','none')}">
+                                <div class="eventend">
+                                     <apex:outputtext value="{!EventRec.CnP_PaaS_EVT__Event_Ended__c}" style="display:none"/> 
+                                </div></div> 
+                                <div style="display:{!if(eventsoldout==true,'block','none')}">
+                                <div class="soldout">
+                                      <apex:outputtext value="{!EventRec.CnP_PaaS_EVT__Sold_Out__c}" style="display:none"/> 
+                                </div> </div> 
+                       </div>
+                       <!--<div class="Bottom">
+                                    <div class="B-Left"></div>
+                                    <div class="B-Middle"></div>
+                                    <div class="B-Right"></div>
+                       </div>-->
+                       
+               </div> 
+                
+               
+                  
+        </div>
+        <div id="ContentBot" style="padding-bottom:10px;display:{!IF(StyleRec.Show_terms_conditions__c==true,'block','none')}">      
+                <apex:inputCheckbox id="term" styleClass="term" onclick="return check(this.checked);" style="display:{!IF(StyleRec.CnP_PaaS_EVT__Acknowledgement_mandatory__c==true,'block','none')}"/>                         
+                <div class="termsandconditions">
+                <apex:outputtext value="{!StyleRec.CnP_PaaS_EVT__Terms_conditions__c}" style="display:none" />  
+                </div>              
+        </div>       
+        <div style="display:{!if(timeout==true || eventsoldout==true,'none','block')}">        
+       <apex:commandButton value="{!StyleRec.CnP_PaaS_EVT__Button_Label__c}" action="{!Page_1_topage3}" styleClass="Submit test1 next" id="Submit" style="display:{!IF(StyleRec.CnP_PaaS_EVT__Acknowledgement_mandatory__c==true,'none','block')}" >
+                                   <apex:param id="eventId" assignTo="{!eid}" value="{!EventRec.Id}"/>
+                                   <apex:param id="PageName" assignTo="{!LayoutPageName}" value="Page 2-Registrant Info"/>
+       </apex:commandButton>      
+       </div>
+  </div>
+  
+  </div>
+
+      <div id="Footer" style="display:{!IF(StyleRec.CnP_PaaS_EVT__Display_Footer__c==true,'block','none')}">
+           <span class="FooterInfo"><apex:outputtext value="{!StyleRec.CnP_PaaS_EVT__Footer_information__c}" style="display:none"/></span>
+       </div> 
+  </div>
+ 
+
+  </apex:pageBlock>
+  
+  </apex:outputPanel>
+ 
+  </apex:form>
+  <apex:outputPanel rendered="{!levelcheck}">
+  <apex:pageBlock rendered="{!if(StyleRec.CnP_PaaS_EVT__Theme_Selection__c=='Custom Theme',true,false)}">
+ 
+        <apex:include pageName="CnP_PaaS_EVT__RegistrationEngine"/>   
+  </apex:pageBlock>
+   </apex:outputPanel>
+  <div id="cnp">Powered by Click &amp; Pledge</div>
+
+<div class="modal-backdrop fade in"></div>
+<div id="alertIE11" class="modal hide">
+  <div class="modal-header">
+    <strong style="font-size:20px;color:#FF0000;text-align:center;display:block;">STOP!</strong>
+  </div>
+  <div class="modal-body">
+    <p style="font-size:15px;color:#FF0000;text-align:center;">You are using Internet Explorer (IE) 11. Unfortunately the registration form does not support IE 11. Please use the latest version of Chrome, Firefox, Opera or Safari.</p>
+  </div>
+  <div class="modal-footer">
+  </div>
+</div>
+
+</apex:page>

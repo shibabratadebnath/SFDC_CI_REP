@@ -1,0 +1,2266 @@
+<apex:page controller="CnP_PaaS.InvoiceVirtualTerminal" extensions="CnP_PaaS.autoCompleteController" action="{!loadhelpContent}">  
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+<style>
+    a.filelink {
+         display:block;
+         text-decoration:none;
+         color:#333333;
+         padding:5px;
+         background-color:#FAFAFA;
+         border:solid 1px #666666;
+        margin-top:15px;
+        float:left;
+        margin-left:20px;
+    }
+    a.filelink:hover {
+         background-color:#333333;
+         color:#FFFFFF;
+    }
+
+.items {
+   font-size:13px;
+    color:#000;
+   /* width: 850px; */
+    text-align: left;
+    border-collapse: collapse;
+    box-shadow: 0 0 5px #CCC;
+    border: 1px solid #666;
+
+}
+.items thead {
+ background:#999;
+}
+.items th {
+        font-size: 12px;
+        background:#999;
+        background-repeat:repeat-x;
+        padding:6px 6px 0px 6px;
+       font-weight:600;
+         color:#FFF;
+
+}
+.items td {
+    padding:10px 10px 0px 10px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #CCC;
+    color:#666;
+
+}
+.items tbody td {
+  height:27px;
+
+}
+.requiredInput .requiredBlock {
+    bottom: 10px !important;
+}
+.items .requiredInput .requiredBlock{
+  bottom:8px !important;
+}
+
+.items .btn {
+ padding:0px;
+
+}
+.calenderIcon{    
+    
+    padding-left: 4px;
+    padding-top: 2px;
+   
+}
+.summary {
+    text-align: right;
+    float: left;
+    padding-left: 60%;
+    height:22px;
+
+
+}
+.summary label {
+  font-size:11px;
+}
+.marginleft div {
+    margin-left:10%;
+
+}
+.marginleft  .pbSubsection .labelCol{
+ width:50%;
+ vertical-align:middle;
+}
+body .bPageBlock .pbBody .labelCol {
+    vertical-align:middle;
+
+}
+</style>
+
+<!-- <apex:sectionHeader title="C&P Invoice" subtitle="New Invoice"/> -->
+   
+   <apex:form rendered="{!IF(CnPAccount.size > 0, true, false)}" >
+   
+    <!-------------help text content ------->
+ <div width="100%">
+    <div style="float:right">
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['Invoice']['Invoices'].display=='true'}">  
+            <Apex:outputLabel value="C&P Help for this Page" style="margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo]').css('display','block');"/>      
+            <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo]').css('display','block');" />                    
+      </apex:outputLink>
+      <apex:outputPanel id="Foo" styleClass="video"  >   
+        <ul style="padding-left:4px;" > {!subTab['Invoice']['Invoices'].description} <br/> <br/>
+             <Apex:outputPanel rendered="{!subTab['Invoice']['Invoices'].ActiveLink=='true'}">
+               <li><a href="{!subTab['Invoice']['Invoices'].link}" target="_blank" >{!subTab['Invoice']['Invoices'].strlink}</a> <br/></li></Apex:outputPanel>
+             <Apex:outputPanel rendered="{!subTab['Invoice']['Invoices'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['Invoice']['Invoices'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Invoice']['Invoices'].strVideo}</a></li></Apex:outputPanel>
+        </ul>
+      </apex:outputPanel>
+     </div>
+    </div>
+    <!-------------help text content ------->
+       <apex:actionFunction action="{!Invoices_format}" name="Invoices" reRender="Seexml,JavaScriptBlock" oncomplete="processcomplete2();"/>
+       <apex:actionFunction action="{!newinvoiceprocess}" reRender="Seexml" name="newinvoicevalue" oncomplete="processcomplete2();"/> 
+       <apex:actionFunction action="{!viewinvoice}" name="viewinvoice"  reRender="Seexml,detailsblock" oncomplete="processcomplete2();">
+             <apex:param value="" name="invoiceid" assignTo="{!invoiceid}" />
+       </apex:actionFunction>
+       <apex:actionFunction action="{!cancelinvoice}" name="Cancel1" reRender="Seexml,JavaScriptBlock" oncomplete="processcomplete2();"/>
+        <apex:actionFunction action="{!newtrans}" name="newtransaction" reRender="Seexml" oncomplete="processcomplete2();"/>
+     <apex:actionFunction action="{!deleteinvoice}" name="deleteinvoice1"  reRender="Seexml,JavaScriptBlock" oncomplete="processcomplete2();">
+             <apex:param value="" name="invoiceid" assignTo="{!invoiceid}" />
+       </apex:actionFunction>
+       
+       <apex:actionFunction action="{!deleteinvoice}" name="deleteinvoice"  reRender="Seexml,JavaScriptBlock" oncomplete="processcomplete2();">
+             <apex:param value="" name="invoiceid" assignTo="{!invoiceid}" />
+       </apex:actionFunction>
+      <apex:actionFunction action="{!resendinvoice}" name="resendinv" reRender="Seexml,JavaScriptBlock" oncomplete="processcomplete2();">
+        <apex:param value="" name="invoiceid" assignTo="{!invoiceid}" />
+       </apex:actionFunction>
+        
+       <apex:pageBlock id="Seexml" mode="maindetail"><!--id="Seexml"  -->
+      
+              <div id="light2" class="white_content">   
+                <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="width:32px;"  /><br/>
+               
+              </div>
+
+         <div id="fade2" class="black_overlay"></div>
+         <!-- list of the all the invoice ----->
+         <apex:outputPanel rendered="{!IF(newinvoice==false && viewinvoice==false,true,false)}">
+                 <div class="btn-block pagination-centered">
+                      <!-- <apex:commandButton action="{!newinvoice}" reRender="Seexml" value="New"/> -->
+                      <a class="btn btn-primary" href="javascript:void(0);" onclick="newinvoicevalue_process();" ><i class="icon-plus-sign icon-white"></i> &nbsp;New</a>
+                 </div>
+                 
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Invoice List</h5>
+              </div>
+              <div class="widget-content">
+  
+                <apex:variable value="0" var="rowNuminv"/>
+                <apex:pageBlockTable value="{!invoicelist}" var="inl" styleClass="datatables detailList">
+                  
+                      <!--<apex:column headerValue="Action"><a href="javascript:void(0)" onclick="Delete_Invoice('{!inl.Id}')"><apex:outputText value="Del"></apex:outputText></a></apex:column>-->
+                      <apex:column headerValue="Invoice Number"><a href="javascript:void(0)" onclick="View_Invoice('{!inl.Id}')"><apex:outputText value="{!inl.CnP_PaaS__Invoice_Number__c}"></apex:outputText></a></apex:column>
+                      <apex:column headerValue="Invoice Policy" ><!--value="{!inl.Invoice_Policy__c}"/>-->
+                      
+                       <apex:outputPanel >
+                                      <a href="javascript:void()" onclick="View_Invoicepolicy('{!JSENCODE(inl.CnP_PaaS__Invoice_Policy__c)}');"><apex:outputtext value="{!JSENCODE(inl.Invoice_Policy__r.Name)}"  /></a>
+                                 </apex:outputPanel>
+                                 </apex:column>
+                      <apex:column headerValue="Status" value="{!inl.CnP_PaaS__Status__c}" styleClass="statusinvoice{!rowNuminv}"/>
+                      <apex:column headerValue="Invoice Date" value="{!inl.CnP_PaaS__invoicedate__c}"/>
+                      <apex:column headerValue="Contact" value="{!inl.CnP_PaaS__Invoice_Contact__c}"/>
+                      <apex:column headerValue="Due Date" value="{!inl.CnP_PaaS__Final_Date__c}"/>
+                      <apex:column headerValue="Action">
+                      <div class="btn-group"> 
+                                  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-cog"></i><span class="caret"></span></a>
+                                  <ul class="dropdown-menu">
+                                     <li><a href="javascript:void(0)" onclick="View_Invoice('{!inl.Id}')"><i class="icon-list"></i><apex:outputText value="View"></apex:outputText></a></li>                                    
+                                     <li style="display:{!IF(inl.Status__c == 'paid','none','block')}"><a href="javascript:void(0)" onclick="Delete_Invoice('{!inl.Id}','{!rowNuminv}')" ><i class="icon-trash"></i><apex:outputText value="Delete"></apex:outputText></a></li>
+                                      <li style="display:{!IF(inl.Status__c == 'paid','none','block')}"><a href="javascript:void(0)" onclick="Resend_Invoice('{!inl.Id}','{!rowNuminv}')" ><i class="icon-repeat"></i><apex:outputText value="Resend"></apex:outputText></a></li>
+                                      <li style="display:{!IF(inl.Status__c == 'paid','none','block')}"><a  href="/apex/CnP_PaaS__externalsitepage?designerid={!inl.CnP_PaaS__TemplateName__c}&invoiceid={!inl.guid__c}" target="_blank"><i class="icon-eye-open"></i><apex:outputText value="Preview"></apex:outputText></a></li>
+
+                                  </ul>
+                      </div>   
+                      </apex:column>
+                     <!-- <apex:column >-->
+                      <apex:variable var="rowNuminv" value="{!VALUE(rowNuminv) + 1}"/>
+                      <!--</apex:column>--> 
+                      </apex:pageBlockTable>
+                      
+                      <input type="hidden" value="{!rowNuminv}" class="rowvaluesinv" name="rowvaluesinv"/> 
+                      
+            </div><!-- widget-content -->
+           </div><!-- widget-box --> 
+           
+                 <div class="btn-block pagination-centered">
+                      <!-- <apex:commandButton action="{!newinvoice}" reRender="Seexml" value="New"/> -->
+                      <a class="btn btn-primary" href="javascript:void(0);" onclick="newinvoicevalue_process();" ><i class="icon-plus-sign icon-white"></i> &nbsp;New</a>
+                 </div>
+                                     
+         </apex:outputPanel>
+         
+         <!-- end here -------->
+         <!-- view invoice details ---->
+      
+   
+   
+         <apex:outputPanel id="detailsblock" rendered="{!IF(newinvoice==false && viewinvoice==true,true,false)}">
+             <div class="btn-block pagination-centered"  style="display:{!IF(viewinvoicedata.Status__c != 'paid','block','none')}">
+                       <a class="btn btn-primary"   href="javascript:void(0);"  onclick="delete_invoice1('{!viewinvoicedata.Id}');" > <i  class="icon-trash icon-white"></i> &nbsp;Delete </a>                  
+            
+                       <a class="btn btn-primary" href="javascript:void(0);" onclick="cancelinv();"> <i  class="icon-remove icon-white"></i> &nbsp;Back</a>  
+             </div>
+              <div class="btn-block pagination-centered"  style="display:{!IF(viewinvoicedata.Status__c == 'paid','block','none')}">                      
+            
+                       <a class="btn btn-primary" href="javascript:void(0);" onclick="cancelinv();"> <i  class="icon-remove icon-white"></i> &nbsp;Back</a>  
+             </div>
+
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Click &amp; Pledge Account Information</h5>
+              </div>
+              <div class="widget-content"> 
+                  <apex:pageBlockSection collapsible="false" showHeader="false">
+                         <apex:pageBlockSectionItem >
+                              <apex:outputLabel value="C&P Account Number"></apex:outputLabel>
+                              <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Invoice_Account_Id__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                  </apex:pageBlockSection>
+                  </div><!-- widget-content -->
+              </div><!-- widget-box -->              
+              
+               <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Invoice Description</h5>
+              </div>
+                <div class="widget-content">
+                 <apex:pageBlockSection columns="1" collapsible="false" showHeader="false">
+                  <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Invoice Name"></apex:outputLabel>
+                       <apex:outputText value="{!viewinvoicedata.Name}"></apex:outputText>
+                   </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Invoice Contact"></apex:outputLabel>
+                         <apex:outputLink value="/{!viewinvoicedata.CnP_PaaS__Invoice_Contact__c}">{!viewinvoicedata.Invoice_Contact__r.Name}</apex:outputLink>    
+                     <!--  <apex:outputtext value="{!viewinvoicedata.Invoice_Contact__r.Name}"></apex:outputText>-->
+                   </apex:pageBlockSectionItem>
+                   <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Invoice Status"></apex:outputLabel>
+                       <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Status__c}"></apex:outputText>
+                   </apex:pageBlockSectionItem>
+                   <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Invoice Number"></apex:outputLabel>
+                       <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Invoice_Number__c}"></apex:outputText>
+                   </apex:pageBlockSectionItem>
+                   <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Invoice Due Date"></apex:outputLabel>
+                       <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Final_Date__c}"></apex:outputText>
+                   </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Invoice Order Number"></apex:outputLabel>
+                        <apex:outputLink value="/{!viewinvoicedata.CnP_PaaS__C_P_Transaction__c}">{!viewinvoicedata.C_P_Transaction__r.Name}</apex:outputLink>    
+                       <!--<apex:outputText value="{!viewinvoicedata.C_P_Transaction__c}"></apex:outputText>-->
+                   </apex:pageBlockSectionItem>
+                   
+                   
+                 </apex:pageblocksection>
+                </div><!-- widget-content -->
+               </div><!-- widget-box -->    
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Item Description</h5>
+              </div>
+              <div class="widget-content"> 
+                  <apex:pageBlockSection columns="1" collapsible="false" showHeader="false">
+                   <!--      <apex:pageBlockSectionItem >
+                              <apex:outputLabel value="Transaction Date"></apex:outputLabel>
+                              <apex:outputText value="{!viewinvoicedata.td_Date__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>-->
+                         <apex:outputPanel >
+                              <apex:pageBlockTable value="{!invoiceitemlist}" var="item" styleClass="detailList">
+                                     <apex:column headerValue="Payment for" value="{!item.Name}"/>
+                                     <apex:column headerValue="SKU" value="{!item.CnP_PaaS__SKU__c}"/>
+                                     <apex:column headerValue="Quantity" value="{!item.CnP_PaaS__Quantity__c}"/>
+                                     <apex:column headerValue="Unit Price  {!currencycode}" value="{!item.CnP_PaaS__Item_Price__c}"/>
+                                     <apex:column headerValue="Unit Tax Deductible  {!currencycode}" value="{!item.CnP_PaaS__tax_deductible__c}"/>
+                                     <apex:column headerValue="Unit Discount  {!currencycode}" value="{!item.CnP_PaaS__Discount__c}"/>
+                                     <apex:column headerValue="Unit Tax  {!currencycode}" value="{!item.CnP_PaaS__Tax__c}"/>
+                                     <apex:column headerValue="Item Campaign" value="{!item.CnP_PaaS__Item_Campaign__c}"/>
+                              </apex:pageBlockTable>
+                         </apex:outputPanel>
+                         <apex:pageBlockSectionItem >
+                              <apex:outputLabel value="Shipping( {!currencycode}) :"></apex:outputLabel>
+                              <apex:outputText value="{!viewinvoicedata.CnP_PaaS__shipping__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                              <apex:outputLabel value="Convenience Fee( {!currencycode}) :"></apex:outputLabel>
+                              <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Convenience_Fee__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                       </apex:pageBlockSection>
+                   </div><!-- widget-content -->
+               </div><!-- widget-box -->                  
+               
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Billing Information</h5>
+              </div>
+              <div class="widget-content">                   
+               <apex:pageBlockSection collapsible="false" showHeader="false">
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="First Name"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__First_Name__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Last Name"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Last_Name__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Address 1"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Billing_Address__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Address 2"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Billing_Address2__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="City"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__City__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Zip/Postal Code"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Zip_Code__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Country"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Country__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="State/Province"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__State__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Phone"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Phone__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >                             
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Email"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Email__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                               <apex:outputLabel value="Confirm Email"></apex:outputLabel>
+                               <apex:outputText value="{!viewinvoicedata.CnP_PaaS__Email__c}"></apex:outputText>
+                         </apex:pageBlockSectionItem>                         
+                      </apex:pageBlockSection>
+                   </div><!-- widget-content -->
+               </div><!-- widget-box -->               
+              
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Shipping Information</h5>
+              </div>
+              <div class="widget-content">              
+                   <apex:pageBlockSection collapsible="false" showHeader="false">
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Add Shipping Information"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Addship__c}"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Use same address as Billing"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Sameship__c}"/>
+                         </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Hide shipping information on Invoice"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Shipinvoice__c}"/>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Allow for editing"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Allow_for_Editing__c}"/>
+                         </apex:pageBlockSectionItem>
+                      <!--   <apex:pageBlockSectionItem />-->
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Address1"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Ship_Address__c}"/>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Address 2"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Ship_Address2__c}"/>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="City"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__shipcity__c}"/>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Zip/Postal Code"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Shipcode__c}"/>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Country"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__ShipCountry__c}"/>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="State/Province"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__shipState__c}"/>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Phone"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Shipphone__c}"/>
+                         </apex:pageBlockSectionItem>
+                      </apex:pageBlockSection>
+                   </div><!-- widget-content -->
+               </div><!-- widget-box -->               
+              
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Tracker &amp; Campaign</h5>
+              </div>
+              <div class="widget-content">              
+                   <apex:pageBlockSection collapsible="false" showHeader="false">
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Tracker"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Tracker__c}"/>
+                         </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Transaction Campaign"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Campaign_Text__c}"/>
+                         </apex:pageBlockSectionItem>
+                   </apex:pageBlockSection>
+                   </div><!-- widget-content -->
+               </div><!-- widget-box -->
+                                  
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Receipt Details</h5>
+              </div>
+              <div class="widget-content">                   
+                   <apex:pageBlockSection collapsible="false" showHeader="false" columns="1">
+                         <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="Send Receipt"></apex:outputLabel>
+                           <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Send_Receipt__c}"/>
+                         </apex:pageBlockSectionItem>                         
+                         <apex:pageblocksectionitem >
+                           <apex:outputLabel value="Organization Information"></apex:outputLabel>
+                           <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Organization_Information__c}"/>
+                         </apex:pageblocksectionitem>
+                         <apex:pageblocksectionitem >
+                           <apex:outputLabel value="Thank you Message"></apex:outputLabel>
+                           <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Thank_you__c}"/>
+                         </apex:pageblocksectionitem>
+                         <apex:pageblocksectionitem >
+                           <apex:outputLabel value="Terms & Conditions"></apex:outputLabel>
+                           <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Terms_Conditions__c}"/>
+                         </apex:pageblocksectionitem>
+                      </apex:pageBlockSection>
+                   </div><!-- widget-content -->
+               </div><!-- widget-box -->              
+              
+             <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Payment Method (Invoice)</h5>
+              </div>
+              <div class="widget-content">              
+                      <apex:pageBlockSection columns="1" collapsible="false" showHeader="false">
+                         <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Invoice Date"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__invoicedate__c}"/>
+                         </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Select Policy"></apex:outputLabel>
+                                 <apex:outputPanel >
+                                      <a href="javascript:void()" onclick="View_Invoicepolicy('{!JSENCODE(viewinvoicedata.CnP_PaaS__Invoice_Policy__c)}');"><apex:outputtext value="{!JSENCODE(viewinvoicedata.Invoice_Policy__r.Name)}"  /></a>
+                                 </apex:outputPanel>
+                         </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Due Date"></apex:outputLabel>
+                                 <apex:outputField value="{!viewinvoicedata.CnP_PaaS__Final_Date__c}"/>
+                         </apex:pageBlockSectionItem>                         
+                      </apex:pageBlockSection>
+                   </div><!-- widget-content -->
+               </div><!-- widget-box -->  
+               <!---------------------------11/18/2013 Starts ----------------->
+               
+               
+                <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Related Opportunities</h5>
+              </div>
+              <div class="widget-content"> 
+               <apex:pageblockTable value="{!oppinvoicelist}" var="oppinvoice">
+               <apex:column headerValue="Opportunity name" >
+                   <apex:outputLink value="/{!oppinvoice.Id}">{!oppinvoice.Name}</apex:outputLink>   
+               </apex:column>
+               <apex:column headerValue="Amount" width="30%">        
+                    <apex:outputField value="{!oppinvoice.Amount}"/>                                                    
+                </apex:column>           
+                <apex:column headerValue="Stage" width="40%">    
+                    <apex:outputField value="{!oppinvoice.StageName}"/>                            
+                </apex:column>   
+               
+               </apex:pageblockTable>
+             </div><!-- widget-content -->
+               </div><!-- widget-box -->  
+               
+               <!--------------------------11/18/2013 Ends -------------------->
+                           
+          
+            <div class="btn-block pagination-centered"  style="display:{!IF(viewinvoicedata.Status__c != 'paid','block','none')}">
+                       <a class="btn btn-primary"   href="javascript:void(0);"  onclick="delete_invoice1('{!viewinvoicedata.Id}');" > <i  class="icon-trash icon-white"></i> &nbsp;Delete </a>                  
+                       <a class="btn btn-primary" href="javascript:void(0);" onclick="cancelinv();"> <i  class="icon-remove icon-white"></i> &nbsp;Back</a>  
+             </div>
+              <div class="btn-block pagination-centered"  style="display:{!IF(viewinvoicedata.Status__c == 'paid','block','none')}">                      
+                       <a class="btn btn-primary" href="javascript:void(0);" onclick="cancelinv();"> <i  class="icon-remove icon-white"></i> &nbsp;Back</a>  
+             </div>
+         </apex:outputPanel>
+         <!-- end here --->
+         
+         <!-- new invoice create -------->
+      
+         <apex:actionFunction action="{!save}" name="saveprocess" reRender="Seexml,JavaScriptBlock"  immediate="" oncomplete="processing();" rendered="{!processingtype== 'SingleTrans'}"/>
+             <div class="btn-block pagination-centered"> 
+                  <apex:outputpanel rendered="{!IF(processbutton==true && newinvoice==true && viewinvoice==false && invoiceset.size>0 && componentvalue == 'true',true,false)}"> 
+                   <div class="btn-block pagination-centered">
+                      <a class="btn btn-primary" href="javascript:void(0);" onclick="discount();" ><i class="icon-plus-sign icon-white"></i> &nbsp;Process Invoice</a> 
+                      <a class="btn btn-primary" href="javascript:void(0);" onclick="cancelinv();"><i class="icon-remove icon-white"></i> &nbsp;Back</a>       
+                   </div>
+
+                  </apex:outputpanel> 
+                  <apex:outputPanel rendered="{!IF(newtransbutton==true &&  newinvoice==true && viewinvoice==false,true,false)}">
+                 <!-- <apex:commandButton styleClass="btn btn-primary" value="New Invoice" action="{!newtrans}"/><br/>-->
+                  <div class="btn-block pagination-centered">
+                   <a class="btn btn-primary" href="javascript:void(0);" onclick="newtrans();"><i class="icon-plus icon-white"></i> &nbsp;New Invoice</a>   
+                     <a class="btn btn-primary" href="javascript:void(0);" onclick="cancelinv();"><i class="icon-remove icon-white"></i> &nbsp;Back</a>       
+                     </div>
+                  </apex:outputPanel>
+             </div>
+
+              <apex:outputPanel rendered="{!IF(invoiceset.size==0 && newinvoice==true && viewinvoice==false  ,true,false)}">
+               <div class="widget-content alert alert-error">             
+                    <center><strong>Sorry but it appears that the Site URL is missing.</strong><br/>
+                         Please click on the Invoice Settings and set up the Invoice Base-Site URL.</center>
+              </div>
+              </apex:outputPanel>
+
+    <apex:outputPanel rendered="{!IF(componentvalue == 'false' && newinvoice==true && viewinvoice==false  ,true,false)}">
+     <div class="widget-content alert alert-error">             
+                  
+                    <center><strong>Invoice only applicable for Opportunities but not for Opportunity Products</strong><br/>
+                         Please click on the C&amp;P Settings and uncheck Products.</center>
+        
+              </div>
+    </apex:outputPanel>
+  
+         <apex:outputPanel rendered="{!IF(newinvoice==true && viewinvoice==false && invoiceset.size>0 && componentvalue == 'true',true,false)}">
+         <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/> 
+              <apex:pageMessages />
+              <apex:actionFunction name="PaymentType" reRender="SelectSection" action="{!PaymentType}">
+                    <apex:param assignTo="{!paymenttypevalue}" value="" name="paymenttype"/>
+              </apex:actionFunction>
+            
+               <div id="light" class="white_content">   
+                <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="width:32px;"  />               
+              </div>
+
+         <div id="fade" class="black_overlay"></div>
+        
+        <apex:outputPanel rendered="{!hideform}">
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Click &amp; Pledge Account Information</h5>              </div>
+              
+              <div class="widget-content">        
+                 <apex:pageBlockSection collapsible="false" showHeader="false" rendered="{!If(processingtype== 'SingleTrans' && hideform==true,true,false)}">
+                     <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="C&P Account Number"></apex:outputLabel>                             
+                            <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <apex:selectList value="{!XmlAuthentication.AccountID}" size="1" styleClass="acc">
+                             <apex:actionSupport event="onchange" reRender="reference,itemdetails,ItemList,paymentdetails,tryagain"/>
+                                <Apex:selectOptions value="{!CnPAccount}"></Apex:selectOptions>
+                            </apex:selectList>
+                            </apex:outputpanel>
+                     </apex:pageBlockSectionItem>
+                 </apex:pageBlockSection>
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->            
+        </apex:outputpanel>
+        
+             <!-- Anuuuuuuuuuuuuuuuuuu-->
+     <apex:outputPanel rendered="{!hideform}"><!-- removed the id as processtype -->
+
+     <apex:outputpanel rendered="{!processingtype== 'SingleTrans'}">  
+     
+     <apex:outputPanel rendered="{!hideform}">
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Payment Description</h5>
+              </div>
+              <div class="widget-content">
+             
+             <apex:pageBlockSection Columns="1" showHeader="false" collapsible="false" id="itemdetails"> 
+        
+                <apex:pageBlockSectionItem > 
+                   <apex:outputPanel id="ItemList">
+                   <apex:variable value="0" var="rowNum"/> 
+                       <apex:dataTable columns="9" value="{!Items}" var="item" styleClass="table table-bordered table-hover" style="margin-bottom:10px;" id="table1" >
+                  
+                           <apex:column headerValue="Payment for" >
+                           <apex:outputPanel styleClass="requiredInput" layout="block"   >       
+                              <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:inputText value="{!item.ItemName}"  disabled="{!disableupdateitem}" title="Payment For" style="min-width:100px;" styleClass="itemname{!rowNum} input-block-level" maxlength="50"  >
+                                <c:PaymentAutoComplete objecttype="{!componentvalue}" autocomplete_textbox="itemname{!rowNum}" autocomplete_id="{!rowNum}" />
+                                </apex:inputText>     
+                           </apex:outputpanel>
+                           </apex:column>
+                  
+                           <apex:column headerValue="SKU" >
+                               <apex:inputText value="{!item.SKU}" disabled="{!disableupdatesku}" size="10" style="min-width: 100px;" styleClass="sku{!rowNum} input-block-level" maxlength="100" />
+                           </apex:column>
+                           
+                           <apex:column headerValue="Quantity">
+                           <apex:outputPanel styleClass="requiredInput" layout="block">
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                           <apex:inputText value="{!item.Quantity}" maxlength="6" size="6" styleclass="quantity{!rowNum} input-block-level" onblur="calculateprice();"/>
+                           </apex:outputPanel>
+                           </apex:column>
+                  
+                          <apex:column headerValue="Unit Price {!currencycode}">
+                           <apex:outputPanel styleClass="requiredInput" layout="block">
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                          <apex:inputText value="{!item.UnitPrice}" styleClass="price{!rowNum}" style="width:45px;" maxlength="6" size="6" onblur="calculateunitdeductable('{!rowNum}');calculateprice();" disabled="{!disableupdateamount}"/>
+                          </apex:outputpanel>
+                          </apex:column>
+                  
+                          <apex:column headerValue="Unit Tax Deductible  {!currencycode}" >
+                          <apex:inputText value="{!item.UnitDeductible}" maxlength="6" style="width:45px;" size="6" styleClass="deduct{!rowNum}" onblur="calculateprice();" disabled="{!disableupdatededuct}"/>
+                          </apex:column>
+                 
+                          <apex:column headerValue="Unit Discount  {!currencycode}">
+                          <apex:inputText value="{!item.UnitDiscount}"   maxlength="6" style="width:45px;" size="6"  styleClass="discount{!rowNum}" onblur="calculateprice();"  disabled="{!disableupdatediscount}" />
+                          </apex:column>
+                          
+                          <apex:column headerValue="Unit Tax  {!currencycode}">
+                          <apex:inputText value="{!item.UnitTax}" maxlength="6" size="6" style="width:45px;" styleClass="tax{!rowNum}" onblur="calculateprice();" disabled="{!disableupdatetax}"/>
+                          </apex:column>
+                          
+                          <apex:column headerValue="*Item Campaign" rendered="{!componentvalue}">
+                          <apex:inputText value="{!item.Campaign}"   maxlength="80" size="15" styleClass="campaign{!rowNum} input-block-level">
+                               <c:PaymentAutoComplete objecttype="campaign" autocomplete_textbox="campaign{!rowNum}" autocomplete_id="{!rowNum}" /> 
+                          </apex:inputText>
+                          </apex:column>
+                           
+                          <apex:column headerValue="" >       
+                          <apex:commandButton action="{!deleteitem}" value="Delete"  rerender="ItemList" rendered="{!If(Items.size>1 && rowNum!='0' ,true,false)}" styleClass="deleteoption{!rowNum}"  oncomplete="calculateprice();">
+                          <apex:param name="contIdParam" value="{!rowNum}" assignTo="{!DeleteId}"/>
+                          </apex:commandbutton>
+                          <script>DeleteOption('{!rowNum}');</script>
+                          <apex:variable var="rowNum" value="{!VALUE(rowNum) + 1}"/>
+                          </apex:column>
+                           
+                       </apex:dataTable>
+                       
+                          <input type="hidden" value="{!rowNum}" class="rowvalues" name="rowvalues"/>  
+                          <input type="hidden" value="{!unittaxdeductible}" class="unittaxportion" />
+                          <input type="hidden" value="{!unittax}" class="unittax" />
+                          <input type="hidden" value="{!unitdiscount}" class="unitdiscount" /> 
+                          <input type="hidden" value="{!convenience_fee}" class="convenience_fee" />
+                          <input type="hidden" value="{!convenience_amount}" class="convenience_amount" />
+                          
+                        <apex:outputPanel rendered="{!componentvalue}" >
+                        <div class="alert alert-info" style="margin-bottom:10px;">* Create NEW Campaigns first before using them in multiple items to avoid duplicate Campaign creation.
+                        </div>
+                          </apex:outputPanel>
+                        <div class="align_center" style="margin-bottom:10px;">
+                        <apex:commandButton action="{!add}" value="Add Item" styleClass="addbtn btn" rerender="ItemList" oncomplete="calculateprice();" />
+                        </div>
+
+                      
+                                              
+                    </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+              
+                <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Shipping( {!currencycode}) :"/>
+                      <apex:inputText value="{!xmlShippingCharges.ShippingValue}" size="5" styleClass="ship" style="width:45px;" onblur="calculateprice();" >
+                          <apex:actionSupport event="onchange" reRender="DisplaySM" />
+                      </apex:inputText>
+                </apex:pageBlockSectionItem> 
+        
+               <apex:pageBlockSectionItem >
+                 <apex:outputLabel value="Convenience Fee ({!currencycode}) :"/>
+                   <apex:inputText value="{!xmltransaction.TransactionConvenienceFee}" maxlength="7" style="width:50px;"  size="5" styleClass="conv"  onblur="Conveniencefee(this.value);"><!-- disabled="{!IF(disableurlvalue==true && disableupdateshipping==true,true,false)}">-->
+                     <apex:actionSupport event="onchange" reRender="DisplaySM" />
+                   </apex:inputText>
+               </apex:pageBlockSectionItem>
+            
+              <apex:pageBlockSectionItem dataStyleClass="marginleft">
+              
+                      <apex:pageBlockSection columns="1" id="paymentdetails">                     
+                             <apex:pageBlockSectionItem labelStyle="width:85%;" dataStyle="width:15%;" dataStyleClass="align_right">          
+                             <apex:outputLabel value="Sub Total ({!currencycode}) :"/>
+                             <apex:outputLabel value="" styleClass="sum" />
+                             </apex:pageBlockSectionItem>          
+                          <apex:pageBlockSectionItem dataStyleClass="align_right">  
+                             <apex:outputLabel value="Total Tax ({!currencycode}) :" />
+                             <apex:outputLabel value="" styleClass="tt" />
+                           </apex:pageBlockSectionItem>                             
+                          <apex:pageBlockSectionItem dataStyleClass="align_right"> 
+                             <apex:outputLabel value="Shipping ({!currencycode}) :" />
+                             <apex:outputLabel value="" styleClass="sp" />
+                           </apex:pageBlockSectionItem> 
+                            <apex:pageBlockSectionItem dataStyleClass="align_right">   
+                             <apex:outputLabel value="Total Discount ({!currencycode}) :"  />
+                             <apex:outputLabel value="" styleClass="td" ></apex:outputLabel>
+                           </apex:pageBlockSectionItem> 
+                         <apex:pageBlockSectionItem dataStyleClass="align_right">  
+                             <apex:outputLabel value="Grand Total ({!currencycode}) :"  style="color:#328400;font-weight: bold;line-height:25px;border-top:1px dotted #333;" />
+                             <apex:outputLabel value="" styleClass="gt"   style="color:#328400;font-weight:bold;line-height:25px;border-top:1px dotted #333;" />
+                          </apex:pageBlockSectionItem>
+                           <apex:pageBlockSectionItem dataStyleClass="align_right">   
+                             <apex:outputLabel value="Convenience Fee ({!currencycode}) :"  />
+                             <apex:outputLabel value=""  styleClass="cv"  style="display:block;color:#000000;" ></apex:outputLabel>
+                           </apex:pageBlockSectionItem>
+            
+                         <apex:pageBlockSectionItem dataStyleClass="align_right">  
+                             <apex:outputLabel value="Grand Total ({!currencycode}) :"  style="color:#328400;font-weight:bold;line-height:25px;border-top:1px dotted #333;" />
+                             <apex:outputLabel value="" styleClass="g_gt"   style="color:#328400;font-weight: bold;line-height: 25px;border-top:1px dotted #333;" />
+                             
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem dataStyleClass="align_right">    
+                             <apex:outputLabel value="Total Tax Deductible ({!currencycode}) :" style="font-weight:bold;color:#c61e1e;"/>
+                             <apex:outputLabel value="" styleClass="tud" style="font-weight:bold;font-size:12px;color:#c61e1e;"/>
+                          </apex:pageBlockSectionItem> 
+                          
+                         <apex:pageBlockSectionItem dataStyleClass="align_right display_none">
+                         <input type="text" value="" class="g_gt_class" name="g_gt_class" style="display:none"/> 
+                         <input type="text" class="tud_class" name="tud_class" value="" style="display:none"/>                     
+                         </apex:pageBlockSectionItem>
+                      </apex:pageBlockSection> 
+                </apex:pageBlockSectionItem>   
+             </apex:pageblockSection>
+           </div><!-- widget-content -->
+         </div><!-- widget-box -->  
+        </apex:outputPanel>
+
+
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Billing Information</h5>
+              </div>
+              <div class="widget-content">
+              
+              <apex:outputLabel styleClass="align_center" value="Search by first name, last name, or email" ></apex:outputLabel>
+              
+             <apex:pageBlockSection showHeader="false" collapsible="false" id="refreshblock" rendered="{!hideform}">
+             
+                  <apex:pageBlockSectionItem > 
+                      <apex:outputLabel value="Existing Patron" ></apex:outputLabel>
+                       <apex:inputText size="50" id="account" value="{!existingpatron}" styleClass="contactfiled" style="width: 300px;" disabled="{!disableload}">
+                         <c:autocomplete objectname="Contact" additionalfield="Email" autocomplete_textbox="{!$Component.account}" autocomplete_hidden="{!$Component.contactid}" />
+                      </apex:inputText>
+                  </apex:pageBlockSectionItem>                
+
+                 <apex:outputPanel >
+                      <apex:inputHidden value="{!contactid}" id="contactid" />
+                      <apex:commandButton action="{!Load}" value="Load"  reRender="refreshblock,refblock,reference" style="padding-left:0%;display:none!important;" styleClass="loadclass" oncomplete="change_patron();"/>  
+                 </apex:outputPanel>                 
+                 
+                 <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="First Name"/>
+                   <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                       <apex:outputPanel styleClass="requiredBlock" layout="block" />
+                       <apex:inputText value="{!Billing.BillingFirstName}" styleClass="billingfirstname" disabled="{!disablefields}"  maxlength="40" /><!--  -->
+                   </apex:outputpanel>
+                 </apex:pageBlockSectionItem>
+     
+                  <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Last Name"/>
+                   <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                       <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                   <apex:inputText value="{!Billing.BillingLastName}" styleClass="billinglastname" disabled="{!disablefields}" maxlength="80" /><!--  -->
+                   </apex:outputpanel>
+                 </apex:pageBlockSectionItem>
+     
+                 <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Address 1"/>
+                   <apex:inputText value="{!BillingAddress.BillingAddress1}"  styleClass="billingaddress1" maxlength="100" />
+                 </apex:pageBlockSectionItem>
+     
+                  <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Address 2"/>
+                   <apex:inputText value="{!BillingAddress.BillingAddress2}" styleClass="billingaddress2" maxlength="100"/>
+                 </apex:pageBlockSectionItem>
+     
+                  <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="City"/>
+                   <apex:inputText value="{!BillingAddress.BillingCity}"  styleClass="billingcity" maxlength="50"/>
+                 </apex:pageBlockSectionItem>
+     
+                 <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Zip/Postal Code"/>
+                   <apex:inputText value="{!BillingAddress.BillingPostalCode}"  styleClass="billingpostalcode" maxlength="20"/>
+                 </apex:pageBlockSectionItem>   
+
+                 <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Country" />
+                    <apex:selectlist value="{!BillingAddress.BillingCountryCode}" size="1" styleClass="billingcountrycode">  
+                      <apex:actionSupport event="onchange" reRender="refreshblock" action="{!billingcountry}"  onsubmit="goingprocess();" oncomplete="processcomplete2();" /> <!-- feroz on 14/02/2013 --> 
+                      <apex:selectOptions value="{!showcountries}" rendered="{!IF(showcountries.size>0,true,false)}"></apex:selectOptions>  <!-- feroz on 14/02/2013 -->       
+                      <apex:selectOptions value="{!xmlstring.CountryCodes}" rendered="{!IF(showcountries.size>0,false,true)}"/> <!-- feroz on 14/02/2013 --> 
+                    </apex:selectlist>
+                      <!-- <apex:selectlist value="{!billingcountry}" size="1" styleClass="billingcountrycode">  
+                      <apex:selectOptions value="{!xmlstring.CountryCodes}"/>
+                      </apex:selectlist>-->
+                 </apex:pageBlockSectionItem>
+   
+                <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="State/Province" />
+                     <apex:outputPanel >
+                     <apex:selectlist value="{!BillingAddress.BillingStateProvince}" size="1" styleClass="billingStateProvince" rendered="{!IF(showstates.size>0,true,false)}" > <!-- feroz on 14/02/2013 -->  
+                         <apex:selectOptions value="{!showstates}"/>
+                     </apex:selectlist>
+                     <apex:inputText value="{!BillingAddress.BillingStateProvince}"  styleClass="billingStateProvince" maxlength="20" rendered="{!IF(showstates.size>0,false,true)}"/><!-- feroz on 14/02/2013 --> 
+                     </apex:outputPanel>
+               </apex:pageBlockSectionItem> 
+   
+
+               <!--
+                <apex:pageBlockSectionItem > 
+                   <apex:outputLabel value="State/Province"/>
+                   <apex:inputText value="{!BillingAddress.BillingStateProvince}"  styleClass="billingStateProvince" maxlength="50"/>
+                 </apex:pageBlockSectionItem>-->
+                 
+                  <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Phone"/>
+                   <apex:inputText value="{!Billing.BillingPhone}" styleClass="billingphone" maxlength="50"/>
+                 </apex:pageBlockSectionItem>
+                 <apex:pageBlockSectionItem />
+     
+                 <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Email"/>
+                   <apex:inputText value="{!Billing.BillingEmail}" disabled="{!disablefields}" styleClass="billingemail" maxlength="50" size="30"/> <!--   -->
+                 </apex:pageBlockSectionItem>
+                 
+                 <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Confirm Email"/>
+                   <apex:inputText value="{!Billing.BillingEmail}"  disabled="{!disablefields}" styleClass="confirmemail" maxlength="50" size="30"/><!--  -->
+                 </apex:pageBlockSectionItem>
+
+             </apex:pageBlockSection>  
+           </div><!-- widget-content -->
+         </div><!-- widget-box --> 
+  
+       <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Shipping Information</h5>
+              </div>
+              <div class="widget-content">    
+             <apex:pageBlockSection showHeader="false" collapsible="false" rendered="{!hideform}" id="refreshblockship" columns="2">   
+                   <apex:pageblocksectionItem >
+                       <apex:outputLabel Value="Add Shipping Information"></apex:outputLabel>
+                       <apex:outputpanel >
+                           <apex:inputcheckbox value="{!inputcheck}" styleclass="inputcheck">
+                              <apex:actionsupport event="onchange" rerender="shipping" /> 
+                           </apex:inputcheckbox>
+                       </apex:outputpanel>
+                   </apex:pageblocksectionItem>   
+             </apex:pageblocksection>
+   
+             <apex:outputPanel id="shipping">
+             <apex:outputPanel style="margin-top:5px;">  <!-- rendered="{!(xmlShippingCharges.ShippingValue != 0.0 ||xmlShippingCharges.ShippingValue != 0)}" -->
+             <apex:pageblockSection columns="2" rendered="{!hideform}" >
+                <apex:pageblocksectionitem >
+                    <apex:outputLabel >Use same address as Billing:</apex:outputLabel>
+                    <apex:inputCheckbox value="{!shippingcheck}"  styleClass="shippingcheck" onclick="shipping(this.checked);">
+                     <apex:actionSupport event="onchange" reRender="refreshblockship,shipping" action="{!shippingcountry}" onsubmit="goingprocess();" oncomplete="processcomplete2();"/> 
+                     </apex:inputCheckbox> 
+                 </apex:pageblocksectionitem>
+                 <apex:pageblocksectionItem >
+                     <apex:outputlabel value="Hide shipping information on Invoice"/>
+                     <apex:inputcheckbox value="{!Invoiceship}" styleclass="hideship"/>
+                 </apex:pageblocksectionItem>
+                 <apex:pageblocksectionItem >
+                     <apex:outputlabel value="Allow for editing"/>
+                     <apex:inputcheckbox value="{!allowedit}" styleclass="allowship"/>
+                 </apex:pageblocksectionItem>
+<apex:pageblockSectionItem />
+                 <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Street Address"/>    
+                   <apex:inputText value="{!ShippingInformation.ShippingAddress1}" styleClass="shippingaddress1" maxlength="100"/>      
+                 </apex:pageBlockSectionItem>
+     
+                  <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Address 2"/>
+                   <apex:inputText value="{!ShippingInformation.ShippingAddress2}" styleClass="shippingaddress2" maxlength="100"/>
+                  </apex:pageBlockSectionItem>
+     
+                 <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="City"/>      
+                     <apex:inputText value="{!ShippingInformation.ShippingCity}"  styleClass="shippingcity" maxlength="50"/>
+                 </apex:pageBlockSectionItem>
+     
+                 <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Zip/Postal Code" />
+                      <apex:inputText value="{!ShippingInformation.ShippingPostalCode}" styleClass="shippingpostalcode" maxlength="20"/>
+                 </apex:pageBlockSectionItem>
+     
+             <!--  <apex:pageBlockSectionItem >
+                 <apex:outputLabel value="Country" />
+                  <apex:selectlist value="{!shippingcountry}" size="1" styleClass="shippingcountrycode" >     
+                          <apex:selectOptions value="{!xmlstring.CountryCodes}"/>
+                      </apex:selectlist>
+               </apex:pageBlockSectionItem>-->
+               <!--<apex:pageBlockSectionItem >     
+                   <apex:outputLabel value="State/Province"/>
+                   <apex:inputText value="{!ShippingInformation.ShippingStateProvince}" styleClass="shippingstateprovince" maxlength="50"/>
+               </apex:pageBlockSectionItem>-->
+               
+               
+     <apex:pageBlockSectionItem >
+      <apex:outputLabel value="Country" />
+       <apex:selectlist value="{!ShippingInformation.ShippingCountryCode}" size="1" styleClass="shippingcountrycode" >     
+          <apex:actionSupport event="onchange" reRender="shipping" action="{!billingcountry}" onsubmit="goingprocess();" oncomplete="processcomplete2();"/> 
+          
+              <apex:selectOptions value="{!showcountries}" rendered="{!IF(showcountries.size>0,true,false)}"></apex:selectOptions>      
+              <apex:selectOptions value="{!xmlstring.CountryCodes}" rendered="{!IF(showcountries.size>0,false,true)}"/> 
+          </apex:selectlist>
+     </apex:pageBlockSectionItem> 
+               
+               
+                  <apex:pageBlockSectionItem >     
+                   <apex:outputLabel value="State/Province"/>
+                 <apex:outputPanel >
+                    <apex:selectlist value="{!ShippingInformation.ShippingStateProvince}" size="1" styleClass="shippingstateprovince" rendered="{!IF(showshippingstates.size>0,true,false)}" >
+                         <apex:selectOptions value="{!showshippingstates}"/>
+                     </apex:selectlist>
+                   <apex:inputText value="{!ShippingInformation.ShippingStateProvince}" styleClass="shippingstateprovince" maxlength="50" rendered="{!IF(showshippingstates.size>0,false,true)}"/>
+               </apex:outputPanel>
+               </apex:pageBlockSectionItem>
+               
+               
+               
+   
+              <apex:pageBlockSectionItem >
+               <apex:outputLabel value="Phone"/>
+               <apex:inputText value="{!ShippingInformation.ShippingPhone}" styleClass="shippingphone" maxlength="50"/>
+             </apex:pageBlockSectionItem>
+          </apex:pageBlockSection>      
+          </apex:outputpanel>         
+          </apex:outputPanel>
+         </div><!-- widget-content -->
+       </div><!-- widget-box -->
+
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Tracker &amp; Campaign</h5>
+              </div>
+              <div class="widget-content">
+              <apex:pageBlockSection rendered="{!hideform}" showHeader="false" collapsible="false">
+                 <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Tracker"/>
+                   <apex:inputText value="{!XmlOrder.Tracker}" disabled="{!disableupdatetracker}" styleClass="tracker" maxlength="50"/>
+                 </apex:pageBlockSectionItem>
+               
+                <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Transaction Campaign"/>
+                   <apex:inputText value="{!XmlOrder.Campaign}" disabled="{!disableupdatecampaign}" styleClass="campaign" maxlength="80">
+                       <c:PaymentAutoComplete objecttype="campaign" autocomplete_textbox="campaign" autocomplete_id="" />
+                   </apex:inputText>
+                 </apex:pageBlockSectionItem>              
+              </apex:pageBlockSection> 
+         </div><!-- widget-content -->
+       </div><!-- widget-box -->            
+            
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Receipt Details</h5>
+              </div>
+              <div class="widget-content">            
+                <apex:pageblocksection columns="1" collapsible="false" showheader="false" rendered="{!hideform}">
+                      <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Send Receipt"/>
+                              <apex:inputCheckbox value="{!xmlReceipt.SendReceipt}" styleClass="sendreceipt">
+                                  <apex:actionSupport event="onchange" rerender="receipt"/>
+                              </apex:inputCheckbox>
+                      </apex:pageBlockSectionItem>      
+                </apex:pageblocksection>
+                      
+                      <apex:outputPanel id="receipt">
+                      <apex:pageblockSection rendered="{!hideform}" columns="1">
+                     
+                       <apex:pageblocksectionItem >
+                              <apex:outputlabel value="Organization Info "/>
+                              <apex:inputtextarea value="{!xmlreceipt.OrganizationInformation}" styleClass="organizationinfo input-block-level" rows="6" cols="75" onkeypress="return imposeMaxLength(event, this, 1500);" onkeyup="return imposeMaxLength(event, this, 1500);"/>
+                          </apex:pageblocksectionItem>  
+                       <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="Thank you Message"/>
+                           <apex:inputTextarea value="{!xmlReceipt.ThankYouMessage}" styleClass="thankyou input-block-level" rows="6" cols="75" onkeypress="return imposeMaxLength(event, this, 500);" onkeyup="return imposeMaxLength(event, this, 500);"/>
+                
+                       </apex:pageBlockSectionItem>
+                          <apex:pageblocksectionItem >
+                              <apex:outputlabel value="Terms & Conditions "/>
+                              <apex:inputtextarea value="{!xmlreceipt.termsCondition}" styleClass="TermsCondition input-block-level" rows="6" cols="75" onkeypress="return imposeMaxLength(event, this, 1500);" onkeyup="return imposeMaxLength(event, this, 1500);" />
+                          </apex:pageblocksectionItem>
+                        
+                          <!-- <apex:pageblocksectionItem >
+                              <apex:outputlabel value="Note to Receiptent "/>
+                              <apex:inputtextarea value="{!xmlreceipt.thankYouMessage}" rows="6" cols="75" />
+                          </apex:pageblocksectionItem>-->
+                                
+                          </apex:pageblockSection>
+                      </apex:outputpanel>
+                     
+         </div><!-- widget-content -->
+       </div><!-- widget-box -->                     
+                               
+       <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Payment Method (Invoice)</h5>
+              </div>
+              <div class="widget-content">             
+                      <apex:pageBlockSection collapsible="false" showHeader="false" columns="1" rendered="{!hideform}" > 
+                               <apex:pageblockSectionItem >  
+                                 <apex:outputlabel value="Invoice Date"/>
+                                 <apex:outputpanel >                                    
+                                    <Apex:inputtext style="width: 75px;" value="{!dateIn}" id="invoicedate" onclick="DynamicDatePicker1(this);" size="11"  styleclass="invoicedate" onblur="duedatecal();" /> 
+                                    <apex:image url="{!URLFOR($Resource.CnP_PaaS__calendar_icon,'calendar_icon.gif')}" style="padding-left:4px;"/> 
+                                  </apex:outputpanel> 
+                               </apex:pageblockSectionItem>
+                                        
+                               <apex:pageblockSectionItem >       
+                                  <apex:outputlabel value="Select Policy"/> 
+                                  <apex:outputpanel id="selectpolicy">
+                                  <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                                  <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                     <apex:selectlist value="{!Selectin}" size="1" styleclass="selectinvpolicy" >
+                                         <apex:selectoption itemLabel="--Select--" itemValue="" />
+                                         <apex:selectoptions value="{!selectname}" />
+                                         <Apex:actionSupport event="onchange" action="{!netterms}" rerender="terms" />
+                                      </apex:selectlist>
+                                    </apex:outputpanel>  
+                                    </apex:outputpanel>
+                               </apex:pageblockSectionItem>
+                       </apex:pageBlockSection> 
+                                
+                       <apex:outputpanel id="terms" rendered="{!hideform}">   
+                       <apex:pageblocksection columns="1" >
+                                <apex:pageblockSectionItem >                                    
+                                      <apex:outputlabel value="Net days"/>
+                                        <apex:outputtext value="{!payment.CnP_PaaS__Net__c}"  styleclass="paymentterms"  />   
+                                                                   
+                                </apex:pageblockSectionItem>
+                                  
+                                 <apex:pageblockSectionItem >
+                                  <apex:outputlabel value="Due Date"/> 
+                                    <apex:outputPanel >
+                                      <apex:outputtext value="{!duedate}" styleclass="duedate"/>                                    
+                                   </apex:outputPanel>  
+                                    </apex:pageblockSectionItem>
+                        </apex:pageblocksection>  
+                        </apex:outputpanel>
+         </div><!-- widget-content -->
+       </div><!-- widget-box -->
+                                  
+           
+      </apex:outputPanel>   
+     </apex:outputPanel>
+     
+       <div class="btn-block pagination-centered"> 
+                  <apex:outputpanel rendered="{!IF(processbutton==true && newinvoice==true && viewinvoice==false,true,false)}">                   
+                      <a class="btn btn-primary" href="javascript:void(0);" onclick="discount();" ><i class="icon-plus-sign icon-white"></i> &nbsp;Process Invoice</a> 
+                      <a class="btn btn-primary" href="javascript:void(0);" onclick="cancelinv();"><i class="icon-remove icon-white"></i> &nbsp;Back</a>
+                <!--  <apex:commandButton value="Process Payment"  action="{!save}" styleClass="ProcessPayment btn btn-primary"  reRender="Seexml" onclick="if(!discount()){return false;}" oncomplete="processing();" rendered="{!processingtype== 'SingleTrans'}" /> -->
+                  </apex:outputpanel> 
+                <!--  <apex:outputPanel rendered="{!IF(newtransbutton==true &&  newinvoice==true && viewinvoice==false,true,false)}">
+                  <apex:commandButton styleClass="btn btn-primary" value="New Transaction" action="{!newtrans}"/><br/>
+                  </apex:outputPanel>-->
+             </div>   
+
+
+     <apex:outputPanel rendered="{!processingtype== 'SingleTrans'}">
+     <apex:outputPanel rendered="{!successfile}" >
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Processing Result</h5>
+              </div>
+              <div class="widget-content">             
+                  
+                    <center><strong>Invoice Transaction Processed Successfully.</strong>
+                    <br/>
+                    Please Check your Email for Further details.</center>
+        
+              </div><!-- widget-content -->
+           </div><!-- widget-box -->      
+     </apex:outputPanel>
+    </apex:outputPanel>
+    
+    <apex:outputPanel rendered="{!processingtype== 'SingleTrans'}">
+     <apex:outputPanel rendered="{!errorfile}" >
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Processing Result</h5>
+              </div>
+              <div class="widget-content">             
+                  
+                    <center><strong>Sorry but it appears that the Site URL is missing.</strong><br/>
+                         Please click on the Invoice Settings and set up the Invoice Base-Site URL.</center>
+        
+              </div><!-- widget-content -->
+           </div><!-- widget-box -->      
+     </apex:outputPanel>
+    </apex:outputPanel> 
+ 
+    <apex:inputtext value="{!ss}" style="display:none" styleclass="aa" />
+      
+      
+      
+      <!-- Javascript ---->
+    
+     <script>
+   
+     function Conveniencefee(value){   
+       value = value.replace(',','');
+       if(value!='0.0'){
+           $(".cv").html(formatDollar(parseFloat(value))); 
+           $(".conv").val(parseFloat(value));
+           var gt =  $('.gt').html();
+           gt = gt.replace(/,/g,'');   
+              
+           $('.g_gt').html(formatDollar(parseFloat(gt)+parseFloat(value)));
+           $('.g_gt_class').val(parseFloat(gt)+parseFloat(value));
+          
+       }     
+   }
+  function DynamicDatePicker1(d_id){     
+        DatePicker.pickDate(false,d_id.id,false);
+       
+  } 
+    
+function imposeMaxLength(Event, Object, MaxLen){
+  var e = window.event ? event.keyCode : Event.which;
+  if((e==32) || (e==13) || (e > 47)){
+      if(MaxLen && (Object.value.length > MaxLen-1))
+       {
+           
+            Object.value = Object.value.substr(0,MaxLen);  
+            if(window.event){
+                 window.event.returnValue=null;
+            }else{
+               
+                return false;
+            }
+       } 
+  }
+}
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+             
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+          
+    
+   function duedatecal(){
+ var selectinvpolicy= jQuery(".selectinvpolicy").val();
+ if(selectinvpolicy == ''){
+         alert('Please Select Invoice Policy');
+         $(".selectinvpolicy").focus();
+         return false;
+ }
+      var invoicedate = new Date(Date.parse(jQuery(".invoicedate").val()));
+     invoicedate.setDate(invoicedate.getDate() + parseInt(jQuery(".paymentterms").text()));
+     
+     
+     jQuery(".duedate").html((invoicedate.getMonth()+1) + '/' +invoicedate.getDate() + '/' + invoicedate.getFullYear());  
+    
+     
+  }       
+   function calculateunitdeductable(rowid){
+ 
+    var rowvalues=$(".rowvalues").val(); 
+    var unittaxportion = parseFloat($(".unittaxportion").val());
+    var unittax = parseFloat($(".unittax").val());
+    var unitdiscount = parseFloat($(".unitdiscount").val()); 
+    var amount=$.trim($(".price"+rowid).val().replace(',',''));
+         if(!isNaN(unittaxportion)){            
+             var taxportion=parseFloat(amount)*parseFloat(unittaxportion)/100;
+             $(".deduct"+rowid).val(parseFloat(taxportion).toFixed(2)); 
+         }
+         if(!isNaN(unittax)){
+             var tax = parseFloat(amount)*parseFloat(unittax)/100;
+             $(".tax"+rowid).val(parseFloat(tax).toFixed(2));
+             
+         }
+         if(!isNaN(unitdiscount)){
+             var discount = parseFloat(amount)*parseFloat(unitdiscount)/100;
+             $(".discount"+rowid).val(parseFloat(discount).toFixed(2));
+         }
+ }   
+ 
+ 
+ 
+ function calculateprice(){
+ 
+    var rowvalues=$(".rowvalues").val();
+    var sumtotal = 0.0;
+      unittax = 0.0;
+      unitdis = 0.0;
+      ship = 0.0;
+      unitdeduct = 0.0;
+      conv = 0.0;
+  
+    var convenience_fee = $(".convenience_fee").val();
+    var convenience_amount = $(".convenience_amount").val();
+  
+     for(var i=0;i<rowvalues;i++){
+        var amount=$.trim($(".price"+i).val().replace(',',''));
+           $(".price"+i).val(parseFloat(amount).toFixed(2));
+           
+        var quantity=$.trim($(".quantity"+i).val().replace(',',''));
+        $(".quantity"+i).val(quantity);
+
+        var deduct=$.trim($(".deduct"+i).val().replace(',',''));
+        //$(".deduct"+i).val(deduct);   
+        
+        $(".deduct"+i).val(parseFloat(deduct).toFixed(2)); 
+        
+        var tax = $(".tax"+i).val().replace(',','');
+        // $(".tax"+i).val(tax);
+        $(".tax"+i).val(parseFloat(tax).toFixed(2));
+        var discount = $(".discount"+i).val().replace(',','');
+     //   $(".discount"+i).val(discount);
+        $(".discount"+i).val(parseFloat(discount).toFixed(2));
+        unittax= parseFloat(unittax)+parseFloat(tax*quantity);
+        unitdis= parseFloat(unitdis)+parseFloat(discount*quantity);
+        sumtotal= parseFloat(sumtotal)+parseFloat(amount*quantity);
+        unitdeduct= parseFloat(unitdeduct)+parseFloat(deduct*quantity);
+     }
+     var sp = $(".ship").val().replace(',','');
+
+     if(sp!=''){
+      $(".ship").val(sp);
+      ship=sp;
+     }
+     
+     if(sp==''){
+         $(".shippingcheck").attr('checked',false);
+     }
+      
+        $('.sum').html(formatDollar(sumtotal));
+        $('.tt').html(formatDollar(unittax));
+        $('.td').html("- " + formatDollar(unitdis));
+        $('.sp').html(formatDollar(parseFloat(ship)));
+    
+           var gt_total = parseFloat(ship)+sumtotal+unittax-unitdis;
+         
+         if(convenience_amount!='' && convenience_fee!=''){
+             var conv = parseFloat(convenience_amount)+parseFloat(gt_total)*parseFloat(convenience_fee)/100;
+          }
+         if(conv!=''){
+             $('.cv').html(formatDollar(parseFloat(conv)));
+             $(".conv").val(parseFloat(conv));
+         }else{
+            if($(".conv").val()=='0.00'){
+               $('.cv').html('0.00');
+               $(".conv").val('0.00');
+            }else{
+               conv = $(".conv").val();
+               $('.cv').html($(".conv").val());
+            }
+         }
+         $('.gt').html(formatDollar(gt_total));
+         $('.g_gt').html(formatDollar(parseFloat(ship)+parseFloat(conv)+sumtotal+unittax-unitdis));
+         $('.g_gt_class').val(parseFloat(ship)+parseFloat(conv)+sumtotal+unittax-unitdis);
+    
+        $('.tud').html(formatDollar(unitdeduct));
+        $('.tud_class').val(unitdeduct);
+ }     
+          
+   function formatDollar(num) {
+    var p = num.toFixed(2).split(".");
+    return p[0].split("").reverse().reduce(function(acc, num, i, orig) {
+        return  num + (i && !(i % 3) ? "," : "") + acc;
+    }, "") + "." + p[1];
+} 
+
+function processing(){
+     $("#light2").attr('style','display:none');
+      $("#fade2").attr('style','display:none');
+ }
+ 
+ 
+  function shipping(val){
+  
+  var billingaddress1=jQuery.trim(jQuery(".billingaddress1").val()); 
+  var billingaddress2=jQuery.trim(jQuery(".billingaddress2").val()); 
+  var billingcity=jQuery.trim(jQuery(".billingcity").val()); 
+  var billingstatecode=jQuery.trim(jQuery(".billingstatecode").val()); 
+  
+  var billingcountrycode=jQuery.trim(jQuery(".billingcountrycode").val()); 
+  var billingpostalcode=jQuery.trim(jQuery(".billingpostalcode").val()); 
+  var billingphone=jQuery.trim(jQuery(".billingphone").val()); 
+  var billingstateprovince=jQuery.trim(jQuery(".billingStateProvince").val());   
+     
+   
+   var shippingaddress1;
+   var shippingcity;
+   var shippingpostalcode;
+   var shippingphone;
+   var shippingaddress2;
+   var shippingstatecode;
+   var shippingcountrycode;
+   var shippingstateprovince;
+   if(val==true){
+   
+   shippingaddress1=billingaddress1;
+   jQuery('.shippingaddress1').val(shippingaddress1);
+   shippingaddress2=billingaddress2;
+   jQuery('.shippingaddress2').val(shippingaddress2);
+   
+    shipingcountrycode=billingcountrycode;
+  
+   jQuery('.shippingcountrycode').val(shipingcountrycode);
+
+      shippingstateprovince=billingstateprovince;
+      
+      jQuery('.shippingstateprovince').val(shippingstateprovince);    
+
+   shippingcity=billingcity;
+   jQuery('.shippingcity').val(shippingcity);
+   
+   shippingpostalcode=billingpostalcode;
+   jQuery('.shippingpostalcode').val(shippingpostalcode);
+   
+   shippingphone=billingphone;
+   jQuery('.shippingphone').val(shippingphone);
+   }
+   if(val==false){
+  
+   jQuery('.shippingaddress1').val('');
+ 
+   jQuery('.shippingaddress2').val('');
+   jQuery('.shippingstatecode').val('');
+   jQuery('.shippingcountrycode').val('840');
+   jQuery('.shippingcity').val('');
+   jQuery('.shippingpostalcode').val('');
+   jQuery('.shippingphone').val('');
+   jQuery('.shippingstateprovince').val('');
+
+
+   }
+ }      
+   
+function discount() {
+ 
+   //    var transaction=jQuery.trim(jQuery(".transaction").val());
+        var syst= jQuery.trim(jQuery(".aa").val());
+        var tracker=jQuery.trim(jQuery(".tracker").val());
+        var campaign=jQuery.trim(jQuery(".campaign").val());
+        var reg_tracker=/^([a-zA-Z0-9\ ])+$/;
+        var reg_campaign=/^([a-zA-Z0-9\ ])+$/;
+        var validformat= /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+        var ship=jQuery.trim(jQuery(".ship").val());
+        var conv= jQuery.trim(jQuery(".conv").val());
+        var selectinvpolicy = jQuery.trim(jQuery(".selectinvpolicy").val());
+        ship=ship;
+        var condition=0;
+  /*     
+if(transaction==''){
+        condition=1;
+        alert("Please Select Transaction Date to process..");
+        jQuery(".transaction").focus();
+        return false;
+}else if(transaction!=''){
+        if (!validformat.test(transaction)){
+                condition=1;
+                alert("Invalid Date Format. Please correct and submit again.");
+                jQuery(".transaction").focus();
+                return false;
+        }else{
+            var monthfield=transaction.split("/")[0]
+            
+            var dayfield=transaction.split("/")[1]
+            
+            var yearfield=transaction.split("/")[2]
+            
+            var dayobj = new Date(yearfield, monthfield-1, dayfield)
+            if ((dayobj.getMonth()+1!=monthfield)||(dayobj.getDate()!=dayfield)||(dayobj.getFullYear()!=yearfield)){
+                condition=1;
+                alert("Invalid Day, Month, or Year range detected. Please correct and submit again.");
+                jQuery(".transaction").focus();
+                return false;
+            }
+        }
+    }
+ */
+var rowvalue=$(".rowvalues").val();
+
+  for(var i=0;i<rowvalue;i++){
+      var acc= $(".acc").val();
+      var itemname=trim($(".itemname"+i).val());
+      var sku=trim($(".sku"+i).val());
+      var amount=trim($(".price"+i).val());
+      var quantity=trim($(".quantity"+i).val());
+      var deduct=trim($(".deduct"+i).val());
+      var discount=trim($(".discount"+i).val());
+      var tax=trim($(".tax"+i).val());
+      var reg_quantity=/^([0-9])+$/; 
+      var reg_itemname=/^([a-zA-Z0-9\ ])+$/;
+      var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+      if(acc == null){
+           condition=1;
+                alert("Please Select C&P Account Number to process Payments");
+                $(".acc"+i).focus();
+                return false;
+      }
+      if(itemname==''||!itemname.indexOf(' ',0) ){
+            condition=1;
+                alert("Please Enter The Payment for");
+                $(".itemname"+i).focus();
+                return false;
+            }
+      if(itemname!='' && itemname.length<2){
+              condition=1;
+                alert("Please enter atleast two characters in Payment for");
+                $(".itemname"+i).focus();
+                return false;
+            }           
+    if(sku!='' && !reg_sku.test(sku)){
+                  condition=1;
+                 alert("Please Enter a valid data (Alphanumerics,-,_,:,space) in SKU ");
+                 $(".sku"+i).focus();
+                 return false;
+            }           
+if(quantity=="" ||!quantity.indexOf(' ',0)){
+          condition = 1;
+                      alert("Enter the valid Quantity");
+                      $(".quantity"+i).focus();
+                      return false;
+                      }
+  else if(quantity<=0)
+  {
+  condition = 1;
+                      alert("Quantity must be greater than 0");
+                      $(".quantity"+i).focus();
+                      return false;
+  }
+ else if(isNaN(quantity))
+        {
+        condition=1;
+            alert("Please Enter a Number  in Quantity ");
+          $(".quantity"+i).focus();
+            return false;
+        } 
+ else if(!reg_quantity.test(quantity)){
+                  condition=1;
+                 alert("Please Enter integer values only in Quantity ");
+                 $(".quantity"+i).focus();
+                 return false;
+            } 
+   
+  
+ if(amount=="")
+  {
+  
+   condition = 1;
+                      alert("Enter the Unit Price ");
+                      $(".price"+i).focus();
+                      return false;
+                      }
+ else  if(amount!='')
+   {                   
+
+  if(isNaN(amount))
+        {
+        condition=1;
+            alert("Please Enter a Number or Decimal value in Unit Price ");
+          $(".price"+i).focus();
+            return false;
+        }
+  else if(amount<0 ||amount<0.0)
+  {
+   condition=1;
+            alert("Unit Price Must be positive values only");
+          $(".price"+i).focus();
+            return false;
+  }
+ 
+  }   
+
+     if(parseInt(amount) < parseInt(discount)){
+     condition = 1;
+     alert("Unit Price must greater than Unit Discount ");
+                       $(".price"+i).focus();
+                      return false;
+     }
+      
+       if(parseInt(amount) < parseInt(deduct)){
+     condition = 1;
+     alert("Unit Price must greater than Unit Deductible");
+                       $(".price"+i).focus();
+                      return false;
+     }
+      if(parseInt(amount) < parseInt(tax)){
+     condition = 1;
+     alert("Unit Price must greater than Unit Tax");
+                       $(".price"+i).focus();
+                      return false;
+     }
+  if(isNaN(deduct))
+        {
+        condition=1;
+            alert("Please Enter a Number or 0 in Unit Deductible ");
+          $(".deduct"+i).focus();
+            return false;
+        }else if(deduct<0 || deduct<0.0)
+        {
+        condition=1;
+            alert("Unit Deductible must be greater than or equal to 0");
+          $(".deduct"+i).focus();
+            return false;
+        }
+     
+  if(tax!='')
+  {      
+   if(isNaN(tax))
+        {
+        condition=1;
+            alert("Please Enter a Number or 0 in Unit Tax ");
+          $(".tax"+i).focus();
+            return false;
+        }
+        else if(tax<0 || tax<0.0)
+        {
+        condition=1;
+            alert("Unit Tax must be greater than or equal to 0");
+          $(".tax"+i).focus();
+            return false;
+        }
+        } 
+   
+   if(discount!='')
+        {
+        if(isNaN(discount))
+        {
+        condition=1;
+            alert("Please Enter a Number or 0 in Unit Discount ");
+          $(".discount"+i).focus();
+            return false;
+        }
+       else if(discount<0 || discount<0.0)
+        {
+        condition=1;
+            alert(" Unit Discount must be greater than or equal to 0");
+          $(".discount"+i).focus();
+            return false;
+        } 
+        } 
+        /********Anu**********/
+          for(var j=i+1;j<rowvalue;j++){
+                var sku_dup = jQuery(".sku"+j).val();
+                
+                if(sku.toLowerCase()== sku_dup.toLowerCase() && sku != '')
+                {
+                     condition=1;
+                     alert("Error:  Duplicate SKU found! " + sku+ ',' + sku_dup);
+                     jQuery(".sku"+j).focus();
+                     return false;
+                } 
+          }  
+       }
+       
+       
+        
+  
+   var sum1= parseFloat(jQuery(".g_gt_class").val());
+   var tud= parseFloat(jQuery(".tud_class").val());
+  
+   if(sum1 < tud){
+       condition =1;
+           alert("Total Tax Deductible should not exceed Grand Total. Please Check");
+           jQuery(".sum").focus();
+           return false;
+   }
+   
+   var sum = jQuery(".gt").text();
+    if(sum.length>13)
+    {
+    condition=1;
+            alert("Total Amount exceeded.Please check Quantity and Unit Price once ");
+          jQuery(".sum").focus();
+            return false;
+    }
+
+    if(ship!=''){
+        if(isNaN(ship))
+        {
+           condition=1;
+            alert("Please Enter a Number or decimal value in Shipping ");
+          jQuery(".ship").focus();
+            return false;
+        } 
+        else if(ship<0 || ship<0.0)
+        {
+        condition=1;
+            alert(" Shipping Must be greater than or equal to 0");
+          jQuery(".ship").focus();
+            return false;
+        }
+        }
+          if(conv!=''){
+        if(isNaN(conv))
+        {
+           condition=1;
+            alert("Please Enter a Number or decimal value in Convenience Fee");
+          jQuery(".conv").focus();
+            return false;
+        } 
+        else if(conv<0 || conv<0.0)
+        {
+        condition=1;
+            alert(" Convenience Fee Must be greater than or equal to 0");
+          jQuery(".conv").focus();
+            return false;
+        }
+        }
+
+     var billingaddress1=jQuery.trim(jQuery(".billingaddress1").val());
+    var billingadd1len=billingaddress1.length;;
+    var billingaddress2=jQuery.trim(jQuery(".billingaddress2").val());
+    var billingadd2len=billingaddress2.length;
+    var billingcountry= jQuery.trim(jQuery(".billingcountrycode").val());
+    var billingcity=jQuery.trim(jQuery(".billingcity").val()); 
+    var billingcitylen=billingcity.length; 
+    var billingstate= jQuery.trim(jQuery(".billingstatecode").val()); 
+    var billingprovince= jQuery.trim(jQuery(".billingStateProvince").val());
+    var billingprovincelen=billingprovince.length;
+    var billingpostalcode=jQuery.trim(jQuery(".billingpostalcode").val()); 
+    var billingphone=jQuery.trim(jQuery(".billingphone").val()); 
+    var billingphonelen=billingphone.length;;
+    var itemname=jQuery.trim(jQuery(".itemname").val());
+    var quantity=jQuery.trim(jQuery(".quantity").val())
+    var unitprice=jQuery(".price").val();
+    var reg_itemname=/^([a-zA-Z0-9\ ])+$/;
+    var shippingaddress1=jQuery.trim(jQuery(".shippingaddress1").val());
+    var shippingaddress1len= shippingaddress1.length;
+    var shippingaddress2=jQuery.trim(jQuery(".shippingaddress2").val());
+    var shippingaddress2len= shippingaddress2.length;
+    var shippingcity=jQuery.trim(jQuery(".shippingcity").val());
+    var shippingcitylen=shippingcity.length;
+    var shippingstateprovince=jQuery.trim(jQuery(".shippingstateprovince").val());
+    var shippingstateprovincelen=shippingstateprovince.length;
+    var shippingphone=jQuery.trim(jQuery(".shippingphone").val());
+    var shippingpostalcode=jQuery.trim(jQuery(".shippingpostalcode").val());
+    var shippingcountrycode=jQuery('.shippingcountrycode').val();
+    var shippingstatecode=jQuery('.shippingstatecode').val(); 
+    
+   /* var splitdate = transaction.split('/');
+    var cvtotal = jQuery(".cv").text();
+ 
+    if(splitdate[0].length == 1){
+        var monthdate = '0'+splitdate[0];
+    }else{
+        var monthdate = splitdate[0];
+    }
+    if(splitdate[1].length == 1){
+        var datedate = '0'+splitdate[1];
+    }else{
+        var datedate = splitdate[1];
+    }
+    var newdate = monthdate + '/' + datedate + '/' + splitdate[2];*/
+
+
+   
+   var fname=jQuery.trim(jQuery(".billingfirstname").val());
+   var lname=jQuery.trim(jQuery(".billinglastname").val());
+  
+   var reg_fname=/^([a-zA-Z0-9\.\,\#\&\-\'\ ])+$/;
+   var reg_cardname=/^([a-zA-Z0-9\.\,\#\-\'\ ])+$/;
+   var reg_lname=/^([a-zA-Z0-9\.\,\#\&\-\'\ ])+$/;
+   var reg_billingaddress1=/^([a-zA-Z0-9\.\,\#\&\-\'\ ])+$/;
+   var reg_billingcity=/^([a-zA-Z0-9\.\,\&\-\'\ ])+$/;
+   var reg_billingprovince=/^([a-zA-Z0-9\.\,\&\-\'\[\]\(\)\ ])+$/;
+   var reg_creditname=/^([a-zA-Z0-9\.\,\#\&\-\ ])+$/;
+   var reg_billingpostalcode=/^([a-zA-Z0-9\.\-\ ]{2,20})+$/;
+   var reg_billingphone=/^([0-9\.\-\(\)\+\ ])+$/;
+   var reg_email = /^([A-Za-z0-9_\-\+\.\!\#\$\%\&\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+  
+ var emaildata=jQuery.trim(jQuery(".internalemaillist").val());
+
+
+   var billingemail= jQuery.trim(jQuery(".billingemail").val());
+   var confirmemail= jQuery.trim(jQuery(".confirmemail").val());  
+  
+   
+                          var sendreceipt;
+ 
+ jQuery(".sendreceipt").each(function()
+    {
+    sendreceipt=jQuery(this).attr("checked");
+    });
+  
+   
+   
+  if(fname=="" || fname==null)
+  {
+   condition = 1;
+                      alert("Billing First Name Must be defined");
+                      jQuery(".billingfirstname").focus();
+                      return false;
+  }
+ if(fname!="" && !reg_fname.test(fname))
+                  {
+                       condition = 1;
+                      alert("Please enter the only Alphanumeric and number for Billing First Name");
+                      jQuery(".billingfirstname").focus();
+                      return false;
+                  }
+     if(lname=="" || lname==null)
+  {
+   condition = 1;
+                      alert("Billing Last Name Must be defined");
+                      jQuery(".billinglastname").focus();
+                      return false;
+  }
+                  
+                  
+   if(lname!="" && !reg_lname.test(lname))
+                  {
+                       condition = 1;
+                      alert("Please enter the only Alphanumeric and number for  Billing Last Name");
+                      jQuery(".billinglastname").focus();
+                      return false;
+                  } 
+                  
+    if(billingaddress1!="")
+    {
+     if(!reg_billingaddress1.test(billingaddress1))
+                  {
+                       condition = 1;
+                      alert("Please enter  valid data for  Billing Address1");
+                      jQuery(".billingaddress1").focus();
+                      return false;
+                  } 
+    if(billingadd1len<2)
+    {
+    condition = 1;
+                      alert("Enter Billing Address1 at least two characters");
+                      jQuery(".billingaddress1").focus();
+                      return false;
+    } 
+   
+     }          
+    if(billingaddress2!="")
+    {
+      if(!reg_billingaddress1.test(billingaddress2))
+                  {
+                       condition = 1;
+                      alert("Please enter valid data for Billing Address2");
+                      jQuery(".billingaddress2").focus();
+                      return false;
+                  } 
+     if(billingadd2len<2)
+    {
+    condition = 1;
+                      alert("Enter Billing Address2 at least two characters");
+                      jQuery(".billingaddress2").focus();
+                      return false;
+    }                
+    } 
+    if(billingcity!='')
+    {
+     if(!reg_billingcity.test(billingcity)) 
+    {
+    condition = 1;
+                      alert("Enter valid data for Billing City");
+                      jQuery(".billingcity").focus();
+                      return false;
+    }
+     if(billingcitylen<2 )
+    {
+    condition = 1;
+                      alert("Enter Billing City at least two characters");
+                      jQuery(".billingcity").focus();
+                      return false;
+    }
+    }    
+    if(billingpostalcode!='' && !reg_billingpostalcode.test(billingpostalcode)) 
+    {
+    condition = 1;
+                      alert("Enter valid data for Billing Zip/Postal code");
+                      jQuery(".billingpostalcode").focus();
+                      return false;
+    }
+   
+    if(billingprovince!='')
+    {
+    if(!reg_billingprovince.test(billingprovince)) 
+    {
+    condition = 1;
+                      alert("Enter valid data for Billing Province(non-US)");
+                      jQuery(".billingprovince").focus();
+                      return false;
+    } 
+     if( billingprovincelen<2 )
+    {
+    condition = 1;
+                      alert("Enter Billing Province(non-US) at least two characters");
+                      jQuery(".billingprovince").focus();
+                      return false;
+    } 
+    } 
+   if(billingphone!='')
+   {
+   if( billingphonelen<10)
+   {
+    condition = 1;
+                      alert("Billing Phone Must contain at least 10 digits");
+                      jQuery(".billingphone").focus();
+                      return false;
+   }
+    if(!reg_billingphone.test(billingphone)) 
+    {
+    condition = 1;
+                      alert("Enter valid data for Billing Phone");
+                      jQuery(".billingphone").focus();
+                      return false;
+    } 
+    }     
+  if(billingprovince=='' && (billingaddress1!='' || billingaddress2!=''))
+   {
+          condition=1;
+          alert("Please enter a value in Billing Province");
+          jQuery(".billingStateProvince").focus();
+            return false;
+    }
+    if(billingemail == ''){
+       condition = 1;
+                      alert("Enter Billing Email to process the Invoice");
+                      jQuery(".billingemail").focus();
+                      return false;
+    }
+ 
+ if(billingemail!='' && !reg_email.test(billingemail)) 
+    {
+    condition = 1;
+                      alert("Enter valid Billing Email");
+                      jQuery(".billingemail").focus();
+                      return false;
+    }
+    if(billingemail!=''&& confirmemail=='' )
+    {
+    condition = 1;
+                      alert("Please Enter Billing Confirm Email");
+                      jQuery(".confirmemail").focus();
+                      return false;
+    }
+    if(confirmemail!='' &&!reg_email.test(confirmemail))
+    {
+    condition = 1;
+                      alert("Enter valid Confirm Email");
+                      jQuery(".confirmemail").focus();
+                      return false;
+    }
+  if(confirmemail != billingemail){
+       condition = 1;
+       alert("Emails Does not Match");
+        jQuery(".confirmemail").focus();
+                      return false;
+   }
+  
+  
+  if(billingemail==''&& confirmemail=='' && sendreceipt == 'checked')
+    {
+    condition = 1;
+                      alert("Please enter Email if you select Send Receipt");
+                      jQuery(".billingemail").focus();
+                      return false;
+    } 
+    
+     if(emaildata!='')
+           {
+            var emailsdata=jQuery(".internalemaillist").val().split(','); 
+             for(var i=0;i<emailsdata.length;i++)
+             {
+                   if(!reg_email.test(emailsdata[i]))
+                   {
+                        condition =1;
+                        alert("Please Enter the Valid Email ids");
+                        jQuery(".internalemaillist").focus();
+                        return false;
+                   }
+             }
+           }  
+    
+   var inputcheck;
+ 
+ jQuery(".inputcheck").each(function()
+    {
+    inputcheck=jQuery(this).attr("checked");
+    });
+    
+    
+     var hideship;
+ 
+ jQuery(".hideship").each(function()
+    {
+    hideship=jQuery(this).attr("checked");
+    });
+    
+    var allowship;
+    jQuery(".allowship").each(function()
+    {
+    allowship = jQuery(this).attr("checked");
+    });
+   
+    if(hideship == 'checked' && allowship == 'checked'){
+        condition = 1;
+        alert("Please unselect hide shipping information when editing is allowed");
+        jQuery(".hideship").focus();
+        return false;
+    }
+  if((ship!=0 ||ship!=0.0)  && shippingaddress1=='')
+  {
+ 
+                      condition = 1;
+                      alert("Please enter  valid data for  Shipping Street Address");
+                      jQuery(".shippingaddress1").focus();
+                      return false;
+  }
+ 
+ if(hideship == 'checked' && shippingaddress1=='' ){
+                      condition = 1;
+                      alert("Please enter  valid data for  Shipping Street Address when Hide shipping information on Invoice is checked to true");
+                      jQuery(".shippingaddress1").focus();
+                      return false;
+ }
+ if(hideship == 'checked' && shippingcity =='' ){
+                      condition = 1;
+                      alert("Please enter  data for  Shipping City when Hide shipping information on Invoice is checked to true");
+                      jQuery(".shippingcity").focus();
+                      return false;
+ }
+ 
+ if(hideship == 'checked' && shippingstateprovince =='' ){
+                      condition = 1;
+                      alert("Please enter  data for  Shipping State when Hide shipping information on Invoice is checked to true");
+                      jQuery(".shippingstateprovince").focus();
+                      return false;
+ }
+  if(shippingaddress1!="")
+    {
+     if(!reg_billingaddress1.test(shippingaddress1))
+                  {
+                       condition = 1;
+                      alert("Please enter  valid data for  Shipping Street Address");
+                      jQuery(".shippingaddress1").focus();
+                      return false;
+                  } 
+    if(shippingaddress1len <2)
+    {
+    condition = 1;
+                      alert("Enter Shipping Street Address at least two characters");
+                      jQuery(".shippingaddress1").focus();
+                      return false;
+    } 
+     }          
+   
+    if( shippingaddress2!="")
+    {
+      if(!reg_billingaddress1.test(shippingaddress2))
+                  {
+                       condition = 1;
+                      alert("Please enter valid data for Shipping Address2");
+                      jQuery(".shippingaddress2").focus();
+                      return false;
+                  } 
+     if(shippingaddress2len<2)
+    {
+    condition = 1;
+                      alert("Enter Shipping Address2 at least two characters");
+                      jQuery(".shippingaddress2").focus();
+                      return false;
+    }                
+    } 
+    
+    if((ship!=0 ||ship!=0.0) && shippingcity=='')
+    {
+    condition = 1;
+                      alert("Enter value in Shipping City");
+                      jQuery(".shippingcity").focus();
+                      return false;
+    }
+   if(shippingcity!='')
+   {
+    if(!reg_billingcity.test(shippingcity)) 
+    {
+    condition = 1;
+                      alert("Enter valid data for Shipping City");
+                      jQuery(".shippingcity").focus();
+                      return false;
+    }
+    if(shippingcitylen<2)
+    {
+    condition = 1;
+                      alert("Enter at least two characters for Shipping City");
+                      jQuery(".shippingcity").focus();
+                      return false;
+    }
+    }
+    if((ship!=0 ||ship!=0.0) && shippingpostalcode=='')
+    {
+    condition = 1;
+                      alert("Enter value in Shipping Zip/Postalcode");
+                      jQuery(".shippingpostalcode").focus();
+                      return false;
+    }
+    if(shippingpostalcode!='' && !reg_billingpostalcode.test(shippingpostalcode)) 
+    {
+    condition = 1;
+                      alert("Enter valid data for Shipping Zip/Postalcode");
+                      jQuery(".shippingpostalcode").focus();
+                      return false;
+    }
+     if((ship!=0 ||ship!=0.0)  && shippingstateprovince=='' && shippingaddress1!='')
+    {
+                      condition = 1;
+                      alert("Enter value in Shipping State/Province");
+                      jQuery(".shippingstateprovince").focus();
+                      return false;
+    }
+    
+    if(shippingstateprovince!='')
+    {
+    if(!reg_billingprovince.test(shippingstateprovince)) 
+    {
+    condition = 1;
+                      alert("Enter valid data for Shipping State/Province");
+                      jQuery(".shippingstateprovince").focus();
+                      return false;
+    } 
+    if(shippingstateprovince<2)
+    {
+    condition = 1;
+                      alert("Enter at least 2 characters for Shipping Province");
+                      jQuery(".shippingstateprovince").focus();
+                      return false;
+    } 
+    }
+   if(shippingphone!='' && shippingphone.length<10)
+   {
+    condition = 1;
+                      alert("Shipping Phone Must contain at least 10 digits");
+                      jQuery(".shippingphone").focus();
+                      return false;
+   }
+    if(shippingphone!='' && !reg_billingphone.test(shippingphone)) 
+    {
+    condition = 1;
+                      alert("Enter valid data for Shipping Phone");
+                      jQuery(".shippingphone").focus();
+                      return false;
+    }    
+    
+    
+    
+  
+    if(selectinvpolicy == ''){
+        condition = 1;
+                      alert("Please Select Invoice Policy");
+                      jQuery(".selectinvpolicy").focus();
+                      return false;
+    }
+   
+
+    saveprocess();  
+           if(condition == 0){
+                   jQuery('html, body').animate({scrollTop:350}, 'fast');
+                  countryprocess2();
+                    return true;
+                  }else{
+                  return false;
+                  }
+ 
+}  
+  function DeleteOption(value){    
+     if(value!='0'){
+         $(".deleteoption"+value).show();
+     }
+ }  
+  function trimvalue(value,fieldclass)
+ {
+     var replace=jQuery.trim(value); 
+     $("."+fieldclass).attr('value',replace);
+ }
+         
+$(".invoicedate").prop('readonly', true);
+calculateprice();
+ 
+</script>
+      <!-- End here ----->
+     
+     
+     </apex:outputPanel>
+   </apex:pageBlock>
+    
+   </apex:form>
+   
+  
+    <apex:pageMessage severity="INFO" rendered="{!IF(CnPAccount.size == 0 , true, false)}" >
+
+  <span style="font-weight:normal;">Before using the Virtual Terminal, the Click &amp; Pledge platform has to be connected to your Salesforce instance.  The native Virtual Terminal in Salesforce also has to know what Click &amp; Pledge account it needs to use to post payments to.  To establish connection between the systems please  follow the steps listed below:</span><br />
+   <br />
+   <strong> Enable Salesforce Connection:</strong> <br />
+   <ol>
+<li>  Login to the Click &amp;  Pledge portal (<a href="https://portal.clickandpledge.com" style="color:#0000FF;" target="_blank">https://portal.clickandpledge.com</a>) </li>
+<li>   Click on Account Info</li>
+<li>   Click on 3rd Party tab</li>
+<li>   Click on Salesforce sub-tab</li>
+<li>   Add the requested information and “Verify &amp; Update” to save</li>
+
+</ol>
+ <br />
+<strong> Set up C&amp;P Account info in C&amp;P Settings tab:</strong> <br />
+ <ol>
+<li>  In Click &amp; Pledge portal click on Account Info</li>
+<li>  Click on Your Profile > API Information</li>
+<li>  Copy the Account ID &amp; API Account GUID</li>
+<li>  In Salesforce click on C&amp;P Settings tab</li>
+<li> Click on C&amp;P Account</li>
+<li>  Enter an identification name for C&amp;P Account Name.  This is for internal use only</li>
+<li>  Add C&amp;P Account Number from Step 3</li>
+<li>  Add C&amp;P Account GUID from Step 3</li>
+<li>  Set C&amp;P Account Status to Active</li>
+<li>  Click on Add/Update to save</li>
+<li>  Repeat steps 1- 10 for all C&amp;P Accounts. </li>
+</ol>
+ <br />
+    
+    </apex:pageMessage>
+   
+   <!--   <apex:pageMessage severity="INFO" rendered="{!IF(CnPAccount.size == 0 && tranId != '' , true, false)}" >
+      <span style="font-weight:normal;"> Sorry but the Virtual Terminal window is not active for the referenced account.</span><br/><span  style="font-weight:normal;">Please enable the Virtual Terminal for the C&amp;P Account used for this transaction by adding the account to the <strong>'C&amp;P Settings'</strong> tab> <strong> 'C&amp;P Account' </strong>sub-tab.
+ </span><br /><br /><br />
+ 
+      </apex:pageMessage>-->
+<style>
+.reclab{
+    display:block;
+    
+    text-align:right;
+    font-size:11px;
+    font-weight:bold;
+    color: #333;
+}
+.black_overlay{
+display: none;
+position: absolute;
+top: 0%;
+left: 0%;
+width: 100%;
+height: 100%;
+background-color: black;
+z-index:1001;
+-moz-opacity: 0.8;
+opacity:.40;
+filter: alpha(opacity=80);
+}
+.white_content {
+display: none;
+position: absolute;
+text-align: center;
+top: 40%;
+left: 49%;
+/*
+width: 25%;
+height: 12%;
+*/
+background-color: #000;
+border-radius:5px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border:1px solid #000;
+padding: 16px;
+z-index:1002;
+overflow: auto;
+} 
+</style>
+
+<script>
+
+  /* jQuery(function(){
+          jQuery(".video").mouseout(function(){             
+              jQuery(this).fadeOut(8000);             
+          })
+          })  */
+
+
+         
+               //$(".invoicedate").prop('readonly', true);
+
+ function View_Invoice(value){
+         countryprocess2();
+         viewinvoice(value);   
+    }
+  
+ 
+ function Resend_Invoice(value){
+      countryprocess2();
+      resendinv(value);
+     
+  } 
+ 
+   function processcomplete2(){ 
+           $("#light2").attr('style','display:none');
+           $("#fade2").attr('style','display:none');           
+    }
+    function countryprocess2(){  
+           $("#light2").attr('style','display:block');
+           $("#fade2").attr('style','display:block');    
+          
+    }     
+    function Delete_Invoice(value,rowNuminv){
+
+       /*   var statusinvoice = jQuery(".statusinvoice"+rowNuminv).text();
+             
+          if(statusinvoice == 'paid'){
+              alert('We cannot delete the invoices which are paid');
+              return false;
+          }else{*/
+            if(confirm("Are you sure you want to permanently delete this record?")==true){  
+                 countryprocess2();
+                 deleteinvoice(value); 
+             }
+       //   }
+
+    }
+
+    
+    function delete_invoice1(value){
+     if(confirm("Are you sure you want to permanently delete this record?")==true){  
+                 countryprocess2();
+                 deleteinvoice1(value); 
+             }
+    }
+    function cancelinv(){
+        countryprocess2();
+        Cancel1();
+       
+    }
+    function newinvoicevalue_process(){
+        countryprocess2();
+        newinvoicevalue();
+    }
+    
+  function goingprocess(){
+     countryprocess2();
+}  
+  
+
+    function newtrans(){
+        countryprocess2();
+        newtransaction();
+    }
+  
+</script>
+
+</apex:page>

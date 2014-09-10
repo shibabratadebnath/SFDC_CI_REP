@@ -1,0 +1,293 @@
+<apex:page standardController="CnP_PaaS__Pledge__c" extensions="CnP_PaaS.PledgeController" tabStyle="CnP_PaaS__Pledge__c" title="C&P Pledge">
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+<script type="text/javascript">
+jQuery=$.noConflict();
+
+function anyskucheck(){
+       var conditionssku= jQuery(".conditionssku").val();
+      
+       if(conditionssku=='Any SKU' ){
+        
+          jQuery(".skuvalue").val(''); 
+         
+          jQuery(".skuvalue").attr('disabled',true);        
+
+       }else{
+          jQuery(".skuvalue").attr('disabled',false);
+       }
+}
+
+
+
+    function pledgeupdatecalculate(){
+        var paymentsreceived=jQuery.trim(jQuery(".paymentsreceived").val()); 
+        var updatepledgeamt=jQuery.trim(jQuery(".updatepledgeamt").val());
+        var pledgename= jQuery.trim(jQuery(".pledgename").val());
+        var contactselect = jQuery.trim(jQuery(".contactselect").val());
+       var status=jQuery.trim(jQuery(".status").val());
+       var startdate1 = new Date(jQuery(".startdate").val());
+       var enddate1 = new Date(jQuery(".enddate").val());
+       var syst=new Date(jQuery(".tday").val());
+       
+          var condition=0;        
+          if(pledgename == ''){
+             condition=1;
+             alert("Please Enter Pledge Name");
+             jQuery(".pledgename").focus();
+             return false;
+          }
+           if(status=='')
+        {
+        condition=1;
+                alert('Pledge Status must be Active/Inactive');
+                   jQuery(".status").focus();
+                return false;
+        }
+           if(contactselect == ''){
+             t=1;
+            alert("Please Select Contact");
+             jQuery(".contactselect").focus();
+            return false;
+            
+         }
+           if(updatepledgeamt== ''){
+             t=1;
+            alert("Please Enter Amount");
+             jQuery(".updatepledgeamt").focus();
+            return false;
+         }
+         
+            if(isNaN(updatepledgeamt) && parseFloat(updatepledgeamt)<0){
+               t=1;
+             alert("Please Enter a Number or Decimal value in Pledge Amount");
+             jQuery(".updatepledgeamt").focus();
+            return false;
+         }
+         if(updatepledgeamt<0 || updatepledgeamt <0.0){
+               t=1;
+            alert("Pledge Amount Must be positive values only");
+             jQuery(".updatepledgeamt").focus();
+            return false;
+         }
+         if(updatepledgeamt.length>11){
+               t=1;
+            alert("Please Enter Valid Amount");
+             jQuery(".updatepledgeamt").focus();
+            return false;
+         }
+         
+           if(startdate1 == '' || startdate1 == 'Invalid Date'){
+             t=1;
+            alert("Please Enter Start Date");
+             jQuery(".startdate").focus();
+            return false;
+            
+         }
+
+          if(enddate1<syst){
+                condition=1;
+                alert('Pledge End Date Must be greater than or equal to Today Date');
+                jQuery(".enddate").focus();
+                return false;
+          }
+  
+        if(startdate1 > enddate1){
+             condition=1;
+             alert('End date should be greater than or equal to start date');
+            jQuery(".enddate").focus();
+            return false;
+         }
+         
+    
+         var Benifit=trim(jQuery(".benifitvalue").val());
+         if(isNaN(Benifit))
+          {
+            alert("Please Enter a Number or Decimal value in Benifit Value ");
+            jQuery(".benifitvalue").focus();
+            return false;
+          }
+   
+  
+        
+       var sku=trim(jQuery(".skuvalue").val());
+
+       var reg_sku=/^([a-zA-Z0-9\-\_\:\ ])+$/;
+       var vtsku=trim(jQuery(".skuforvt").val());
+       
+        if(vtsku!='' && !reg_sku.test(vtsku)){       
+         alert("Please Enter a valid data (Alphanumerics,-,_,:,space) in Default SKU for VT ");
+         jQuery(".skuforvt").focus();
+         return false;
+            }
+            
+         if(sku!='' && !reg_sku.test(sku)){       
+         alert("Please Enter a valid data (Alphanumerics,-,_,:,space) in SKU ");
+         jQuery(".skuvalue").focus();
+         return false;
+            }
+            
+
+        if(condition == 0){
+            return true;
+        }else if(condition == 1 ){
+            return false;
+        }
+    }
+  /*  function pledgecalculate(){
+
+        var paymentsreceived=jQuery.trim(jQuery(".paymentsreceived").val()); 
+        var pledgeamount=jQuery.trim(jQuery(".totalpledge").val()); 
+        var pledgeremaining=jQuery(".pledgeremaining").val();
+       // var reg_remain =  /^([0-9\,\])+$/;
+        var updatepledgeamt=jQuery.trim(jQuery(".updatepledgeamt").val());
+         var startdate = new Date(jQuery(".startdate").val());
+       var enddate = new Date(jQuery(".enddate").val());
+       var syst=new Date(jQuery(".aa").val());
+        var status=jQuery.trim(jQuery(".status").val());
+        var condition=0;
+        var excessamt = jQuery.trim(jQuery(".excessamt").val());
+
+       
+        if(status!='Active'){
+               condition=1;
+                alert('Pledge Status must be Active to process payments');
+                   jQuery(".status").focus();
+                return false;
+        }
+       
+        if(excessamt == 'false' && parseFloat(pledgeremaining) >= 0 ){
+            condition =1;
+            alert('Pledge amount should be greater than Payments Received');
+            return false;
+        }
+        if(startdate> syst){
+                condition=1;
+                alert('Pledge Date Must be less than or equal to Today Date');
+                jQuery(".startdate").focus();
+                return false;
+        }
+         
+           
+           if(condition == 0){
+                return true;
+           }else if(condition == 1 ){
+                return false;
+           }
+    }
+*/
+
+
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+             
+              jQuery(this).fadeOut(8000);
+             
+          })
+          jQuery('.benifitvalue').val(jQuery('.benifitvalue').val().replace('-','').replace(',',''));
+          jQuery('.updatepledgeamt').val(jQuery('.updatepledgeamt').val().replace('-','').replace(',',''));
+          });
+</script>
+<apex:form >
+  <apex:pageblock title="Pledge Detail" rendered="{!IF(editpledge = true && xmlset == true,true,false)}">
+ 
+ <apex:pageBlockButtons >
+      <apex:commandButton value="Update" action="{!pledgeupdate}" onclick="if(!pledgeupdatecalculate()){return false;}"/>
+      <apex:commandbutton value="Cancel" action="{!pledgecancel}" immediate="true"/>
+ </apex:pageBlockButtons>
+ <apex:pageMessages />
+ 
+ <apex:pageblocksection collapsible="false" title="Pledge Edit">
+      <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Pledge Name"/>
+           <apex:outputPanel styleClass="requiredInput" layout="block"  >
+           <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+              <apex:inputText value="{!pledgeview.name}" styleclass="pledgename" maxlength="80"/>
+            </apex:outputPanel>
+        </apex:pageblockSectionItem>
+      <apex:inputHidden />
+  
+      <apex:pageBlockSectionItem >
+     <apex:outputLabel value="Pledge Status"/>
+      <apex:inputField value="{!pledgeview.CnP_PaaS__Pledge_Status__c}" styleClass="status"/>
+      </apex:pageBlockSectionItem>
+<apex:outputlabel style="color:#328400;padding-left: 120px;position: relative;font-weight:bold;font-size:13px;" value="Information (Internal Use)"></apex:outputlabel>
+ <apex:pageBlockSectionItem >
+ <apex:outputLabel value="Contact"></apex:outputLabel>
+  <apex:outputPanel styleClass="requiredInput" layout="block"  >
+       <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+<apex:inputfield value="{!pledgeview.CnP_PaaS__Contact__c}" styleClass="contactselect" rendered="{!IF(contactcheck==false,true,false)}"/>
+<apex:inputtext value="{!pledgecon}" disabled="{!contactcheck}" rendered="{!IF(contactcheck==true,true,false)}" styleClass="contactselect" />
+</apex:outputPanel>
+</apex:pageblocksectionitem>
+<apex:inputField value="{!pledgeview.CnP_PaaS__Tribute__c}"/>
+
+<apex:pageblocksectionitem >
+  <apex:outputLabel value="Pledge Amount"></apex:outputLabel>
+  <apex:outputPanel styleClass="requiredInput" layout="block"  >
+       <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+  <apex:inputtext value="{!pledgeview.CnP_PaaS__Pledge_Amount__c}" styleClass="updatepledgeamt" maxlength="11"/>
+  </apex:outputPanel>
+   </apex:pageblocksectionitem>
+<apex:inputField value="{!pledgeview.CnP_PaaS__Benifit_Value__c}" styleClass="benifitvalue"/>
+   <apex:pageBlockSectionItem >
+      <apex:outputLabel value="Start Date"/>
+       <apex:outputPanel styleClass="requiredInput" layout="block"  >
+       <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+          <apex:inputField value="{!pledgeview.CnP_PaaS__Start_Date__c}" styleclass="startdate"/>
+       </apex:outputPanel>
+      </apex:pageBlockSectionItem>
+     <apex:inputtext value="{!pledgeview.CnP_PaaS__Number_of_Payments__c}" maxlength="12"/>
+    <apex:inputField value="{!pledgeview.CnP_PaaS__End_Date__c}" styleClass="enddate"/>
+    
+      <apex:inputfield value="{!pledgeview.CnP_PaaS__Description__c}" />
+     
+    
+         <apex:inputField value="{!pledgeview.CnP_PaaS__SKU_VT__c}" styleClass="skuforvt"/>
+          <apex:pageblockSectionItem />
+      <apex:pageblocksectionItem >
+        <apex:outputLabel style="font-weight:bold;font-size:11px;">SKU Condition</apex:outputLabel>
+           <apex:outputPanel >
+           <apex:selectList value="{!pledgeview.CnP_PaaS__SKU_Condition__c}" size="1" onchange="anyskucheck();" styleclass="conditionssku">
+                 <apex:selectOptions value="{!skuconditions}"/>
+            </apex:selectList>&nbsp;&nbsp;&nbsp;&nbsp;
+          <apex:inputtext value="{!pledgeview.CnP_PaaS__SKU__c}" maxlength="11" size="10" styleclass="skuvalue"/>
+            <script>
+                        anyskucheck();
+                     </script>
+        </apex:outputPanel>
+     </apex:pageblocksectionItem>
+    
+ 
+    <apex:pageblockSectionItem />
+   
+      <apex:inputField value="{!pledgeview.CnP_PaaS__Campaign__c}"/>
+      <apex:inputhidden />
+     <apex:inputField value="{!pledgeview.CnP_PaaS__Excess_Amount__c}" styleClass="excessamount"/>
+  
+  <apex:inputtext value="{!ss}" styleclass="tday" style="display:none"/>
+ </apex:pageblocksection>
+   <apex:inputtext value="{!paymentsreceived}" styleclass="paymentsreceived" style="display:none" />
+
+</apex:pageblock>
+
+
+<!--<apex:pageblock title="Related Opportunities"  rendered="{!xmlset}">
+    <apex:pageblockSection columns="1">  
+       <apex:pageBlockTable value="{!pledgelist}" var="pldg" width="100%" >         
+         
+          <apex:column headerValue="Name" width="20%">
+            <apex:outputLink value="/{!pldg.Id}">{!pldg.Name}</apex:outputLink>                 
+          </apex:column>   
+           
+          <apex:column headerValue="Opportunity Name" width="30%">    
+            <apex:outputField value="{!pldg.Opportunity__c}"/>                            
+          </apex:column> 
+          <apex:column headerValue="Opportunity Amount" width="30%">    
+            <apex:outputField value="{!pldg.Amount__c}"/>                            
+          </apex:column> 
+         
+     </apex:pageBlockTable>      
+    </apex:pageblockSection>  
+</apex:pageBlock>-->
+</apex:form>
+</apex:page>

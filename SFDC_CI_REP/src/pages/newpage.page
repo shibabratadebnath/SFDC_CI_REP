@@ -1,0 +1,33 @@
+<apex:page standardcontroller="Company__c" extensions="ShowOnlyJoinedEmployees">
+    <script>
+        function CallCloning()
+        {
+             boolean r = document.getElementById("{!$Component.frm.txt1}").value;
+             if(r==true)
+            {
+                alert("ghvh");
+                MethodCallingFunction();
+            }
+            else
+            {
+                location.reload();
+            }
+        }
+     </script>   
+    <apex:form id="frm">
+        <apex:actionFunction name="MethodCallingFunction" action="{!Clonerec}"/>
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!DE}" var="Employees">
+                <apex:column >
+                    <apex:inputCheckbox value="{!Employees.CheckBOXVar}" onclick="CallCloning()" id="txt1">
+                    </apex:inputCheckbox>
+                </apex:column>   
+                <apex:column value="{!Employees.empVar.Name}"/>
+                <apex:column value="{!Employees.empVar.Address__c}"/>
+                <apex:column value="{!Employees.empVar.Company__c}"/>
+                <apex:column value="{!Employees.empVar.Salary__c}"/>
+                <apex:column value="{!Employees.empVar.Joined_Resigned__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

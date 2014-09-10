@@ -1,0 +1,557 @@
+<apex:page controller="CnP_PaaS_EVT.Messsages_class" sidebar="false" showHeader="false" standardStylesheets="false" action="{!loadhelpContent}" >
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+ <apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/> 
+
+
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/main.js')}"/> 
+
+<style>
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+</style>
+
+
+
+<apex:form >
+
+<div id="content-header">
+    <h1><i class="icon icon-tasks"></i> Messages</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"><!-- <a class="btn tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a> -->
+     <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Messages'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Messages'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Messages'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Messages'].link}" target="_blank" >{!subTab['Active Events']['Messages'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Messages'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Messages'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Messages'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel> 
+    
+    </div>
+  </div>
+    
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="tip-bottom" data-original-title="{!Eventdetails1.Name}">{!Eventdetails1.Name}</a> <a class="current" data-original-title="Messages}">Messages</a> </div>
+  <div class="eventdatebar">
+        <i class="icon-time"></i>&nbsp;&nbsp;
+        <span class="popover-startdate">Event:</span>
+        <span><strong>{!Eventdetails1.Name} &nbsp;&nbsp;</strong></span>    
+        <span class="popover-startdate">Start Date:</span>
+        <span><strong>{!startdate}&nbsp;&nbsp;</strong></span>                                   
+        <span class="popover-endson">End Date:</span>
+        <span><strong>{!enddate} &nbsp;&nbsp;</strong></span>                             
+        <span class="popover-endson">Publish Date:</span>
+        <span><strong>{!publishdate}</strong></span>                          
+    </div>
+ 
+<div id="frame-content" class="container-fluid">
+ 
+ <!------  EVENT INFORMATION START --------->
+  
+<apex:pageBlock >
+
+    <apex:selectRadio value="{!selectedoption}" styleClass="tabletabs">
+    <apex:actionSupport event="onchange" action="{!dispalyeventorlevel}" />
+    <apex:selectOptions value="{!options}">
+    </apex:selectOptions>
+    </apex:selectRadio>
+
+<div class="tab-content">
+    
+        <div class="tab-pane active noborder" id="tab1">
+        <apex:outputPanel id="event">
+         <apex:pageBlock rendered="{!eventadd}">
+            
+                 <apex:pageBlockButtons style="text-align:center;width:100%;padding:10px;" >
+                  <apex:commandButton value="Save" action="{!SaveEvent}"  styleClass="btn btn-primary"  onclick="return checkvalidate();"/>
+                  &nbsp;&nbsp;<apex:commandButton value="Cancel" action="{!cancelevent}" styleClass="btn btn-primary" />
+                 </apex:pageBlockButtons>
+         
+         
+                 <div class="detailstable">
+                       <apex:pageBlockSection id="CustomInfo" columns="1" collapsible="false">                 
+                      <!--    <apex:outputLabel value="Event" style="font-weight: bold;font-size:14px;"/>-->
+                           
+                            <apex:pageBlockSectionItem helpText="This event is sold out. Please check the listing for future events.">                                                                           
+                                 <apex:outputLabel value="Sold Out"/>
+                                 <apex:inputTextarea value="{!Eventdetails1.CnP_PaaS_EVT__Sold_Out__c}" id="EventSetInfo_soldout" styleClass="EventSetInfo_soldout" />
+                             </apex:pageBlockSectionItem>
+                             <apex:pageBlockSectionItem helpText="This event is over. Please check the listing for future events.">
+                                 <apex:outputLabel value="Event Ended" />                                 
+                                 <apex:inputTextarea value="{!Eventdetails1.CnP_PaaS_EVT__Event_Ended__c}" id="EventSetInfo_ended" styleClass="EventSetInfo_ended"/>
+                             </apex:pageBlockSectionItem>
+                             
+                            <apex:outputLabel value="Payment" style="font-weight: bold;font-size:14px;"/>
+                            
+                            <apex:pageBlockSectionItem >
+                                 
+                                 <apex:outputLabel value="Show Terms & Conditions"/> 
+                                 <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__Show_Terms_Conditions__c}" id="EventCustomInfo_ShowTC" styleClass="showterm"/>
+                                                                    
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem >
+                                 <apex:outputLabel value="Acknowledgement Mandatory"/>
+                                 <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__Acknowledgement_Mandatory__c}" id="EventLayoutCustomInfo_ShowTC" styleClass="acknowledgement"/>                                 
+                                     
+                            </apex:pageBlockSectionItem>
+                           
+                            <apex:pageBlockSectionItem helpText="Standard terms and conditions associated with this page layout">
+                                 <apex:outputLabel value="Terms & Conditions Text"/>
+                              
+                                  <apex:inputTextarea value="{!Eventdetails1.CnP_PaaS_EVT__Terms_Conditions__c}" id="EventLayoutCustomInfo_TandC"  styleClass="EventLayoutCustomInfo_TandC"/>
+                            </apex:pageBlockSectionItem>
+                            
+                            
+                            
+                            <apex:pageBlockSectionItem helpText="Thank you for your registration. Please check your email for a copy of your receipt.">
+                            <apex:outputLabel value="Thank You"  />
+                           
+                             <apex:inputTextarea value="{!Eventdetails1.CnP_PaaS_EVT__Thank_You__c}" id="Eventinfo_thanku" styleClass="Eventinfo_thanku"/>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem helpText="The Payment was declined.  Please check the information and try again, or use another credit card.">
+                            <apex:outputLabel value="Payment Declined" />
+                        
+                            <apex:inputTextarea value="{!Eventdetails1.CnP_PaaS_EVT__Declined__c}" id="Eventinfo_declined" styleClass="Eventinfo_declined"/>
+                            </apex:pageBlockSectionItem>
+                            <apex:outputPanel >
+                            
+                            <apex:outputLabel value="Receipt" style="font-weight: bold;font-size:14px;"/>
+                           
+                            </apex:outputPanel>
+                         <apex:pageBlockSectionItem id="SendReceiptItem">
+                        <apex:outputLabel value="Send Receipt" />
+                        <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__Send_Receipt__c}" styleClass="Eventinfo_send_receipt" id="Eventinfo_send_receipt" onchange="CreditOptions();">
+                        
+                        </apex:inputField>
+                        </apex:pageBlockSectionItem>
+                            
+                             <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Organization Information" styleClass="Organization_lable"/>
+                            <apex:outputpanel >
+                            <apex:inputtextarea value="{!Eventdetails1.CnP_PaaS_EVT__Organization_Information__c}" id="Eventinfo_Eventinfo_orga" styleclass="Eventinfo_Eventinfo_orga input-block-level" rows="7"  cols="30"/>
+                            (Max length 1500 characters)
+                            </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                             <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Thank You Message"  styleClass="Thank_lable"/>
+                            <apex:outputpanel >
+                            <apex:inputtextarea value="{!Eventdetails1.CnP_PaaS_EVT__Thank_You_Message_Receipt__c}" id="Eventinfo_Thanks" styleclass="Eventinfo_Thanks input-block-level" rows="7"  cols="75"/>
+                            (Max length 500 characters)
+                            </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                            
+                            
+                             <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Terms & Conditions" styleClass="terms_lable"/>
+                            <apex:outputpanel >
+                            <apex:inputtextarea value="{!Eventdetails1.CnP_PaaS_EVT__Receipt_Terms_Condition__c}" id="Eventinfo_Receipt_Terms_Condition" styleclass="Eventinfo_Receipt_Terms_Condition input-block-level" rows="7" cols="75" />
+                            (Max length 1500 characters)
+                            <br />
+                            <apex:outputText value="(The following HTML tags are allowed: <P></P><BR /><OL></OL><LI></LI><UL></UL> )" />
+                            </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                           
+                           
+                           <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Internal Notification" styleClass="terms_lable"/>
+                            <apex:outputpanel >
+                            <apex:inputtextarea value="{!Eventdetails1.CnP_PaaS_EVT__Internal_Notification__c}" id="Eventinfo_Internal_Notification__c" styleclass="internalemaillist input-block-level" rows="7" cols="75" />
+                            (Type email addresses separated by semicolon max 1000 chars)
+                            </apex:outputpanel>
+                            </apex:pageBlockSectionItem>
+                       </apex:pageBlockSection>
+                 </div>
+             
+        </apex:pageBlock>
+        <script type="text/javascript">
+        
+   CKEDITOR.replace($(".EventSetInfo_soldout").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}}); 
+   CKEDITOR.replace($(".EventSetInfo_ended").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+  CKEDITOR.replace($(".EventLayoutCustomInfo_TandC").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+  CKEDITOR.replace($(".Eventinfo_thanku").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+  CKEDITOR.replace($(".Eventinfo_declined").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+  
+  
+  
+   CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+   CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+   CKEDITOR.config.contentsCss= ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+   CKEDITOR.config.language = 'en-us';  
+   CKEDITOR.config.customConfig = '{!$Resource.ckconfig}';
+   CKEDITOR.config.toolbar='Custome';
+   
+   
+  function checkvalidate()
+  {
+     if($(".Eventinfo_Eventinfo_orga").val().length>1500)
+     {
+       alert("Organization Information should be less than 1500 Characters");
+       $(".Eventinfo_Eventinfo_orga").focus();
+       return false;
+     }
+      if($(".Eventinfo_Thanks").val().length>500)
+     {
+       alert("Thank you Message should be less than 500 Characters");
+       $(".Eventinfo_Thanks").focus();
+       return false;
+     }
+      if($(".Eventinfo_Receipt_Terms_Condition").val().length>1500)
+     {
+       alert("Terms & Conditions should be less than 1500 Characters");
+       $(".Eventinfo_Receipt_Terms_Condition").focus();
+       return false;
+     }
+     if($(".internalemaillist").val().length>1000)
+     {
+       alert("Internal Notification should be less than 1000 Characters");
+       $(".internalemaillist").focus();
+       return false;
+     }
+     
+    var reg_email = /^([A-Za-z0-9_\-\+\&\.\!\#\$\%\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9\-\.])+\.([A-Za-z]{2,4})$/; 
+     var emaildata=jQuery.trim(jQuery(".internalemaillist").val());
+    if(emaildata!='')
+           {
+            var emailsdata=jQuery.trim(jQuery(".internalemaillist").val()).split(';'); 
+             for(var i=0;i<emailsdata.length;i++)
+             {
+            
+                   if(!reg_email.test(emailsdata[i]) && emailsdata[i] != '' )
+                   {
+                        condition =1;
+                        alert("Please Enter the Valid Email ids");
+                        jQuery(".internalemaillist").focus();
+                        return false;
+                   }
+             }
+           }   
+  }
+ 
+    </script>
+        </apex:outputPanel>
+ 
+        <apex:outputPanel id="eventid">
+        <apex:pageBlock rendered="{!EditEventadd}" >
+             <apex:pageBlockButtons style="text-align:center;width:100%;padding:10px;" >
+             <apex:commandButton value="Edit" action="{!EditEvent}" styleClass="btn btn-primary"   />
+              &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!Eventdetails1.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+             </apex:pageBlockButtons>
+         
+              <apex:pageBlockSection columns="1" >
+              
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Sold Out"> </apex:outputLabel>
+            
+                   <apex:outputPanel >
+                     <span class="Soldout">
+                      <apex:outputText value="{!Eventdetails1.CnP_PaaS_EVT__Sold_Out__c}" style="display:none"></apex:outputText>
+                      </span>
+                     </apex:outputPanel>
+             
+              </apex:pageBlockSectionItem>
+              
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Event Ended"> </apex:outputLabel>
+            
+                <apex:outputPanel >
+                     <span class="EventEnd">
+                      <apex:outputText value="{!Eventdetails1.CnP_PaaS_EVT__Event_Ended__c}"   style="display:none"></apex:outputText>
+                      </span>
+                     </apex:outputPanel>
+             
+              </apex:pageBlockSectionItem>
+              
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Show Terms & Conditions"></apex:outputLabel>
+              <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Show_Terms_Conditions__c}"/>
+              
+              </apex:pageBlockSectionItem>
+              
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Acknowledgement Mandatory"></apex:outputLabel>
+              <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Acknowledgement_Mandatory__c}"/>
+          
+              </apex:pageBlockSectionItem>
+              
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Terms & Conditions"></apex:outputLabel>
+              <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Terms_Conditions__c}"/>
+           
+              </apex:pageBlockSectionItem>
+              
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Thank You Message"> </apex:outputLabel>
+             
+             
+                  <apex:outputPanel >
+                     <span class="Thanks">
+                      <apex:outputText value="{!Eventdetails1.CnP_PaaS_EVT__Thank_You__c}" style="display:none"></apex:outputText>
+                      </span>
+                     </apex:outputPanel>
+             
+               
+              </apex:pageBlockSectionItem>
+              
+              <apex:pageBlockSectionItem labelStyle="white-space:nowrap;">
+              <apex:outputLabel value="Registration Declined Message"></apex:outputLabel>
+           
+                 <apex:outputPanel >
+                     <span class="regdec">
+                      <apex:outputText value="{!Eventdetails1.CnP_PaaS_EVT__Declined__c}" style="display:none"></apex:outputText>
+                      </span>
+                     </apex:outputPanel>
+            
+              </apex:pageBlockSectionItem>
+              
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Send Receipt"> </apex:outputLabel>
+              <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Send_Receipt__c}"/>
+             </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem >
+             <apex:outputLabel value="Organization Information"></apex:outputLabel>
+             <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Organization_Information__c}" rendered="{!If(Eventdetails1.CnP_PaaS_EVT__Send_Receipt__c==true,true,false)}"/>
+             </apex:pageBlockSectionItem>
+             
+             <apex:pageBlockSectionItem >
+             <apex:outputLabel value="Thank You Message"> </apex:outputLabel>
+              <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Thank_You_Message_Receipt__c}" rendered="{!If(Eventdetails1.CnP_PaaS_EVT__Send_Receipt__c==true,true,false)}"/>
+             </apex:pageBlockSectionItem>
+             
+             <apex:pageBlockSectionItem >
+             <apex:outputLabel value="Terms & Conditions"> </apex:outputLabel>
+              <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Receipt_Terms_Condition__c}" rendered="{!If(Eventdetails1.CnP_PaaS_EVT__Send_Receipt__c==true,true,false)}"/>
+              </apex:pageBlockSectionItem>
+              
+               <apex:pageBlockSectionItem >
+             <apex:outputLabel value="Internal Notification"> </apex:outputLabel>
+              <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Internal_Notification__c}" />
+              </apex:pageBlockSectionItem>
+              
+              <script>
+            $(document).ready(function() {
+          var SendReceiptCheck= $(".Eventinfo_send_receipt").is(':checked');
+            
+
+            if(SendReceiptCheck==false)
+            {
+             $(".Eventinfo_Eventinfo_orga").css("display","none");
+             $(".Eventinfo_Thanks").css("display","none");
+             $(".Eventinfo_Receipt_Terms_Condition").css("display","none");
+             $(".Organization_lable").css("display","none");
+             $(".Thank_lable").css("display","none");
+             $(".terms_lable").css("display","none");
+            
+            }
+            else if(SendReceiptCheck==true)
+            {
+             $(".Eventinfo_Eventinfo_orga").css("display","block");
+             $(".Eventinfo_Thanks").css("display","block");
+             $(".Eventinfo_Receipt_Terms_Condition").css("display","block");
+             $(".Organization_lable").css("display","block");
+             $(".Thank_lable").css("display","block");
+             $(".terms_lable").css("display","block");
+            
+            }
+      
+                   var Soldout=$(".Soldout").text();
+                      $(".Soldout").html(Soldout);
+                       
+                       var EventEnd=$(".EventEnd").text();
+                      $(".EventEnd").html(EventEnd);
+                      
+                       var Thanks=$(".Thanks").text();
+                      $(".Thanks").html(Thanks);
+                      
+                      var regdec=$(".regdec").text();
+                      $(".regdec").html(regdec);
+      
+      
+      
+      });
+      </script>     
+              </apex:pageBlockSection>
+             
+          
+             
+              
+         </apex:pageBlock>
+        
+         
+       </apex:outputPanel>
+</div>  
+</div>
+
+</apex:pageBlock>  
+    
+    
+    
+
+ <!--------- EVENT INFORMATION END ------------------>
+ 
+ 
+ <!-------- LEVEL INFORMATION START ---------->
+ 
+    <div class="tab-content">
+    <apex:outputPanel id="level">
+    <apex:pageBlock id="body" rendered="{!Leveldis}">
+      
+       
+    <div class="tab-pane active noborder" id="tab2">
+    
+            <apex:outputPanel id="levelid" styleClass="btn-block pagination-centered">
+           
+            
+                <apex:outputLabel value="Select Registration Level :" style="font-weight:bold;display:inline;"></apex:outputLabel>&nbsp;
+                 <apex:selectList value="{!Everegname}" size="1"  >
+                 <apex:actionSupport event="onchange" action="{!Getvalues}" />
+                   <apex:selectOptions value="{!acclist}" ></apex:selectOptions>
+                  </apex:selectList>
+                 &nbsp; &nbsp;
+                 <apex:outputLabel value="Copy From:" style="font-weight:bold;display:inline;"></apex:outputLabel>&nbsp;
+                 <apex:selectList id="copylist" value="{!Everegnamecopy}" size="1"  rendered="{!Leveldis}">
+                 <apex:actionSupport event="onchange" action="{!Getvaluescopy}" />
+                   <apex:selectOptions value="{!copymessagelevellist}" ></apex:selectOptions>
+                 </apex:selectList>
+            </apex:outputPanel>
+              
+         <apex:pageBlock rendered="{!Leveladd}">
+                  <div class="btn-block pagination-centered" >
+                  <apex:commandButton value="Save" action="{!SaveLevel}" styleClass="btn btn-primary" />
+                &nbsp;&nbsp;<apex:commandButton value="Cancel" action="{!cancellevel}" styleClass="btn btn-primary" />
+                 </div>
+                        <apex:pageBlockSection columns="1" >
+                         <apex:pageBlockSectionItem >
+                         <apex:outputLabel value="Sold Out Message"></apex:outputLabel>
+                         <apex:inputTextarea value="{!reglevel.CnP_PaaS_EVT__Message_to_display_when_limit_is_reached__c}" id="EventLevelinfo_LimitMessage" styleClass="EventLevelinfo_LimitMessage"/>
+                         </apex:pageBlockSectionItem>
+                        
+                        </apex:pageBlockSection>
+                        
+                
+              <script type="text/javascript">
+ 
+              CKEDITOR.replace($(".EventLevelinfo_LimitMessage").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}}); 
+              CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+              CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+              CKEDITOR.config.contentsCss= ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+              CKEDITOR.config.language = 'en-us';  
+              CKEDITOR.config.customConfig = '{!$Resource.CnP_PaaS_EVT__ckconfig}';
+              CKEDITOR.config.toolbar='Custome';
+ 
+            </script>          
+         </apex:pageBlock>
+     
+      
+         <apex:pageBlock rendered="{!EditLeveladd}">
+          
+           <div class="btn-block pagination-centered" >
+                  <apex:commandButton value="Edit" action="{!EditLevel}" styleClass="btn btn-primary" />
+                   &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!Eventdetails1.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+                  </div>
+                   <apex:pageBlockSection columns="1" >
+                   <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Sold Out Message"></apex:outputLabel>
+                
+                 <apex:outputPanel >
+                     <span class="titleandinfo">
+                      <apex:outputText value="{!reglevel.CnP_PaaS_EVT__Message_to_display_when_limit_is_reached__c}" style="display:none"></apex:outputText>
+                      </span>
+                     </apex:outputPanel>
+               
+                  </apex:pageBlockSectionItem>
+                   </apex:pageBlockSection>
+                   
+                 
+      
+         </apex:pageBlock> 
+         
+    </div>
+              <script>
+     
+                     $(document).ready(function () {  
+                                      
+                       var titleandinfo=$(".titleandinfo").text();
+                      $(".titleandinfo").html(titleandinfo);
+                      
+                      
+                       
+                });        
+
+        </script>
+    </apex:pageBlock> 
+    </apex:outputPanel>
+    </div>
+    
+    
+<!------------- LEVEL INFORMATION END ------------>
+<script>
+function CreditOptions(){
+
+var SendReceiptCheck= $(".Eventinfo_send_receipt").is(':checked');
+
+
+if(SendReceiptCheck==false)
+{
+ $(".Eventinfo_Eventinfo_orga").css("display","none");
+ $(".Eventinfo_Thanks").css("display","none");
+ $(".Eventinfo_Receipt_Terms_Condition").css("display","none");
+ $(".Organization_lable").css("display","none");
+ $(".Thank_lable").css("display","none");
+ $(".terms_lable").css("display","none");
+
+}
+else if(SendReceiptCheck==true)
+{
+$(".Eventinfo_Eventinfo_orga").css("display","block");
+ $(".Eventinfo_Thanks").css("display","block");
+ $(".Eventinfo_Receipt_Terms_Condition").css("display","block");
+  $(".Organization_lable").css("display","block");
+ $(".Thank_lable").css("display","block");
+ $(".terms_lable").css("display","block");
+
+}
+
+}
+</script>
+
+</div>
+</apex:form> 
+ <script>
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+</script>            
+</apex:page>

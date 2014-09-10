@@ -1,0 +1,82 @@
+<apex:component controller="CnP_PaaS_EVT.sftreecomponentcontroller" >
+
+<div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-home"></i> Navigation</a>
+<ul style="display: block;" class="leftnav">
+   
+    
+      <apex:variable value="0" var="rowNum"/>
+      <apex:variable value="0" var="rowNum1"/>
+      <apex:repeat value="{!nodeList}" var="node">
+      <apex:outputtext value="{!node.name}" styleclass="nodename" style="display:none"/>
+      <li   class="submenu1  {!IF(left(node.id,15)==$CurrentPage.parameters.id,'','active')}">
+      <a href="#">
+      <img src="{!URLFOR($Resource.bootstrap,'admin/img/active_events_icon.png')}" alt="Active Events" width="30" height="30" style="display:{!IF(node.name=='Active Events','inline','none')}" />
+      <img src="{!URLFOR($Resource.bootstrap,'admin/img/upcoming_events_icon.png')}" alt="Upcoming Events" width="30" height="30" style="display:{!IF(node.name=='Upcoming Events','inline','none')}" />
+      <img src="{!URLFOR($Resource.bootstrap,'admin/img/archieved_events_icon.png')}" alt="Archieved Events" width="30" height="30" style="display:{!IF(node.name=='Archived Events','inline','none')}" />
+      <img src="{!URLFOR($Resource.bootstrap,'admin/img/recurring_events_icon.png')}" alt="Recurring Events" width="30" height="30" style="display:{!IF(node.name=='Recurring Events','inline','none')}" />
+      <img src="{!URLFOR($Resource.bootstrap,'admin/img/event_listings_icon.png')}" alt="Event Listings" width="30" height="30" style="display:{!IF(node.name=='Event Listings','inline','none')}" />
+      <img src="{!URLFOR($Resource.bootstrap,'admin/img/box_office_icon.png')}" alt="Box Office" width="30" height="30" style="display:{!IF(node.name=='Box Office','inline','none')}" />
+      <img src="{!URLFOR($Resource.bootstrap,'admin/img/device_manager_icon.png')}" alt="Device Manager" width="30" height="30" style="display:{!IF(node.name=='Device Manager','inline','none')}" />
+   
+      &nbsp; 
+      <span onclick="Mainparentclickcall('{!HTMLENCODE(node.name)}');"><apex:outputtext value="{!HTMLENCODE(node.name)}"/></span></a>
+        <ul>
+        <apex:repeat value="{!node.SubEvents}" var="child">
+        
+          
+          <li class="submenu2" id="mainnonbox{!rowNum}" style="display:{!if(JSENCODE(node.name)!='Box Office',"block","none")}"><a href="#" ><span onclick="parentClickCall('{!JSENCODE(child.id)}','mainnonbox{!rowNum}','100','{!rowNum}','{!JSENCODE(node.name)}');" ><apex:outputtext value="{!HTMLENCODE(child.Name)}"/></span></a>
+           
+             <ul class="subitems">
+             <apex:variable var="rowNum" value="{!VALUE(rowNum) + 1}" />
+             <apex:variable value="0" var="submenuCount"/>
+              <apex:repeat value="{!node.childrenEvents}" var="child1">
+              <li class="submenu3" id="submain{!submenuCount}"><a href="#" ><span onclick="childClickCall('{!JSENCODE(child.id)}','submain{!submenuCount}','8',{!submenuCount},'{!JSENCODE(child1.APIName)}');">{!HTMLENCODE(child1.name)}</span></a>
+                 <apex:outputPanel rendered="{!IF(child1.name=='Designer',true,false)}" layout="none">
+                  <ul class="subsubitems" ><!-- style="display:{!if(child1.name=='Designer',"block","none")}" -->
+                   <apex:variable value="0" var="submenudesignerCount"/>
+                   <apex:repeat value="{!node.childrenEventsofdesigner}" var="child2" >
+                        <li class="submenu4" id="submaindesigner{!JSENCODE(submenudesignerCount)}" ><a href="#"  ><span onclick="childchildClickCall('{!JSENCODE(child.id)}','submaindesigner{!submenudesignerCount}','5',{!submenudesignerCount},'{!JSENCODE(child2.APIName)}');"><apex:outputtext value="{!HTMLENCODE(child2.name)}"/></span></a></li>
+                     <apex:variable var="submenudesignerCount" value="{!VALUE(submenudesignerCount) + 1}" />
+                   </apex:repeat>
+                  </ul>
+                 </apex:outputPanel>
+                 <apex:outputPanel rendered="{!IF(child1.name=='Check-In / Check-Out',true,false)}" layout="none">
+                  <ul class="subsubitems" ><!-- style="display:{!if(child1.name=='Designer',"block","none")}" -->
+                   <apex:variable value="0" var="submenudesignerCount"/>
+                   <apex:repeat value="{!node.childrenEventsofmobile}" var="child3" >
+                        <li class="submenu4" id="submaindesigner{!JSENCODE(submenudesignerCount)}" ><a href="#"  ><span onclick="childchildClickCall('{!JSENCODE(child.id)}','submaindesigner{!submenudesignerCount}','5',{!submenudesignerCount},'{!JSENCODE(child3.APIName)}');"><apex:outputtext value="{!HTMLENCODE(child3.name)}"/></span></a></li>
+                     <apex:variable var="submenudesignerCount" value="{!VALUE(submenudesignerCount) + 1}" />
+                   </apex:repeat>
+                  </ul>
+                 </apex:outputPanel>          
+              </li> 
+              <apex:variable var="submenuCount" value="{!VALUE(submenuCount) + 1}" />
+              </apex:repeat>
+            </ul>
+           
+          </li> 
+          </apex:repeat>
+          
+          
+          
+          <apex:repeat value="{!node.SubEvents}" var="child">
+          <li class="submenu2" id="mainbox{!rowNum1}" style="display:{!if(JSENCODE(node.name)=='Box Office',"block","none")}"><a href="#" ><span onclick="parentClickCall('{!JSENCODE(child.id)}','mainbox{!rowNum1}','100','{!rowNum1}','{!JSENCODE(node.name)}');" ><apex:outputtext value="{!HTMLENCODE(child.Name)}"/></span></a>
+          </li> 
+           <apex:variable var="rowNum1" value="{!VALUE(rowNum1) + 1}" />
+          </apex:repeat>
+          
+          
+          
+          
+          
+        </ul>
+      </li>
+      
+</apex:repeat>
+ 
+</ul>
+
+</div>
+ 
+  
+</apex:component>

@@ -1,0 +1,253 @@
+<apex:page title="C&P Invoice" tabStyle="C_P_Invoice__tab"  sidebar="false" standardStylesheets="true" >
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+     <apex:composition template="CnP_PaaS__Broadcast_Template">            
+         <apex:define name="css">         
+                     <link rel="stylesheet" href="{!URLFOR($Resource.DataTables,'css/demo_table_jui.css')}" />
+                     <link rel="stylesheet" href="{!URLFOR($Resource.DataTables,'jquery-ui-1.8.4.custom.css')}" />
+                      <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/bootstrap.min.css" />
+                     <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/bootstrap-responsive.min.css" />
+                     <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/main.css" />
+                     <link rel="stylesheet" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/css/grey.css" /> 
+                    <!-- <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/bootstrap.min.css"/>
+                     <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/bootstrap-responsive.min.css"/>-->
+                     <!--<link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/main.css"/> -->
+                     <!--<link rel="stylesheet" href="http://click-pledge.v-empower.com/web/SALESFORCE/PAAS/Bootstrap/css/grey.css"/>-->
+                    <style>
+                    
+                    .helpLink {
+                    position:relative;
+                    }
+                    .video{
+                          display:none;
+                          width:15%;
+                          height:auto; 
+                          background:#EEE;
+                          border:1px solid #CCC;
+                          position:absolute;     
+                          z-index:10;
+                         /* margin-left:920Px;*/
+                        }
+                     a.filelink {
+                    
+                             display:block;
+                             text-decoration:none;
+                             color:#333333;
+                             padding:5px;
+                             background-color:#FAFAFA;
+                             border:solid 1px #666666;
+                             margin-top:15px;
+                             float:left;
+                             margin-left:20px;
+                        }
+                    a.filelink:hover {
+                             background-color:#333333;
+                             color:#FFFFFF;
+                        }
+                    
+                    
+                    
+                    
+                    
+                    .btn {
+                    display: inline-block!important;
+                    padding: 4px 12px!important;
+                    margin-bottom: 0!important;
+                    font-size: 14px!important;
+                    line-height: 20px!important;
+                    color: #333!important;
+                    text-align: center!important;
+                    text-shadow: 0 1px 1px rgba(255,255,255,0.75)!important;
+                    vertical-align: middle!important;
+                    cursor: pointer!important;
+                    background-color: #f5f5f5!important;
+                    background-image: -moz-linear-gradient(top,#fff,#e6e6e6)!important;
+                    background-image: -webkit-gradient(linear,0 0,0 100%,from(#fff),to(#e6e6e6))!important;
+                    background-image: -webkit-linear-gradient(top,#fff,#e6e6e6)!important;
+                    background-image: -o-linear-gradient(top,#fff,#e6e6e6)!important;
+                    background-image: linear-gradient(to bottom,#fff,#e6e6e6)!important;
+                    background-repeat: repeat-x!important;
+                    border: 1px solid #bbb!important;
+                    border-color: #e6e6e6 #e6e6e6 #bfbfbf!important;
+                    border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25)!important;
+                    border-bottom-color: #a2a2a2!important;
+                    -webkit-border-radius: 4px!important;
+                    -moz-border-radius: 4px!important;
+                    border-radius: 4px!important;
+                    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff',endColorstr='#ffe6e6e6',GradientType=0)!important;
+                    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false)!important;
+                    -webkit-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05)!important;
+                    -moz-box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05)!important;
+                    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05)!important;
+                    }
+                    .btn-primary {
+                    color: #fff!important;
+                    text-shadow: 0 -1px 0 rgba(0,0,0,0.25)!important;
+                    background-color: #006dcc!important;
+                    background-image: -moz-linear-gradient(top,#08c,#04c)!important;
+                    background-image: -webkit-gradient(linear,0 0,0 100%,from(#08c),to(#04c))!important;
+                    background-image: -webkit-linear-gradient(top,#08c,#04c)!important;
+                    background-image: -o-linear-gradient(top,#08c,#04c)!important;
+                    background-image: linear-gradient(to bottom,#08c,#04c)!important;
+                    background-repeat: repeat-x!important;
+                    border-color: #04c #04c #002a80!important;
+                    border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25)!important;
+                    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc',endColorstr='#ff0044cc',GradientType=0)!important;
+                    filter: progid:DXImageTransform.Microsoft.gradient(enabled=false)!important;
+                    }                    
+                    .apexp .bPageBlock.apexDefaultPageBlock .pbBody {
+                    margin: 0px;
+                    }
+                    
+                    @media only screen and (max-width: 760px),
+                        (min-device-width: 768px) and (max-device-width: 1024px)  {
+                        
+                            /* Force table to not be like tables anymore */
+                            table.phHeader, .phHeader thead, .phHeader tbody, .phHeader th, .phHeader td, .phHeader tr { 
+                                display: block; 
+                                border: none!important;
+                            }
+                            
+                            /* Hide table headers (but not display: none;, for accessibility) */
+                            .phHeader thead tr { 
+                                position: absolute;
+                                top: -9999px;
+                                left: -9999px;
+                            }
+                            
+                            .phHeader tr { border: 1px solid #ccc; }
+                            
+                            .phHeader td { 
+                                /* Behave  like a "row" */
+                                border: none;  
+                                position: relative;
+                                padding: 0px 10px;
+                            }
+                            
+                            .phHeader td:before { 
+                                /* Now like a table header */
+                                position: absolute;
+                                /* Top/left values mimic padding */
+                                top: 6px;
+                                left: 6px;
+                                width: 45%; 
+                                padding-right: 10px; 
+                                white-space: nowrap;
+                            }
+                        }
+                    </style>            
+            </apex:define>
+            
+            
+                 <div class="tabbable tabs-left">
+                       <div id="leftnav">
+                        <apex:define name="sidebar">
+                               <div id="sidebar"> <a href="#" class="visible-phone"><i class="icon icon-home"></i>Show Navigation</a>
+                                <ul style="display: block;" class="leftnav nav ">
+                                   <li class="submenu1 active"><a href="#create_invoice" data-toggle="tab" onclick="Invoices_format();"><img alt="Invoices" src="https://clickandpledge.s3.amazonaws.com/Salesforce/Bootstrap/img/invoices_icon.png" width="30px"/> &nbsp;<span>Invoices</span></a></li> 
+                                   <li><a href="#invoice_policy" data-toggle="tab" onclick="Invoicepolicy_format();"><img alt="Invoice Policy" src="https://clickandpledge.s3.amazonaws.com/Salesforce/Bootstrap/img/invoice_policy_icon.png" width="30px"/> &nbsp;<span>Invoice Policy</span> </a></li>   
+                                  <li ><a href="#invoice_setting" data-toggle="tab" ><img alt="Invoice Setting" src="https://clickandpledge.s3.amazonaws.com/Salesforce/Bootstrap/img/invoice_setting_icon.png" width="30px"/> &nbsp;<span>Invoice Setting</span></a></li>
+                                                    
+                                </ul>
+                              </div>
+                        </apex:define>
+                   </div>
+                    <apex:define name="content">
+                         <!-- <apex:form > -->
+                                 <div class="header-curve"></div>
+                                 <div class="tab-content">                                  
+                                  <div class="tab-pane active" id="create_invoice"> <!-- New Invoice Page --->
+                                             <div id="content-header">
+                                                    <h1><i class="icon icon-list-alt" style="float:left"></i> New Invoice</h1>                                    
+                                             </div>
+                                             <div class="container-fluid">  
+                                                <apex:include pageName="CnP_PaaS__InvoiceVirtualTerminal"/>
+                                             </div>
+                                      </div> <!-- End here --->
+                                        <div class="tab-pane" id="invoice_policy"> <!-- Invoice Policy Page --->
+                                             <div id="content-header">
+                                                    <h1><i class="icon icon-tasks" style="float:left"></i> Invoice Policy</h1>                                    
+                                             </div>
+                                             <div class="container-fluid">  
+                                                <apex:include pageName="CnP_PaaS__NewInvoicePolicy" /> 
+                                             </div>                                            
+                                      </div> <!-- End here --->
+                                      <div class="tab-pane" id="invoice_setting"> <!-- Invoice Setting Page -->
+                                       
+                                       <div id="content-header">
+                                                    <h1><i class="icon icon-home" style="float:left"></i> Invoice Setting</h1>                                    
+                                             </div>
+                                             <div class="container-fluid">  
+                                                <apex:include pageName="CnP_PaaS__invoicesettings"/>
+                                             </div>
+                                       </div> <!-- Invoice setting Page end here --->                                      
+                                    
+                                     
+                                 </div>
+                         <!-- </apex:form> -->
+                    </apex:define>
+                </div>                
+                <apex:define name="javascript">
+                
+                     <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+                     
+                     <script src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+                     <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__DataTables,'js/jquery.dataTables.js')}"/>
+                      <script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script>
+                </apex:define>       
+     </apex:composition>
+     <apex:outputPanel id="JavaScriptBlock">
+<script>
+$('.detailList').addClass('table table-bordered table-hover');
+$(document).ready(function(){
+           $('.datatables').dataTable({
+                    "bJQueryUI": true,
+                    "iDisplayLength"    : 25,
+                    "bRetrieve": true, 
+                    "bDestroy": true, 
+                    aoColumnDefs: [
+                      { aTargets: [0], bSortable: true}                     
+                    ] 
+                });
+               /* $('.datatables1').dataTable({
+                    "bJQueryUI": true,
+                    "iDisplayLength"    : 25, 
+                    aoColumnDefs: [
+                      { aTargets: [0], bSortable: true}] 
+                });*/
+    })
+ $(function(){
+     $(".video").mouseout(function(){             
+          $(this).fadeOut(8000);             
+      });
+ });
+ 
+ 
+ function Invoicepolicy_format(){
+     countryprocess();
+     Invoicepolicy();   
+ }
+ function Invoices_format(){
+     countryprocess2();
+     resetCkEditorsOnLoad();
+     Invoices();    
+ }     
+</script> 
+       <!-- <script>
+            instance = CKEDITOR.currentInstance;
+            if (instance) { instance.destroy(true); }
+            CKEDITOR.replace($(".thnQ").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});
+            CKEDITOR.replace($(".decl").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});    
+            CKEDITOR.replace($(".term").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});        
+           // CKEDITOR.replace($(".emailbody").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}}});    
+            CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+            CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+            CKEDITOR.config.contentsCss= ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+            CKEDITOR.config.language = 'en-us';  
+            CKEDITOR.config.customConfig = '{!$Resource.ckconfig}';
+            CKEDITOR.config.toolbar='Custome'; 
+            CKEDITOR.config.height='150';
+        </script> --> 
+        
+</apex:outputPanel>
+</apex:page>

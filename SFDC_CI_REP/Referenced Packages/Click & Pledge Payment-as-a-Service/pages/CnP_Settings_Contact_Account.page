@@ -1,0 +1,971 @@
+<apex:page controller="CnP_PaaS.SettingsController" extensions="CnP_PaaS.ContactMapController" action="{!loadhelpContent}" >
+<apex:form >
+<script type="text/javascript">
+     
+ function CheckSaveData(actionvalue){
+
+      var t=0;
+      var rowvalue=jQuery(".rowvalues").val();
+       for(var i=0;i<rowvalue;i++){
+
+        var LabelName  = jQuery(".LabelName"+i).val();
+        var LabelName_wid = /^([0-9])+$/;
+        var recordtype= jQuery(".recordtype"+i).val();
+        var conditionwid = jQuery(".conditionswid"+i).val();
+   
+        if(LabelName!="" && !LabelName_wid.test(LabelName)){
+                      t=t+1;
+                      alert("Please enter only Numeric digits for WID ");
+                      jQuery(".LabelName"+i).focus();
+                      return false;
+                  }
+       
+        if(recordtype == null){
+         t=t+1;
+        alert("Please Select at least one recordtype");
+         return false;
+        }
+      
+          for(var j=i+1;j<rowvalue;j++){
+                var label_dup = jQuery(".LabelName"+j).val();
+                var condition_wid = jQuery(".conditionswid"+j).val();
+                 if(LabelName == label_dup && conditionwid==condition_wid ){
+                     t=t+1;
+                     alert("Error:  Duplicate WID found! " + LabelName + ',' + label_dup);
+                     jQuery(".LabelName"+j).focus();
+                     return false;
+                } 
+                
+          }  
+       }
+       
+      if(actionvalue == 'add'){ 
+       countryprocess();
+       addItem();
+      } 
+      if(actionvalue == 'save'){
+          countryprocess();
+          contactsave();
+       }
+          if(t==0){  return true; }
+          else{ return false;  }
+       
+       } 
+      
+      
+      function CheckSaveDataAccount(actionvalue){ 
+      var t =0; 
+       var rowvalueact=jQuery(".rowvaluesact").val();
+       for(var i=0;i<rowvalueact;i++){
+
+        var widName  = jQuery(".widName"+i).val();
+        var widName_wid = /^([0-9])+$/;
+        var recordtypeact= jQuery(".recordtypeact"+i).val();
+        var conditionactwid = jQuery(".conditionsactwid"+i).val();
+     
+        if(widName!="" && !widName_wid.test(widName))
+                  {
+                      alert("Please enter only Numeric digits for WID ");
+                      jQuery(".widName"+i).focus();
+                      return false;
+                  }
+       
+        if(recordtypeact == null){
+        alert("Please Select at least one recordtype");
+         return false;
+        }
+      
+          for(var j=i+1;j<rowvalueact;j++){
+                var widlabel_dup = jQuery(".widName"+j).val();
+                var conditionact_wid = jQuery(".conditionsactwid"+j).val();
+                 if(widName== widlabel_dup && conditionactwid==conditionact_wid ){
+                     t=t+1;
+                     alert("Error:  Duplicate WID found! " + widName   + ',' + widlabel_dup );
+                     jQuery(".widName"+j).focus();
+                     return false;
+                } 
+                
+          }  
+       }
+    if(actionvalue == 'add'){ 
+       countryprocess();
+       addItemAccount();
+     }
+    if(actionvalue == 'save'){ 
+       countryprocess();
+       accountsave();
+     }
+        if(t==0){
+          return true;
+       }else{
+          return false;
+       }
+   
+    }
+    function processcomplete(){
+   
+           jQuery("#light").attr('style','display:none');
+           jQuery("#fade").attr('style','display:none');
+           
+    }
+    function countryprocess(){
+           jQuery("#light").attr('style','display:block');
+           jQuery("#fade").attr('style','display:block');
+           return true;
+    }
+    
+ function recurringcheckwid(classvalue){
+       var conditions = jQuery(".conditionswid"+classvalue).val();
+   
+       if(conditions == 'Is Recurring' || conditions=='Any WID' || conditions=='Fundraiser' ){
+          jQuery(".LabelName"+classvalue).attr('disabled',true); 
+          jQuery(".LabelName"+classvalue).val(''); 
+
+       }else{
+          jQuery(".LabelName"+classvalue).attr('disabled',false);
+          
+       }
+       
+}
+
+ function Changevalue(type){
+         
+          if(type=='onetoone')
+          {
+             jQuery('.onetoone').attr('checked','checked');
+          }
+          if(type=='noaccount')
+          {           
+            jQuery('.noaccount').attr('checked','checked');           
+          }
+          if(type=='onetomany')
+          {
+             jQuery(".onetomany").attr('checked','checked');
+          }
+    }
+    function Accountsetting(type){
+         jQuery("#light").attr('style','display:block');
+         jQuery("#fade").attr('style','display:block');
+         ContactMapid(type);
+    } 
+
+    
+
+function checkwidaccount(classvalue){
+       var conditions = jQuery(".conditionsactwid"+classvalue).val();
+      
+       if(conditions == 'Is Recurring' || conditions=='Any WID' || conditions=='Fundraiser'){
+          jQuery(".widName"+classvalue).attr('disabled',true); 
+          jQuery(".widName"+classvalue).val(''); 
+       }else{
+          jQuery(".widName"+classvalue).attr('disabled',false);
+       }
+       
+}
+
+function totalsavemethod(){
+
+
+/****************Checksavedata functions***********/
+   var t=0;
+      var rowvalue=jQuery(".rowvalues").val();
+      
+       for(var i=0;i<rowvalue;i++){
+
+        var LabelName  = jQuery(".LabelName"+i).val();
+        var LabelName_wid = /^([0-9])+$/;
+        var recordtype= jQuery(".recordtype"+i).val();
+        var conditionwid = jQuery(".conditionswid"+i).val();
+   
+        if(LabelName!="" && !LabelName_wid.test(LabelName)){
+                      t=t+1;
+                      alert("Please enter only Numeric digits for WID ");
+                      jQuery(".LabelName"+i).focus();
+                      return false;
+                  }
+       
+        if(recordtype == null){
+         t=t+1;
+        alert("Please Select at least one recordtype");
+         return false;
+        }
+      
+          for(var j=i+1;j<rowvalue;j++){
+                var label_dup = jQuery(".LabelName"+j).val();
+                var condition_wid = jQuery(".conditionswid"+j).val();
+                 if(LabelName == label_dup && conditionwid==condition_wid ){
+                     t=t+1;
+                     alert("Error:  Duplicate WID found! " + LabelName + ',' + label_dup);
+                     jQuery(".LabelName"+j).focus();
+                     return false;
+                } 
+                
+          }  
+       }
+
+/**************************Checksavedata account functions *******************/
+  var rowvalueact=jQuery(".rowvaluesact").val();
+    for(var i=0;i<rowvalueact;i++){
+
+        var widName  = jQuery(".widName"+i).val();
+        var widName_wid = /^([0-9])+$/;
+        var recordtypeact= jQuery(".recordtypeact"+i).val();
+        var conditionactwid = jQuery(".conditionsactwid"+i).val();
+     
+        if(widName!="" && !widName_wid.test(widName))
+                  {
+                      alert("Please enter only Numeric digits for WID ");
+                      jQuery(".widName"+i).focus();
+                      return false;
+                  }
+       
+        if(recordtypeact == null){
+        alert("Please Select at least one recordtype");
+         return false;
+        }
+      
+          for(var j=i+1;j<rowvalueact;j++){
+                var widlabel_dup = jQuery(".widName"+j).val();
+                var conditionact_wid = jQuery(".conditionsactwid"+j).val();
+                 if(widName== widlabel_dup && conditionactwid==conditionact_wid ){
+                     t=t+1;
+                     alert("Error:  Duplicate WID found! " + widName   + ',' + widlabel_dup );
+                     jQuery(".widName"+j).focus();
+                     return false;
+                } 
+                
+          }  
+       }
+ 
+   if(t==0){
+          processstart();
+          totalsave();
+          return true;
+       }else{
+          return false;
+       }
+}
+
+function savemethodaccount(){
+  
+savemethodaccountsetting();
+}
+
+function savemethodcontact(){
+   
+    savemethodcontactsetting();
+}
+
+function delContProcess(val1,val2){
+ if(confirm("Are you sure you want to permanently delete this record?"))
+         {
+              processstart();
+              delCont(val1,val2);  
+         }
+        
+}
+
+function delAccountProcess(val1,val2){
+if(confirm("Are you sure you want to permanently delete this record?"))
+         {
+      processstart();
+      delAccount(val1,val2);
+      }
+}
+
+function SavecontactmapProcess(){
+     processstart();
+     Savecontactmapping();
+}
+
+function SavecontactmatchProcess(){
+     processstart();
+     Savecontactmap();
+}
+</script>    
+
+<!--<link rel="stylesheet" href="http://click-pledge.v-empower.com/web/ConstantContact/html-admin/css/bootstrap.min.css" />
+           <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/ConstantContact/html-admin/css/main.css"/> -->          
+             
+           <div class="padding_5" style="float:right;">      
+                     <apex:outputLink styleClass="helpLink align_right " rendered="{!subTab['Settings']['Contact and Account'].display=='true'}">   
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo]').css('display','block');" />
+                             <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[idjQuery=Foo]').css('display','block');" style="display:inline;" />
+                       </apex:outputLink>
+                    
+                      <apex:outputPanel id="Foo" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                        {!subTab['Settings']['Contact and Account'].description}  <br/>
+                         <apex:outputpanel rendered="{!subTab['Settings']['Contact and Account'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Settings']['Contact and Account'].link}" target="_blank" >{!subTab['Settings']['Contact and Account'].strlink}</a> <br/></li></apex:outputpanel>
+                         <apex:outputpanel rendered="{!subTab['Settings']['Contact and Account'].ActiveVideo=='true'}">
+                             <li> <a href="{!subTab['Settings']['Contact and Account'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['Contact and Account'].strvideo}</a></li></apex:outputpanel>
+                       </ul> 
+                      </apex:outputPanel>
+          </div>
+                      
+         <div id="content-header">
+               <h1><img alt="Contacts &amp; Accounts" title="Contacts &amp; Accounts" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/contacts_accounts_icon.png" style="display:inline;vertical-align:top;" width="25" /> Contacts &amp; Accounts</h1>                                    
+         </div>
+         <div class="container-fluid">                  
+                 
+                      
+      <apex:pageBlock id="statustextmesg" mode="maindetail">
+         <!--    Person Account Setting  -->
+         <apex:actionFunction action="{!selectcon}" reRender="Personaccount,Personaccountset,RefreshBlock_account,accounttsavestatus"  name="ContactMapid" oncomplete="processcomplete();">
+                <apex:param assignTo="{!compare}" name="conid" value=""/>         
+         </apex:actionFunction>
+         <apex:actionFunction action="{!save}" name="totalsave"  reRender="contactaccountsave" status="mainstatus" oncomplete="processcomplete();"/>
+        <apex:actionFunction action="{!Savecontactmap}" name="Savecontactmap" id="Savecontactmap"  rerender="matchfieldssetting" oncomplete="processcomplete();"/>
+         <apex:actionFunction action="{!addItem}" name="addItem" id="addItem"  reRender="RefreshBlock_1" oncomplete="processcomplete();"/>
+         <apex:actionFunction action="{!delCont}" name="delCont" id="delCont"  reRender="RefreshBlock_1" oncomplete="processcomplete();">
+             <apex:param name="DeleteId" value="" assignTo="{!DeleteId}"/>
+             <apex:param name="DeleteFromObjectId" value="" assignTo="{!DeleteFromObjectId}"/>
+         </apex:actionFunction>
+         <apex:actionFunction action="{!addItemAccount}" name="addItemAccount" id="addItemAccount"  reRender="RefreshBlock_account" oncomplete="processcomplete();"/>
+          <apex:actionFunction action="{!delAccount}" name="delAccount" id="delAccount" status="accountstatus"  reRender="RefreshBlock_account" oncomplete="processcomplete();">
+             <apex:param name="DeleteIdAccount" value="" assignTo="{!DeleteIdAccount}"/>
+             <apex:param name="DeleteFromObjectIdAccount" value="" assignTo="{!DeleteFromObjectIdAccount}"/>
+         </apex:actionFunction>
+          <apex:outputPanel id="totalsave">
+           <apex:outputPanel id="contactaccountsave">   
+              <apex:pagemessages />
+                  
+        <div class="btn-block pagination-centered">
+          <a class="btn btn-primary" href="javascript:void(0)" onclick="totalsavemethod();" ><i class="icon-edit icon-white"></i> Update Settings</a>                                                        
+        </div>
+        
+        <!--<apeX:outputPanel id="statustextmesg">
+               <apex:actionstatus id="mainstatus" startText="processing..."> 
+                 <apex:facet name="stop">
+             <apex:outputPanel >
+                   <apex:outputPanel ><p>Settings Saved Successfully.</p></apex:outputPanel>
+                  </apex:outputPanel>
+                 </apex:facet>
+              </apex:actionstatus> 
+             </apex:outputPanel> feroz on 15-1-2014 --> 
+        
+        <apex:outputPanel rendered="{!If(packname == false,true,false)}" ><!--  -->     
+        <div class="widget-box" >
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Account Settings</h5>
+              </div>
+              <div class="widget-content">              
+
+                          <input type="radio" style="margin-left:25px;float:left;" name="accountsetting" value="noaccount" class="noaccount" onclick="Accountsetting('noaccount');"><apex:outputLabel style="padding-left:50px;">Do Not Create new Account for new Contacts</apex:outputLabel></input>
+                          <input type="radio" style="margin-left:25px;float:left;" name="accountsetting" value="onetoone" class="onetoone" onclick="Accountsetting('onetoone');">
+                              <apex:outputLabel style="padding-left:50px;">Create an Account/Contact pair (1 to 1)</apex:outputLabel>  
+                                                                    
+                                <apex:outputPanel id="Personaccount" style="padding-left:70px;display: block;" rendered="{!IF(compare=='onetoone' && checkingperson ==true,true,false)}">
+                                       
+                                            <apex:selectRadio value="{!accountinfo}" styleClass="radio" style="width:280px">
+                                               <Apex:actionSupport event="onclick" reRender="personaccountrecordtype"/>
+                                               <apex:selectOption itemlabel="Person Account" itemvalue="personaccount"/>
+                                               <apex:selectOption itemlabel="Business Account" itemvalue="businessaccount"/>
+                                            </apex:selectRadio>   
+                                                                                                                           
+                                         <apex:outputPanel id="personaccountrecordtype" style="padding-left:1px;display: block;">                                                           
+                                           <apex:outputLabel styleClass="display_inline" >Record Type</apex:outputLabel>&nbsp;
+                                           <apex:selectList value="{!onetoone}"  size="1" rendered="{!if(accountinfo=='personaccount' && checkingperson ==true,true,false)}">
+                                              <apex:selectOptions value="{!person_account}"></apex:selectOptions>
+                                            </apex:selectList>
+                                            <apex:selectList size="1" value="{!onetoone}" rendered="{!if(accountinfo=='businessaccount' && checkingperson ==true,true,false)}">
+                                              <apex:selectOptions value="{!business_account}"></apex:selectOptions>
+                                            </apex:selectList>
+                                         </apex:outputPanel>                                                                                   
+                                </apex:outputPanel>
+                                
+                          </input>
+                          <input type="radio" style="margin-left:25px;float:left;" name="accountsetting" value="onetomany" class="onetomany" onclick="Accountsetting('onetomany');">
+                                <apex:outputLabel rendered="{!IF(checkingperson ==true,true,false)}" style="padding-left:50px;">Use one parent Business Account for new Contacts (1 to many)</apex:outputLabel>                                       
+                                <apex:outputLabel rendered="{!IF(checkingperson ==false,true,false)}" style="padding-left:50px;">Use one parent Account for new Contacts (1 to many)</apex:outputLabel>                                       
+                                <apex:outputPanel id="Personaccountset">
+                                                          <apex:outputPanel rendered="{!IF(compare=='onetomany' && checkingperson ==true,true,false)}">
+                                                               <apex:outputlabel style="padding-left:70px;float:left;">Please enter the parent Business Account: &nbsp;</apex:outputlabel> 
+                                                               <apex:inputText styleClass="businessaccountname" value="{!acclpvalue.CnP_PaaS__Account_lp__c}">
+                                                                    <c:PaymentAutoCompleteSettings objecttype="account" autocomplete_textbox="businessaccountname" autocomplete_id="0" autocomplete_process="0" />
+                                                               </apex:inputText>
+                                                          </apex:outputPanel>
+                                                           <apex:outputPanel rendered="{!IF(compare=='onetomany' && checkingperson ==false,true,false)}" >
+                                                              <apex:outputlabel style="padding-left:70px;float:left;" >Please select the parent Account: &nbsp;</apex:outputlabel>
+                                                              <apex:inputField styleClass="businessaccountname" value="{!acclpvalue.CnP_PaaS__Account_lp__c}"  />
+                                                          </apex:outputPanel>                                                  
+                                                        </apex:outputPanel>
+                          </input>               
+                 <script> Changevalue('{!JSENCODE(compare)}'); </script>
+                 
+              <div class="clearboth" style="clear:both;"></div>
+        </div><!-- widget-content -->
+        </div><!-- widget-box -->
+        </apex:outputPanel> 
+
+    
+     <!--Recordtypes addition ------>
+     <apex:outputPanel rendered="{!If(checkingperson  == false,true,false)}" ><!--  -->    
+     <div class="widget-box" >
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Record Types</h5>
+              </div>
+              <div class="widget-content"> 
+                     
+                  <apex:outputPanel > 
+                   <apex:actionstatus id="statusId" startText="Please wait....">
+                    <apex:facet name="stop">    
+                      <apex:outputPanel id="ShowBlockItem">      
+                        <apex:outputPanel id="RefreshBlock_1"> 
+                    
+                          <apex:outputLabel style="font-weight:bold" value="New & Existing Contacts"></apex:outputLabel>     
+                           <apex:variable value="0" var="rowNum"/>
+                           
+                           <div style="margin-left:40px;margin-top:10px;" >                           
+                            <apex:dataTable columns="9" value="{!FieldValueslist}" var="item" styleClass="table table-bordered table-striped" >
+                               <apex:inputhidden value="{!item.contact}" />
+                               <apex:column style="width: 10px;">
+                                 <apex:outputLabel value="If"></apex:outputLabel>
+                               </apex:column>
+                               <apex:column headerValue="Condition">
+                                 <apex:selectlist value="{!item.conditions_wid}"  size="1" style="width:100px" onchange="recurringcheckwid('{!rowNum}');" styleclass="conditionswid{!rowNum}">             
+                                  <apex:selectOptions value="{!showConditionWID}" />
+                                 </apex:selectlist>
+                               </apex:column>
+                               <apex:column headerValue="WID "   >
+                                 <apex:inputText value="{!item.wid }" style="width:150px;" styleClass="LabelName{!rowNum}" maxlength="10"/>
+                                  <script>recurringcheckwid('{!rowNum}');</script>
+                               </apex:column>
+                               <apex:inputHidden value="{!item.RecordId}"/>
+                               <apex:column style="width: 10px;"> 
+                                  <apex:outputLabel value=">>"></apex:outputLabel> 
+                               </apex:column>
+                               <apex:column headerValue="Record Type">
+                                 <apex:selectlist value="{!item.Field_mapping}"  size="1"  styleClass="recordtype{!rowNum}">             
+                                    <apex:selectOptions value="{!showFields}" />
+                                 </apex:selectlist>
+                               </apex:column>
+                               <apex:column headerValue="Action" style="width: 40px;">
+                                   <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delContProcess('{!JSENCODE(rowNum)}','{!JSENCODE(item.RecordId)}');"><i class="icon-trash"></i></a>
+                                
+                                      <apex:actionstatus id="contactstatus" startText="Please wait....">                                
+                                                                <apex:facet name="stop"/>                                                    
+                                                  </apex:actionstatus>
+                                   </div>
+                                      <apex:variable var="rowNum" value="{!VALUE(rowNum) + 1}"/>
+                               </apex:column>  
+ 
+                            
+
+                            </apex:dataTable>
+                            <input type="hidden" value="{!rowNum}" class="rowvalues" name="rowvalues"/> 
+                            </div>     
+               
+                         </apex:outputPanel> 
+                       </apex:outputPanel>                       
+                      </apex:facet>
+                     </apex:actionstatus>
+                  </apex:outputPanel>  
+                  
+                  <apex:outputPanel id="contactsavestatus"> 
+                     <div class="btn-block pagination-centered">
+                         <a class="btn" href="javascript:void(0)" onclick="CheckSaveData('add');"><i class="icon-plus-sign"></i> Add New</a>
+                         </div>                                                                                 
+                   </apex:outputPanel> 
+                                              <!---------------------------------Account Record Types -------------------->
+                 <apex:outputPanel > 
+                   <apex:actionstatus id="statusactId" startText="Please wait....">
+                    <apex:facet name="stop">    
+                      <apex:outputPanel id="ShowBlockItemact" >  
+                        <apex:outputPanel id="RefreshBlock_account"> 
+                        <apex:outputPanel rendered="{!IF(compare=='onetoone' && checkingperson ==false &&  packname ==false, true,false)}">
+                        
+                          <apex:outputLabel style="font-weight:bold" value="New Accounts"></apex:outputLabel>     
+                           <apex:variable value="0" var="rowNumact"/>
+                           
+                           <apex:outputPanel style="margin-left:40px;margin-top:10px;display:block;">
+                            <apex:dataTable columns="9" value="{!FieldValueslistaccount}" var="item" styleClass="table table-bordered table-striped">
+                               <apex:inputhidden value="{!item.account}" />
+                               <apex:column style="width:10px"> 
+                                 <apex:outputLabel value="If"></apex:outputLabel>
+                               </apex:column>
+                               <apex:column headerValue="Condition">
+                                 <apex:selectlist value="{!item.conditions_accountwid}"  size="1" style="width:100px" onchange="checkwidaccount('{!rowNumact}');" styleclass="conditionsactwid{!rowNumact}">             
+                                  <apex:selectOptions value="{!showConditionWID}" />
+                                 </apex:selectlist>
+                               </apex:column>
+                               <apex:column headerValue="WID "   >
+                                 <apex:inputText value="{!item.accountwid }" style="width:150px;" styleClass="widName{!rowNumact}" maxlength="10"/>
+                                  <script>checkwidaccount('{!rowNumact}');</script>
+                               </apex:column>
+                                 <apex:inputHidden value="{!item.RecordIdact}"/>
+                               <apex:column style="width:10px"> 
+                                  <apex:outputLabel value=">>"></apex:outputLabel> 
+                               </apex:column>
+                               <apex:column headerValue="Record Type">
+                                 <apex:selectlist value="{!item.Field_mappingaccount}"  size="1"  styleClass="recordtypeact{!rowNumact}">             
+                                    <apex:selectOptions value="{!showFieldsaccount}" />
+                                 </apex:selectlist>
+                               </apex:column>
+                               <apex:column headerValue="Action" style="width:40px;">
+                                  <div class="btn-group">
+                                      <a class="btn" href="javascript:void(0);" onclick="delAccountProcess('{!JSENCODE(rowNumact)}','{!JSENCODE(item.RecordIdact)}');" status="NextRowStatusdeleteact"><i class="icon-trash"></i></a>
+                                  </div>                               
+                                    <apex:actionstatus id="accountstatus" startText="Please wait....">                                
+                                        <apex:facet name="stop"/>                                                    
+                                    </apex:actionstatus>
+                                     <apex:variable var="rowNumact" value="{!VALUE(rowNumact) + 1}"/>  
+                                </apex:column>  
+                              
+                            </apex:dataTable>
+                            </apex:outputPanel>
+                            
+                            <input type="hidden" value="{!rowNumact}" class="rowvaluesact" name="rowvaluesact"/>     
+                          </apex:outputPanel>
+                         </apex:outputPanel>
+                        </apex:outputPanel>
+                       </apex:facet>
+                       
+                      </apex:actionstatus>
+                    </apex:outputPanel>           
+            
+                   <apex:outputPanel id="accounttsavestatus">
+                    <apex:outputpanel rendered="{!IF(compare=='onetoone' && checkingperson ==false &&  packname ==false, true,false)}"> 
+                      <div class="btn-block pagination-centered">
+                       <a class="btn" href="javascript:void(0)" onclick="CheckSaveDataAccount('add');"><i class="icon-plus-sign"></i> Add New</a>
+                      </div>                                                                                 
+                    </apex:outputPanel> 
+                  </apex:outputPanel>
+
+        </div><!-- widget-content -->
+        </div><!-- widget-box -->
+        </apex:outputPanel>   
+   
+     </apex:outputPanel> 
+     <!---- recordtypes addition end ----->
+  
+    
+    <apex:outputPanel id="contactsetting">
+          <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Match Mode</h5>
+              </div>
+              <div class="widget-content"> 
+
+                     <apex:outputLabel ><b> Contact Settings</b></apex:outputLabel>  
+                        <apex:selectRadio value="{!contactoption}" id="contactoption"  styleClass="radio" layout="pageDirection"  style="margin-left:25px;float:left;width:350px;" >
+                        <apex:selectOption itemvalue="automatic" itemlabel="Fully-automatic Contact Creation" /> <apex:actionSupport />
+                        <apex:selectOption itemvalue="semiautomatic" itemlabel="Semi-automatic Contact Creation (Recommended)" /> <apex:actionSupport />
+                        <apex:selectOption itemvalue="manual" itemlabel="Manual Contact Creation" /> </apex:selectRadio>
+
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->
+    </apex:outputPanel><!-- contactsetting -->
+    
+</apex:outputPanel>
+
+       <apex:outputPanel id="matchfieldssetting">  
+          <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Match Fields</h5>
+              </div>
+              <div class="widget-content">
+                      
+                         <apex:pagemessages />
+        
+                         <div class="btn-block pagination-centered">
+                               <a class="btn btn-primary" href="javascript:void(0)" onclick="SavecontactmatchProcess();"><i class="icon-edit icon-white"></i> Update Match Fields</a>
+                         </div>               
+   
+                        <apex:pageBlockSection columns="3">
+                              <apex:pageBlockSectionItem labelStyle="white-space:nowrap;">
+                                     <apex:outputLabel value="First Name"></apex:outputLabel>
+                                     <apex:selectList value="{!selectedtagsfirstname}" multiselect="true" size="24" >
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!ContactFields}"></apex:selectOptions>
+                                     </apex:selectList>
+                              </apex:pageBlockSectionItem>
+                              
+                               <apex:pageBlockSectionItem labelStyle="white-space:nowrap;">
+                                     <apex:outputLabel value="Last Name"></apex:outputLabel>
+                                     <apex:selectList value="{!selectedtagslastname}" multiselect="true" size="24" >
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!ContactFields}"></apex:selectOptions>
+                                     </apex:selectList>
+                              </apex:pageBlockSectionItem>
+                              
+                               <apex:pageBlockSectionItem >
+                                     <apex:outputLabel value="Email"></apex:outputLabel>
+                                     <apex:selectList value="{!selectedtagsemail}" multiselect="true" size="24" >
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!ContactEmailFields}"></apex:selectOptions>
+                                     </apex:selectList>
+                              </apex:pageBlockSectionItem>
+                              <!--<apex:pageBlockSectionItem >
+                                     <apex:outputLabel value="Phone Number"></apex:outputLabel>
+                                     <apex:selectList value="{!selectedtagsphone}" multiselect="true" size="24" >
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!ContactPhoneFields}"></apex:selectOptions>
+                                     </apex:selectList>
+                              </apex:pageBlockSectionItem>-->
+                              <apex:pageBlockSectionItem dataStyle="white-space:nowrap;">
+                                     <apex:outputLabel value="Street"></apex:outputLabel>
+                                     <apex:selectList value="{!selectedtagsstreet}" multiselect="true" size="24" >
+                                     <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!ContactFields}"></apex:selectOptions>
+                                     </apex:selectList>
+                              </apex:pageBlockSectionItem>                 
+                              
+                              <apex:pageBlockSectionItem >
+                                     <apex:outputLabel value="City"></apex:outputLabel>
+                                     <apex:selectList value="{!selectedtagscity}" multiselect="true" size="24" >
+                                     <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!ContactFields}"></apex:selectOptions>
+                                     </apex:selectList>
+                              </apex:pageBlockSectionItem>
+                              <apex:pageBlockSectionItem >
+                                     <apex:outputLabel value="State"></apex:outputLabel>
+                                     <apex:selectList value="{!selectedtagsstate}" multiselect="true" size="24" >
+                                     <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!ContactFields}"></apex:selectOptions>
+                                     </apex:selectList>
+                              </apex:pageBlockSectionItem>
+                              <apex:pageBlockSectionItem >
+                                     <apex:outputLabel value="Postal"></apex:outputLabel>
+                                     <apex:selectList value="{!selectedtagspostal}" multiselect="true" size="24">
+                                     <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!ContactFields}"></apex:selectOptions>
+                                     </apex:selectList>
+                              </apex:pageBlockSectionItem>
+                              <apex:pageBlockSectionItem >
+                                     <apex:outputLabel value="Country"></apex:outputLabel>
+                                     <apex:selectList value="{!selectedtagscountry}" multiselect="true" size="24">
+                                     <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!ContactFields}"></apex:selectOptions>
+                                     </apex:selectList>
+                              </apex:pageBlockSectionItem>
+                             
+                         </apex:pageBlockSection> 
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                         
+          </apex:outputPanel>
+          
+          
+            <apex:actionFunction action="{!SavecontactmapFields}" name="Savecontactmapping" id="Savecontactmapping" rerender="mapfieldssetting" oncomplete="processcomplete();"/>
+              
+          <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Contact &amp; Account Mapping</h5>
+              </div>
+              <div class="widget-content"> 
+                            
+                 <apex:outputPanel id="mapfieldssetting">            
+                 <apex:pagemessages /> 
+                 <div class="btn-block pagination-centered">
+                       <a class="btn btn-primary" href="javascript:void(0)" onclick="SavecontactmapProcess();"><i class="icon-edit icon-white"></i> Update Map Fields</a>              
+                 </div>
+                 </apex:outputPanel>
+                 
+                 <apex:pageblocksection >
+                    <apex:outputPanel id="contactmappingfields_billing" style="padding:10px 10px 0px 10px;display:block;">            
+                    <apex:outputLabel value="Billing Information" style="font-weight:bold;"></apex:outputLabel>
+                     <table Class="table table-striped table-bordered">
+                           <tr>
+                              <th>Field Name</th>
+                              <th ><span style="display:{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,'block','none')}">Contact Fields</span><span style="display:{!IF(checkingperson == true && accountinfo=='personaccount','block','none')}">Person Account Contact Fields</span></th>
+                              <th><span style="display:{!IF(packname ==false,'block','none')}">Account Fields</span></th>
+                           </tr>
+                           <tr>
+                              <td>First Name</td>
+                              <td><apex:selectList value="{!bill_firstname}" size="1" disabled="true">
+                                      <apex:selectOption itemLabel="First Name" itemValue="{!bill_firstname}"></apex:selectOption>
+                                      <!-- <apex:selectOptions value="{!ContactFields}"></apex:selectOptions> -->
+                                  </apex:selectList>
+                              </td>
+                              <td>
+                              <apex:selectlist size="1" value="{!bill_acc_firstname}"  disabled="true"  rendered="{!IF( packname ==false,true,false)}">
+                                       <apex:selectOption itemLabel="Account Name" itemValue="{!bill_acc_lastname}" />                             
+                              </apex:selectlist>
+                              </td>
+                           </tr>
+                            <tr>
+                              <td>MI</td>
+                              <td> <apex:selectList size="1" value="{!bill_mi}" >
+                                  <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                  <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                  <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                     </apex:selectList></td>
+                              <td><apex:selectlist size="1" value="{!bill_acc_mi}"  rendered="{!IF( packname ==false,true,false)}">
+                                      <apex:selectOption itemLabel="None" itemValue=""/>
+                                      <apex:selectOptions value="{!accountmapfields}" />
+                              </apex:selectlist></td>
+                           </tr>
+                           <tr>
+                          <td>Last Name</td>
+                          <td><apex:selectList value="{!bill_lastname}" size="1" disabled="true">
+                                  <apex:selectOption itemLabel="Last Name" itemValue="{!bill_lastname}"></apex:selectOption>
+                                 <!-- <apex:selectOptions value="{!ContactFields}"></apex:selectOptions> -->
+                              </apex:selectList>
+                          </td>
+                          <td>
+                          <apex:selectlist size="1" value="{!bill_acc_lastname}" disabled="true"  rendered="{!IF( packname ==false,true,false)}">
+                                  <apex:selectOption itemLabel="Account Name" itemValue="{!bill_acc_lastname}"/>
+                                 
+                          </apex:selectlist>
+                          </td>
+                           </tr>
+                           <tr>
+                              <td>Email</td>
+                              <td><apex:selectList value="{!bill_email}" size="1">
+                                      <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                       <apex:selectOptions value="{!contactmapemailfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                       <apex:selectOptions value="{!personaccountmapemailfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                  </apex:selectList>
+                              </td>
+                              <td>
+                              <apex:selectlist size="1" value="{!bill_acc_email}" rendered="{!IF( packname ==false,true,false)}" >
+                                      <apex:selectOption itemLabel="None" itemValue=""/>
+                                       <apex:selectOptions value="{!accountmapemailfields}" /> 
+                              </apex:selectlist>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>Phone</td>
+                              <td><apex:selectList value="{!bill_phone}" size="1">
+                                      <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                     <apex:selectOptions value="{!contactmapphonefields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                     <apex:selectOptions value="{!personaccountmapphonefields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                  </apex:selectList>
+                              </td>
+                              <td>
+                              <apex:selectlist size="1"  value="{!bill_acc_phone}" rendered="{!IF( packname ==false,true,false)}">
+                                      <apex:selectOption itemLabel="None" itemValue=""/>
+                                      <apex:selectOptions value="{!accountmapphonefields}" /> 
+                              </apex:selectlist>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>Street</td>
+                              <td><apex:selectList value="{!bill_address}" size="1">
+                                      <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                      <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                      <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                  </apex:selectList>
+                              </td>
+                              <td>
+                              <apex:selectlist size="1" value="{!bill_acc_address}" rendered="{!IF( packname ==false,true,false)}">
+                                      <apex:selectOption itemLabel="None" itemValue=""/>
+                                      <apex:selectOptions value="{!accountmapfields}"  /> 
+                              </apex:selectlist>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>City</td>
+                              <td><apex:selectList value="{!bill_city}" size="1">
+                                      <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                      <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                      <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                  </apex:selectList>
+                              </td>
+                              <td>
+                              <apex:selectlist size="1"  value="{!bill_acc_city}" rendered="{!IF( packname ==false,true,false)}">
+                                      <apex:selectOption itemLabel="None" itemValue=""/>
+                                      <apex:selectOptions value="{!accountmapfields}"/> 
+                              </apex:selectlist>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>State</td>
+                              <td><apex:selectList value="{!bill_state}" size="1" >
+                                      <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                      <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                      <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                  </apex:selectList>
+                              </td>
+                              <td>
+                              <apex:selectlist size="1" value="{!bill_acc_state}" rendered="{!IF( packname ==false,true,false)}">
+                                      <apex:selectOption itemLabel="None" itemValue=""/>
+                                      <apex:selectOptions value="{!accountmapfields}"/> 
+                              </apex:selectlist>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>Postal</td>
+                              <td><apex:selectList value="{!bill_postal}" size="1">
+                                      <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                      <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                      <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                  </apex:selectList>
+                              </td>
+                              <td>
+                              <apex:selectlist size="1" value="{!bill_acc_postal}" rendered="{!IF( packname ==false,true,false)}">
+                                      <apex:selectOption itemLabel="None" itemValue=""/>
+                                      <apex:selectOptions value="{!accountmapfields}"/> 
+                              </apex:selectlist>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>Country</td>
+                              <td><apex:selectList value="{!bill_country}" size="1" >
+                                      <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                      <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                      <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                  </apex:selectList>
+                              </td>
+                              <td>
+                              <apex:selectlist size="1" value="{!bill_acc_country}" rendered="{!IF( packname ==false,true,false)}">
+                                      <apex:selectOption itemLabel="None" itemValue=""/>
+                                      <apex:selectOptions value="{!accountmapfields}"/> 
+                              </apex:selectlist>
+                              </td>
+                           </tr>            
+                         </table>
+                          </apex:outputPanel> 
+                         
+                                 
+                          <apex:outputPanel id="contactmappingfields_shipping" style="padding:10px 10px 0px 10px;display:block;">
+                                 <apex:outputLabel value="Shipping Information" style="font-weight:bold;"></apex:outputLabel>
+                                 <table Class="table table-striped table-bordered">
+                                 <tr>
+                                    <th>Field Name</th>
+                                    <th ><span style="display:{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,'block','none')}">Contact Fields</span><span style="display:{!IF(checkingperson == true && accountinfo=='personaccount','block','none')}">Person Account Contact Fields</span></th>
+                                    <th><span style="display:{!IF(packname ==false,'block','none')}">Account Fields</span></th>
+                                 </tr>
+                                 <tr>
+                                     <td>First Name</td>
+                                     <td> <apex:selectList value="{!ship_firstname}" size="1">
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                          <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                          </apex:selectList>
+                                     </td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_firstname}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                          <apex:selectOptions value="{!accountmapfields}" /> 
+                                  </apex:selectlist></td>
+                                </tr>
+                                 <tr>
+                                     <td>MI</td>
+                                     <td> <apex:selectList value="{!ship_mi}" size="1">
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                          <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                          </apex:selectList>
+                                     </td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_mi}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                          <apex:selectOptions value="{!accountmapfields}" /> 
+                                  </apex:selectlist></td>
+                                </tr>
+                                 <tr>
+                                     <td>Last Name</td>
+                                     <td> <apex:selectList value="{!ship_lastname}" size="1">
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                          <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                          </apex:selectList>
+                                     </td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_lastname}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                          <apex:selectOptions value="{!accountmapfields}"/> 
+                                  </apex:selectlist></td>
+                                </tr>
+                                 <tr>
+                                     <td>Email</td>
+                                     <td> <apex:selectList value="{!ship_email}" size="1">
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!contactmapemailfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                          <apex:selectOptions value="{!personaccountmapemailfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                          </apex:selectList>
+                                     </td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_email}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                           <apex:selectOptions value="{!accountmapemailfields}"/> 
+                                  </apex:selectlist></td>
+                                </tr>
+                                <tr>
+                                     <td>Phone</td>
+                                     <td> <apex:selectList value="{!ship_phone}" size="1">
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!contactmapphonefields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                          <apex:selectOptions value="{!personaccountmapphonefields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                          </apex:selectList>
+                                     </td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_phone}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                          <apex:selectOptions value="{!accountmapphonefields}"/> 
+                                  </apex:selectlist></td>
+                                </tr>
+                                <tr>
+                                     <td>Street</td>
+                                     <td><apex:selectList value="{!ship_address}" size="1">
+                                     <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                     <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                     <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                 </apex:selectList></td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_address}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                          <apex:selectOptions value="{!accountmapfields}" /> 
+                                  </apex:selectlist></td>
+                                </tr>
+                                <tr>
+                                     <td>City</td>
+                                     <td><apex:selectList value="{!ship_city}" size="1">
+                                     <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                     <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                     <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                 </apex:selectList></td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_city}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                          <apex:selectOptions value="{!accountmapfields}"/> 
+                                  </apex:selectlist></td>
+                                </tr>
+                                <tr>
+                                     <td>State</td>
+                                     <td> <apex:selectList value="{!ship_state}" size="1" >
+                                          <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                          <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                          <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                          </apex:selectList>
+                                     </td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_state}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                          <apex:selectOptions value="{!accountmapfields}"/>  
+                                  </apex:selectlist></td>
+                                </tr>
+                                <tr>
+                                     <td>Postal</td>
+                                     <td> <apex:selectList value="{!ship_postal}" size="1">
+                                     <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                     <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions> 
+                                 <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                 </apex:selectList></td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_postal}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                          <apex:selectOptions value="{!accountmapfields}"/>
+                                  </apex:selectlist></td>
+                                </tr>
+                                <tr>
+                                     <td>Country</td>
+                                     <td><apex:selectList value="{!ship_country}" size="1" >
+                                 <apex:selectOption itemLabel="None" itemValue=""></apex:selectOption>
+                                        <apex:selectOptions value="{!contactmapfields}" rendered="{!IF(checkingperson == false || (checkingperson==true && accountinfo=='businessaccount') ,true,false)}"></apex:selectOptions>
+                                 <apex:selectOptions value="{!personaccountmapfields}" rendered="{!IF(checkingperson == true && accountinfo=='personaccount',true,false)}" /> 
+                                 </apex:selectList></td>
+                                     <td><apex:selectlist size="1" value="{!ship_acc_country}" rendered="{!IF( packname ==false,true,false)}">
+                                          <apex:selectOption itemLabel="None" itemValue=""/>
+                                         <apex:selectOptions value="{!accountmapfields}" />
+                                  </apex:selectlist></td>
+                                </tr>        
+                                 </table>
+                          </apex:outputPanel>
+                          </apex:pageBlocksection>
+              
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->              
+              
+             <!--       <div align="center">
+                 <apex:commandButton value="Save" action="{!SavecontactmapFields}" />
+                 </div>-->
+              
+         </apex:pageBlock>
+    </div>
+               
+  </apex:form>
+</apex:page>

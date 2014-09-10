@@ -1,0 +1,13 @@
+<apex:page >
+<!--<h1>% Monthly Growth ThisYear #</h1>  
+Download Date and Time : <apex:outputLabel value="{!Dvalue}"></apex:outputLabel>
+  <apex:pageBlock >  
+      <apex:pageBlockTable value="{!Results}" var="ar">  
+          <apex:column headerValue="Month" value="{!ar.MonthNo}"/>  
+           <apex:column headerValue="Number Of Transactions" value="{!ar.TotalAmount}"/>
+           <apex:column headerValue="Relative Change" value="{!ar.Difference} %"/>    
+      </apex:pageBlockTable>
+      {!IF(ResultSet.size==0,"NO records available.",NULL)} 
+      </apex:pageBlock>
+   -->   
+      </apex:page>

@@ -1,0 +1,20 @@
+<apex:page standardController="Account"  extensions="CnP_PaaS.CnP_Redirect_Controller">
+    <script>
+          window.onload = function() {
+              load();
+          }          
+          function function2(url)
+          {
+              parent.parent.location.href=url;
+          }          
+    </script>
+
+    <apex:form >
+    
+    <apex:outputPanel rendered="{!IF(bus_act == false, true, false)}">
+        <apex:actionFunction name="load" action="{!Redirectperson}" />
+     </apex:outputPanel>   
+     
+        <apex:pagemessages />
+    </apex:form>          
+</apex:page>

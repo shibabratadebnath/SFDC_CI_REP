@@ -1,0 +1,28 @@
+<apex:page standardcontroller="Account" standardstylesheets="false" showheader="false">
+    <html>
+        <head>
+            <style>
+                p{
+                      background-color: blue;
+                 }
+                h1{
+                      text-align: center;
+                      color :#00008B;
+                 }
+            </style>
+        </head>
+        <body bgcolor='#87CEFA'>
+            <h1>Employee Database</h1>
+            <p>
+                  Your text
+            </p>
+            <ul class="yourstyleclass declared in the head section">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Contact</a></li>﻿            
+            </ul>
+        </body>
+    </html>
+</apex:page>

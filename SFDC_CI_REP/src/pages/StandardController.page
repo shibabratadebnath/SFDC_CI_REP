@@ -1,0 +1,20 @@
+<apex:page standardController="Employee_s__c">
+    <apex:form >
+        <apex:pageBlock title="Information">
+            <apex:pageblockSection columns="3">
+                <apex:inputfield value="{!Employee_s__c.Name}"/>
+                <apex:inputfield value="{!Employee_s__c.Address__c}"/>
+                <apex:inputfield value="{!Employee_s__c.Approved_Rejected__c}"/>
+                <apex:inputfield value="{!Employee_s__c.Company__c}"/>
+                <apex:inputfield value="{!Employee_s__c.Company_Unique_Name__c}"/>
+                <apex:inputfield value="{!Employee_s__c.CountJoinRes__c}"/>
+                <apex:inputfield value="{!Employee_s__c.Emplyee_rith_Join_Res__c}"/>
+                <apex:inputfield value="{!Employee_s__c.Joined_Resigned__c}"/>
+                <apex:inputfield value="{!Employee_s__c.Salary__c}"/>
+            </apex:pageblockSection>
+            <apex:pageBlockButtons location="top">
+                <apex:commandButton value="save" action="{!save}"/>
+            </apex:pageBlockButtons>
+    </apex:pageBlock>
+</apex:form>
+</apex:page>

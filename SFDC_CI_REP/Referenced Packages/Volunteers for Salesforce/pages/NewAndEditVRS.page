@@ -1,0 +1,36 @@
+<!-- 
+// Written by David Habib, copyright (c) 2013 DJH Consulting, djhconsulting.com 
+// This program is released under the GNU Affero General Public License, Version 3. http://www.gnu.org/licenses/
+ -->
+
+<apex:page standardController="GW_Volunteers__Volunteer_Recurrence_Schedule__c" extensions="GW_Volunteers.VOL_CTRL_NewAndEditVRS" title="{!$ObjectType.GW_Volunteers__Volunteer_Recurrence_Schedule__c.Label}" tabStyle="GW_Volunteers__Volunteer_Recurrence_Schedule__c" >
+	<apex:sectionHeader title="{!$ObjectType.GW_Volunteers__Volunteer_Recurrence_Schedule__c.Label}" subtitle="{!$ObjectType.GW_Volunteers__Volunteer_Recurrence_Schedule__c.Label}" />	
+	<apex:form >
+		<apex:pageBlock title="{!$ObjectType.GW_Volunteers__Volunteer_Recurrence_Schedule__c.Label}" mode="edit" id="pbMain" >
+            <apex:pageBlockButtons >
+                <apex:commandButton action="{!Save}" value="{!$Label.gw_volunteers__labelButtonSave}"/>
+                <apex:commandButton action="{!Cancel}" value="{!$Label.gw_volunteers__labelButtonCancel}" immediate="true"/>
+            </apex:pageBlockButtons> 
+            <apex:pageBlockSection title="{!$Label.gw_volunteers__labelInformation}" columns="1" >                        
+				<!--  now add fields the user can specify -->
+				<apex:repeat value="{!$ObjectType.GW_Volunteers__Volunteer_Recurrence_Schedule__c.FieldSets.GW_Volunteers__NewAndEditVRSFS}" var="f" >
+					<apex:inputField value="{!vrs[f]}" required="{!IF(OR(f.DBRequired, f.Required), 'true', 'false')}" >
+               	        <apex:actionSupport immediate="false" event="onchange" 
+               	        	rerender="pbsJRS" status="retrieveStatus" rendered="{!IF(f == 'GW_Volunteers__Volunteer_Job__c', 'true', 'false')}" 
+               	        	action="{!refreshListSOJRS}" />                        
+					</apex:inputField> 
+	  			</apex:repeat>                    
+            </apex:pageBlockSection>
+            <apex:pageBlockSection title="{!$Label.gw_volunteers__labelCopySchedule}" columns="1" id="pbsJRS" >
+				<apex:pageBlockSectionItem >
+                    <apex:outputLabel value="{!$ObjectType.GW_Volunteers__Job_Recurrence_Schedule__c.Label}" />
+			    	<apex:selectList value="{!jrsId}" size="1" required="false">
+			    		<apex:selectOptions value="{!listSOJRS}" />			    		
+               	        <apex:actionSupport immediate="false" event="onchange" rerender="pbMain" status="retrieveStatus" action="{!copyScheduleFromJRS}" />                        
+			    	</apex:selectList>									    	
+			    </apex:pageBlockSectionItem>
+			    <apex:actionStatus startText="{!$Label.gw_volunteers__labelMessageLoading}" stopText=" " id="retrieveStatus" startStyle="color:green; font-style:italic" />			    
+			</apex:pageBlockSection>
+        </apex:pageBlock>	
+	</apex:form> 
+</apex:page>

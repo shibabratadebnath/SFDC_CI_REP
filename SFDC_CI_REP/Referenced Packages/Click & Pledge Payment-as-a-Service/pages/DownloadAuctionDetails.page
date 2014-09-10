@@ -1,0 +1,47 @@
+<apex:page controller="CnP_PaaS.DownloadAuctions">
+ <apex:form >
+  <apex:pageBlock rendered="{!packagecheck}" >
+     <apex:pageBlockSection >
+     
+         <apex:pageBlockSectionItem >
+               <apex:outputText value="Select the Auction:"/>
+               <apex:selectList size="1" value="{!Auctionname}">
+                   <apex:actionSupport event="onchange" reRender="listdata"/>
+                   <apex:selectOption itemValue="" itemLabel="Select"></apex:selectOption>
+                   <apex:selectOptions value="{!Auctionlist}"></apex:selectOptions>
+               </apex:selectList>
+         </apex:pageBlockSectionItem>
+         
+     </apex:pageBlockSection>
+     <apex:pageBlockSection id="listdata"> 
+     <table><tr><td>
+       <apex:outputPanel rendered="{!IF(Auctionname!=null,true,false)}">
+          <div style="text-align:center;">
+            <apex:commandButton value="Download" action="{!downloadFile}">
+                 <apex:param assignTo="{!Auctionname}" name="Auctionname" value="{!Auctionname}"/>
+            </apex:commandButton>
+           </div> 
+         </apex:outputPanel> </td></tr>
+         <tr><td>   
+         <apex:pageBlockTable value="{!OpportunityInfo}" var="opp" rendered="{!If(OpportunityInfo.size >0 && Auctionname!=null ,true,false)}">
+            <apex:column headerValue="Contact Name">
+               <apex:outputLink value="/{!opp.SalesForceID}">{!opp.Firstname}{!opp.LastName}</apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="Opportunity Name">
+               <apex:outputLink value="/{!opp.OpportunityId}">{!opp.itemname}</apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="Amount" value="{!opp.Amount}"/>
+            <apex:column headerValue="Guid" value="{!opp.vaultguid}"/>
+            <apex:column headerValue="Account Id" value="{!opp.acc_num}"/>
+         </apex:pageBlockTable></td></tr></table>
+         <apex:outputPanel rendered="{!IF(OpportunityInfo.size <= 0 && Auctionname!=null,true,false)}">
+            <h4> Right now dont have any Contact with Opportunity.</h4>
+         </apex:outputPanel>
+     </apex:pageBlockSection>
+     
+  </apex:pageBlock>
+  <apex:pageBlock rendered="{!IF(packagecheck==false,true,false)}">
+      <apex:pagemessage summary="Auction for salesforce is not installed" severity="info" strength="3"></apex:pagemessage> 
+   </apex:pageBlock>
+ </apex:form>
+</apex:page>

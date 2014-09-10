@@ -1,0 +1,388 @@
+<apex:page controller="CnP_PaaS_EVT.Registrantandattendee_class" showHeader="false" sidebar="false" standardStylesheets="false" action="{!loadhelpContent}">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/bootstrap.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.flot.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.flot.resize.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.peity.min.js')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+<style>
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+.display_inline{
+    display:inline;
+}
+.backdrop{
+    width: 98%;
+    position: absolute;
+    height: 270px;
+    background-color: #000;
+    opacity: 0.2;
+}
+.loader{
+    position: absolute;
+    top:45%;
+    left:50%;
+}
+</style>
+<script>
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+
+function reportdelete()
+{
+  if(confirm("Are you sure you want to permanently delete this record?")==true)
+  {
+    return true;
+  }
+}
+function reportdeleteatt()
+{
+  if(confirm("Are you sure you want to permanently delete this record?")==true)
+  {
+    return true;
+  }
+}
+</script>
+<apex:form >
+<apex:pageBlock >
+
+  <div id="content-header">
+    <h1><i class="icon icon-tasks"></i> Registrations</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"> <!--<a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a>-->
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Registrations'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Registrations'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Registrations'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Registrations'].link}" target="_blank" >{!subTab['Active Events']['Registrations'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Registrations'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Registrations'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Registrations'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel>  
+    </div>
+  </div>
+  
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="current">Registrations</a> </div>
+  
+   <div class="eventdatebar">
+   <i class="icon-time"></i>&nbsp;&nbsp;
+        <span class="popover-startdate">Event:</span>
+        <span><strong>{!EventTemplate.Name} &nbsp;&nbsp;</strong></span>    
+        <span class="popover-startdate">Start Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Start_date_and_time__c}" /> &nbsp;&nbsp;</strong></span>                                   
+        <span class="popover-endson">End Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Start_date_and_time__c}" /> &nbsp;&nbsp;</strong></span>                             
+        <span class="popover-endson">Publish Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Publish_date__c}" /></strong></span>                          
+    </div>
+
+<div class="container-fluid">
+
+
+    <div class="btn-block pagination-centered">
+          <apex:outputLink value="/apex/TemperoryGridTables_2?EventId={!eventid}" target="_self" styleClass="btn btn-primary"> Manage Temporary Contacts  </apex:outputLink>
+   
+   &nbsp;&nbsp; <apex:outputLink value="/apex/ExternalRegistrationPage?event_id={!eventid}&registrationtype=manual" styleClass="btn btn-primary" target="_self">Box Office</apex:outputLink>
+          
+    </div>
+
+
+   <div class="row-fluid">
+        
+    <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Registrants</h5>
+              </div>
+              <div class="widget-content">
+        <apex:outputPanel id="pgbregistrant">
+         <apex:actionStatus id="status1">
+            <apex:facet name="start">            
+                <div class="loader">
+                    <img src="/img/loading24.gif" style="vertical-align:middle;"/>
+                    <!-- <span style="margin-left: 10px; font-size: 12px; font-weight: bold; color: #000000;">Please wait...</span> -->
+                </div>
+                <div class="backdrop" style="height:270px;"></div>
+            </apex:facet>
+        </apex:actionStatus>
+      <apex:actionFunction name="firstregistrant" action="{!firstregistrant}" status="status1" reRender="pgbregistrant"/>
+        <apex:actionFunction name="lastregistrant" action="{!lastregistrant}" status="status1" reRender="pgbregistrant"/>
+        <apex:actionFunction name="nextregistrant" action="{!nextregistrant}" status="status1" reRender="pgbregistrant"/>
+        <apex:actionFunction name="previousregistrant" action="{!previousregistrant}" status="status1" reRender="pgbregistrant"/>
+        <apex:actionFunction name="changeLimitregistrant" action="{!changeLimitregistrant}" status="status1" reRender="pgbregistrant"/>
+        <apex:actionFunction name="callActionreg" action="{!pageNavigationregistrant}" status="status1" reRender="pgbregistrant"/>
+           <apex:actionFunction name="searchDatareg" action="{!searchDatareg}" status="status1"  reRender="pgbr"/>  
+               
+              <div id="scroll" style="height: 350px; overflow:auto;">
+              
+              <div style="float:right;margin-bottom:10px;">
+                 Search &nbsp;<apex:inputText value="{!regsearchString}" onkeyup="searchDatareg();" />
+             </div>
+             
+           <apex:pageBlockTable value="{!regRecords}" var="con" id="pgbr" styleClass="registrant detailList table table-bordered table-striped">
+                <apex:column headerValue="Action" styleClass="align_center" headerClass="align_center" >
+                  <apex:outputLink value="/apex/Registrantpage_edit_2?id={!con.id}" target="_self" styleClass="icon-edit"></apex:outputLink>
+                  &nbsp; <apex:commandLink value="" styleClass="icon-trash" style="cursor: pointer;" action="{!deleteRegistrant}" onclick="if(!reportdelete()) return false;"  >
+                  <apex:param name="Custregid" value="{!con.id}" /></apex:commandLink>
+                </apex:column>
+                <apex:column headerValue="Registrant Name">
+                <apex:outputLink value="/{!con.id}" target="_new" >{!con.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column headerValue="Contact">
+                <apex:outputLink value="/{!con.CnP_PaaS_EVT__ContactId__c}" target="_new" >{!con.ContactId__r.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column headerValue="Status" value="{!con.CnP_PaaS_EVT__Status__c}"/>
+               
+                <apex:column headerValue="Created Date" value="{!con.createdDate}"/>
+                <apex:column headerValue="Name Badge"><apex:outputLink value="/apex/ticketdesign?RegId={!con.id}&eventid={!eventid}&anonymous={!con.EventId__r.CnP_PaaS_EVT__Anonymous__c}&ticketid=namebadge&print=true" target="_new"><apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__CommonFolder,'CommonFolder/images/PDFIcon.png')}" width="20" height="20"/> </apex:outputLink>&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<apex:outputLink value="/apex/ticketPrint?RegId={!con.id}&eventid={!eventid}&anonymous={!con.EventId__r.CnP_PaaS_EVT__Anonymous__c}&ticketid=namebadge&print=true" target="_new"><apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__CommonFolder,'CommonFolder/images/WordIcon.png')}" width="20" height="20"/></apex:outputLink></apex:column>
+            </apex:pageBlockTable>            
+        </div>
+        <br />
+       <div>
+            <div class="span4">
+                <apex:outputLabel value="{!recordInforegistrant}" styleClass="display_inline"/> &nbsp;
+                <apex:selectList value="{!reglimits}" size="1" onchange="changeLimitregistrant();return false;">
+                    <apex:selectOptions value="{!items}"/>
+                </apex:selectList>
+            </div>
+            <div class="span4 align_center">
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!regfirstOff}">
+                        <img src="/s.gif" onclick="firstregistrant();return false;" style="cursor:pointer; cursor:hand; background-image: url('/img/paginationArrows.gif');background-position: 0 1px;background-repeat: no-repeat; height: 11px;width: 9px;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!regfirstOff)}">
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: 0 -10px;background-repeat: no-repeat; height: 11px;width: 9px;"/>
+                    </apex:outputPanel>
+                </span>
+               
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!regfirstOff}">
+                        <img class="prev" src="/s.gif" onclick="previousregistrant();return false;" style="cursor:pointer; cursor:hand;background-image: url('/img/paginationArrows.gif'); background-position: -10px 1px;background-repeat: no-repeat;height: 11px;margin: 0; padding: 0;width: 9px;"/>
+                        <apex:outputLabel value="Previous" styleClass="display_inline"  style="cursor:pointer; cursor:hand;" onclick="previousregistrant();return false;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!regfirstOff)}">
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: -10px -10px;background-repeat: no-repeat;height: 11px;margin: 0;padding: 0;width: 9px;"/>
+                        <apex:outputLabel value="Previous" styleClass="display_inline"  style="cursor:text; color: #A8A8A8"/>
+                    </apex:outputPanel>
+                </span>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!reglastOff}">
+                        <apex:outputLabel value="Next" style="cursor:pointer; cursor:hand;" styleClass="display_inline"  onclick="nextregistrant();return false;"/>
+                        <img src="/s.gif" onclick="nextregistrant();return false;" style="cursor:pointer; cursor:hand; background-image: url('/img/paginationArrows.gif');background-position: -17px 1px; background-repeat: no-repeat;height: 11px; width: 9px;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!reglastOff)}">
+                        <apex:outputLabel value="Next" style="cursor:text; color: #A8A8A8" styleClass="display_inline" />
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: -17px -10px;background-repeat: no-repeat;height: 11px;width: 9px;"/>
+                    </apex:outputPanel>
+                </span>
+               
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!reglastOff}">
+                        <img src="/s.gif" onclick="lastregistrant();return false;" style="cursor:pointer; cursor:hand; background-image: url('/img/paginationArrows.gif'); background-position: -27px 1px;background-repeat: no-repeat;height: 11px;width: 9px;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!reglastOff)}">
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: -27px -10px;background-repeat: no-repeat;height: 11px;width: 9px; "/>
+                    </apex:outputPanel>
+                </span>
+            </div>
+            <div class="span4 align_right">
+                <apex:outputLabel value="Page" styleClass="display_inline" /> &nbsp;
+                <apex:inputText id="pageNoreg" value="{!regpageNumber}" style="width:20px; text-align:center" size="3" onkeydown="return runScriptreg(event);"/> &nbsp;
+                <apex:outputLabel value="of {!totalPageregistrant}" styleClass="display_inline"/>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+       </apex:outputPanel>           
+           
+       
+                       
+        </div><!-- widget-content -->
+       </div><!-- widget-box -->           
+        
+        
+      <div class="widget-box">
+             <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Registered Attendees</h5>
+              </div>
+              <div  class="widget-content">    
+         <apex:outputPanel id="pgb">
+          <apex:actionStatus id="status">
+            <apex:facet name="start">
+                <div class="loader">
+                    <img src="/img/loading24.gif" style="vertical-align:middle;"/>
+                    <!-- <span style="margin-left: 10px; font-size: 12px; font-weight: bold; color: #000000;">Please wait...</span> -->
+                </div>
+                <div class="backdrop" style="height:350px;"></div>
+            </apex:facet>
+        </apex:actionStatus>
+        <apex:actionFunction name="first" action="{!first}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="last" action="{!last}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="next" action="{!next}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="previous" action="{!previous}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="changeLimit" action="{!changeLimit}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="callAction" action="{!pageNavigation}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="searchData" action="{!searchData}" status="status" reRender="pgbt"/>  
+        
+        <div id="scroll" style="height: 265px; overflow:auto;">
+        
+             <div style="float:right;margin-bottom:10px;">
+             Search &nbsp;<apex:inputText value="{!searchString}" onkeyup="searchData();" />            
+             </div>
+             
+            <apex:pageBlockTable value="{!records}" var="con" id="pgbt" styleClass="attendeelist detailList table table-bordered table-striped" >
+                <apex:column headerValue="Action" styleClass="align_center" headerClass="align_center" >
+                 <apex:outputLink value="/apex/Attendeepage_2?id={!con.id}" target="_self" styleClass="icon-edit"></apex:outputLink>
+                              &nbsp; <apex:commandLink value="" styleClass="icon-trash" style="cursor: pointer;" action="{!deleteattendee}" onclick="if(!reportdeleteatt()) return false;" >
+                              <apex:param name="Custattid" value="{!con.id}" /></apex:commandLink>
+                </apex:column>
+                
+             <apex:column headerValue="Attendee Name">
+               <apex:outputLink value="/{!con.id}" target="_new" >{!con.Name}</apex:outputLink>
+            </apex:column>
+
+               <apex:column headerValue="Contact">
+               <apex:outputLink value="/{!con.CnP_PaaS_EVT__ContactId__c}" target="_new" >{!con.ContactId__r.Name}</apex:outputLink>
+            </apex:column>
+           
+             <apex:column headerValue="Registrant Name">
+               <apex:outputLink value="/{!con.CnP_PaaS_EVT__Registrant_session_Id__c}" target="_new" >{!con.Registrant_session_Id__r.Name}</apex:outputLink>
+            </apex:column>
+          
+            <apex:column headerValue="Registration Level">
+               <apex:outputLink value="/{!con.CnP_PaaS_EVT__Registration_level__c}" target="_new" >{!con.Registration_level__r.Name}</apex:outputLink>
+            </apex:column>
+            <apex:column headerValue="Status" value="{!con.CnP_PaaS_EVT__Status__c}"/>
+            <apex:column headerValue="Created Date" value="{!con.createddate}"/>
+            <apex:column headerValue="Name Badge"><apex:outputLink value="/apex/ticketdesign?AttId={!con.id}&eventid={!eventid}&anonymous={!con.EventId__r.CnP_PaaS_EVT__Anonymous__c}&ticketid=namebadge&print=true" target="_new"><apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__CommonFolder,'CommonFolder/images/PDFIcon.png')}" width="20" height="20"/> </apex:outputLink>&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<apex:outputLink value="/apex/ticketPrint?AttId={!con.id}&eventid={!eventid}&anonymous={!con.EventId__r.CnP_PaaS_EVT__Anonymous__c}&ticketid=namebadge&print=true" target="_new"><apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__CommonFolder,'CommonFolder/images/WordIcon.png')}" width="20" height="20"/></apex:outputLink></apex:column>
+            </apex:pageBlockTable>
+        
+
+        </div>
+        <br/>
+         
+       <div>
+            <div class="span4">
+                <apex:outputLabel value="{!recordInfo}" styleClass="display_inline" /> &nbsp;
+                <apex:selectList value="{!limits}" size="1" onchange="changeLimit();return false;">
+                    <apex:selectOptions value="{!items}"/>
+                </apex:selectList>
+            </div>
+            <div class="span4 align_center">
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!firstOff}">
+                        <img src="/s.gif" onclick="first();return false;" style="cursor:pointer; cursor:hand; background-image: url('/img/paginationArrows.gif');background-position: 0 1px;background-repeat: no-repeat; height: 11px;width: 9px;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!firstOff)}">
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: 0 -10px;background-repeat: no-repeat; height: 11px;width: 9px;"/>
+                    </apex:outputPanel>
+                </span>
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!firstOff}">
+                        <img class="prev" src="/s.gif" onclick="previous();return false;" style="cursor:pointer; cursor:hand;background-image: url('/img/paginationArrows.gif'); background-position: -10px 1px;background-repeat: no-repeat;height: 11px;margin: 0; padding: 0;width: 9px;"/>
+                        <apex:outputLabel value="Previous" styleClass="display_inline"  style="cursor:pointer; cursor:hand;" onclick="previous();return false;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!firstOff)}">
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: -10px -10px;background-repeat: no-repeat;height: 11px;margin: 0;padding: 0;width: 9px;"/>
+                        <apex:outputLabel value="Previous" styleClass="display_inline"  style="cursor:text; color: #A8A8A8"/>
+                    </apex:outputPanel>
+                </span>
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!lastOff}">
+                        <apex:outputLabel value="Next" style="cursor:pointer; cursor:hand;" onclick="next();return false;" styleClass="display_inline"/>
+                        <img src="/s.gif" onclick="next();return false;" style="cursor:pointer; cursor:hand; background-image: url('/img/paginationArrows.gif');background-position: -17px 1px; background-repeat: no-repeat;height: 11px; width: 9px;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!lastOff)}">
+                        <apex:outputLabel value="Next" style="cursor:text; color: #A8A8A8" styleClass="display_inline"/>
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: -17px -10px;background-repeat: no-repeat;height: 11px;width: 9px;"/>
+                    </apex:outputPanel>
+                </span>
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!lastOff}">
+                        <img src="/s.gif" onclick="last();return false;" style="cursor:pointer; cursor:hand; background-image: url('/img/paginationArrows.gif'); background-position: -27px 1px;background-repeat: no-repeat;height: 11px;width: 9px;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!lastOff)}">
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: -27px -10px;background-repeat: no-repeat;height: 11px;width: 9px; "/>
+                    </apex:outputPanel>
+                </span>
+            </div>
+            <div class="span4 align_right">
+                <apex:outputLabel value="Page" styleClass="display_inline"/> &nbsp;
+                <apex:inputText id="pageNo" value="{!pageNumber}" style="width:20px; text-align:center" size="3" onkeydown="return runScript(event);"/> &nbsp;
+                <apex:outputLabel value="of {!totalPage}" styleClass="display_inline"/>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+   
+         </apex:outputPanel>
+          
+                  
+
+        </div><!-- widget-content -->
+        </div><!-- widget-box --> 
+   </div><!-- row-fluid --> 
+</div> <!-- container-fluid -->
+
+  
+
+</apex:pageBlock>
+ 
+<script>
+        function runScript(obj){
+          //  alert(obj.keyCode);
+            if(obj.keyCode == 13){
+                callAction();   // call action function
+                return false;
+            }else if((obj.keyCode > 34 && obj.keyCode < 40) || (obj.keyCode > 95 && obj.keyCode < 106) || (obj.keyCode > 47 && obj.keyCode < 58) || obj.keyCode == 8 || obj.keyCode == 46 ){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    </script>
+
+ <script>
+        function runScriptreg(obj){
+          //  alert(obj.keyCode);
+            if(obj.keyCode == 13){
+                callActionreg();   // call action function
+                return false;
+            }else if((obj.keyCode > 34 && obj.keyCode < 40) || (obj.keyCode > 95 && obj.keyCode < 106) || (obj.keyCode > 47 && obj.keyCode < 58) || obj.keyCode == 8 || obj.keyCode == 46 ){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    </script>
+    </apex:form>
+  <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.dataTables.js')}"/>
+</apex:page>

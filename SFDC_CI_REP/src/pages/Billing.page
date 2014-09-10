@@ -1,0 +1,20 @@
+<apex:page controller="Billingfunc">
+    <h1>Billing Screen</h1>
+    <apex:form >
+        Enter the Amount to be paid:<apex:inputText value="{!amount}"/><br/>
+        Enter Customers money:<apex:inputText value="{!cust_amt}"/><br/>
+        <apex:commandButton value="Submit" action="{!calc}"/><br/><br/>
+        <h1>OUT</h1><br/>
+        500 * <apex:outputText value="{!R500}"/><br/>
+        100 * <apex:outputText value="{!R100}"/><br/>
+        50 * <apex:outputText value="{!R50}"/><br/>
+        20 * <apex:outputText value="{!R20}"/><br/>
+        10 * <apex:outputText value="{!R10}"/><br/>
+        <h1>BALANCE IN ACCOUNT</h1><br/>
+        500 * <apex:inputText value="{!Rs500}"/><br/>
+        100 * <apex:outputText value="{!Rs100}"/><br/>
+        50 * <apex:outputText value="{!Rs50}"/><br/>
+        20 * <apex:outputText value="{!Rs20}"/><br/>
+        10 * <apex:outputText value="{!Rs10}"/><br/>
+    </apex:form>
+</apex:page>

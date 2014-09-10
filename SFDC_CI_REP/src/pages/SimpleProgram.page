@@ -1,0 +1,7 @@
+<apex:page controller="SimpleProgram">
+<apex:form >
+  Enter your name:<apex:inputtext value="{!IPName}"/>
+                  <apex:commandButton value="Submit" action="{!NameMethod}"/>
+   Your Name is : <apex:outputtext value="{!OPName}"/>
+</apex:form>
+</apex:page>

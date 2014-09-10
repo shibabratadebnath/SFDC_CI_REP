@@ -1,0 +1,389 @@
+<apex:page controller="CnP_PaaS_EVT.checkinCheckout_class" sidebar="false" showHeader="false" standardStylesheets="false">
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__jqplot, 'js/jquery-1.3.2.min.js')}"/>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>-->
+<script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+<!--<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap-responsive.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/main.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/grey.css"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.dataTables.js')}"/>
+
+<script>
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+
+function LoadFunction(){
+
+window.location.reload();
+}
+
+function validate(){
+var Status= $(".StatusVal").val(); 
+alert(Status);
+return false;
+}
+</script>
+<style type="text/css">
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+        .popup
+        {
+            z-index: 9999;
+            width: 500px;
+        }
+
+        .popupBg
+        {
+            background-color:black;
+            opacity: 0.50;
+            filter: alpha(opacity = 50);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }
+        .display_inline{
+            display:inline;
+        }
+        .backdrop{
+            width: 98%;
+            position: absolute;
+            background-color: #000;
+            opacity: 0.2;
+        }
+        .loader{
+            position: absolute;
+            top:45%;
+            left:50%;
+           
+            
+        }
+    </style>
+    <apex:form id="siteform">
+    <div id="content-header">
+    <h1><i class="icon icon-tasks"></i> {!Pagelabel}</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"><!-- <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a>-->
+     <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Check-In And Check-Out'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Check-In And Check-Out'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Check-In And Check-Out'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Check-In And Check-Out'].link}" target="_blank" >{!subTab['Active Events']['Check-In And Check-Out'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Check-In And Check-Out'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Check-In And Check-Out'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Check-In And Check-Out'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel> 
+    
+    
+    </div>
+    </div>
+     <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="current"> {!Pagelabel}</a> </div>
+    
+     <div class="eventdatebar">
+ <i class="icon-time"></i>&nbsp;&nbsp;
+        <span class="popover-startdate">Event:</span>
+        <span><strong>{!EventTemplate.Name} &nbsp;&nbsp;</strong></span>    
+        <span class="popover-startdate">Start Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Start_date_and_time__c}" /> &nbsp;&nbsp;</strong></span>                                   
+        <span class="popover-endson">End Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Start_date_and_time__c}" /> &nbsp;&nbsp;</strong></span>                             
+        <span class="popover-endson">Publish Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Publish_date__c}" /></strong></span>                          
+    </div>
+    
+    <div id="frame-content" class="container-fluid">
+     <apex:pageBlock id="pgb" mode="maindetail">
+     
+     <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5> {!Pagelabel}</h5>
+            
+          </div>
+          <div class="widget-content" id="widget-content1">
+           <apex:actionStatus id="status">
+            <apex:facet name="start">
+                <div class="loader">
+                    <img src="/img/loading24.gif" style="vertical-align:middle;"/>
+                    <!-- <span style="margin-left: 10px; font-weight: bold; color: #000000;">Please wait...</span> -->
+                </div>
+                <div class="backdrop" style="height:600px;"></div>
+            </apex:facet>
+        </apex:actionStatus>
+        <apex:actionFunction name="first" action="{!first}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="last" action="{!last}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="next" action="{!next}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="previous" action="{!previous}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="changeLimit" action="{!changeLimit}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="callAction" action="{!pageNavigation}" status="status" reRender="pgb"/>
+        <apex:actionFunction name="searchData" action="{!searchData}" status="status"  reRender="pgbt,SearchRefresh"/> 
+        <div id="scroll" style="height: 600px; overflow:auto;">
+           
+           <div style="float:right;margin-bottom:10px;">
+                 Search &nbsp;<apex:inputText value="{!SearchString}" onkeyup="searchData();" />
+             </div>
+           
+           <apex:pageBlockTable value="{!attendees}" var="at" id="pgbt" styleClass="detailList table">
+                 <apex:column headerValue="Name">
+                 <apex:outputText value="{!at.Name}"></apex:outputText>
+                 </apex:column>
+               <apex:column headerValue="Ticket ID">
+                 <apex:outputText value="{!at.CnP_PaaS_EVT__Ticket_Number__c}"></apex:outputText>
+                 </apex:column>
+                 <apex:column headerValue="Ticket GUID">
+                 <apex:outputText value="{!at.CnP_PaaS_EVT__Ticket_guid__c}"></apex:outputText>
+                 </apex:column>
+                  <apex:column headerValue="Check-In Notes">
+                 <apex:outputText value="{!at.CnP_PaaS_EVT__CheckIn_Notes__c}"></apex:outputText>
+                 </apex:column>
+                <apex:column headerValue="Check-In Status">
+                <apex:outputtext value="{!at.CnP_PaaS_EVT__CheckIn_Status__c}" />
+                </apex:column>
+                <apex:column headerValue="Action" styleClass="align_center" headerClass="align_center">
+                <Apex:commandButton styleClass="btn" style="width: 100px;" status="status" action="{!CheckMethod}" value="{!IF(at.CnP_PaaS_EVT__CheckIn_Status__c==null,'Check-In',if(at.CnP_PaaS_EVT__CheckIn_Status__c=='Checked-In','Check-Out','Check-In'))}" rerender="siteform">
+                           <apex:param id="attidc" name="attidc" value="{!at.id}" assignTo="{!AttendeeId}"/>
+                           <apex:param id="attCheckst" name="attCheckst" value="{!IF(at.CnP_PaaS_EVT__CheckIn_Status__c==null,'Checked-In',if(at.CnP_PaaS_EVT__CheckIn_Status__c=='Checked-In','Checked-Out','Checked-In'))}" assignTo="{!attCheckInStatus}"/>
+                           <apex:param id="Checkidc" name="Checkidc" value="Table" assignTo="{!TableView}"/>
+                           </apex:commandbutton>
+                </apex:column>
+                <!--<apex:column value="{!at.Increment_Number__c}"/>-->
+                <apex:column headerValue="Preview" styleClass="align_center" headerClass="align_center">
+                 
+                 <apex:commandbutton value="Preview" style="width: 100px;" styleClass="btn" action="{!AttendeeRecord}" status="status" rerender="siteform">
+                            <apex:param id="CheckRec2" name="CheckRec2" value="{!at.id}" assignTo="{!AttendeeId}"/>
+                            <apex:param id="CheckidcTest" name="CheckidcTest" value="TestTable" assignTo="{!TableView}"/>
+                            </apex:commandbutton>
+                      </apex:column>
+            </apex:pageBlockTable>
+         </div>
+         <br/>
+         
+         <apex:outputpanel id="SearchRefresh"> 
+        <div>
+            <div class="span4">
+                <apex:outputLabel value="{!recordInfo}" styleClass="display_inline" /> &nbsp;
+                <apex:selectList value="{!limits}" size="1" onchange="changeLimit();return false;">
+                    <apex:selectOptions value="{!items}"/>
+                </apex:selectList>
+            </div>
+            <div class="span4 align_center">
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!firstOff}">
+                        <img src="/s.gif" onclick="first();return false;" style="cursor:pointer; cursor:hand; background-image: url('/img/paginationArrows.gif');background-position: 0 1px;background-repeat: no-repeat; height: 12px;width: 9px;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!firstOff)}">
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: 0 -10px;background-repeat: no-repeat; height: 12px;width: 9px;"/>
+                    </apex:outputPanel>
+                </span>
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!firstOff}">
+                        <img class="prev" src="/s.gif" onclick="previous();return false;" style="cursor:pointer; cursor:hand;background-image: url('/img/paginationArrows.gif'); background-position: -10px 1px;background-repeat: no-repeat;height: 12px;margin: 0; padding: 0;width: 9px;"/>
+                        <apex:outputLabel value="Previous" styleClass="display_inline"  style="cursor:pointer; cursor:hand;" onclick="previous();return false;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!firstOff)}">
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: -10px -10px;background-repeat: no-repeat;height: 12px;margin: 0;padding: 0;width: 9px;"/>
+                        <apex:outputLabel value="Previous" styleClass="display_inline"  style="cursor:text; color: #A8A8A8"/>
+                    </apex:outputPanel>
+                </span>
+                &nbsp;&nbsp;
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!lastOff}">
+                        <apex:outputLabel styleClass="display_inline" value="Next" style="cursor:pointer; cursor:hand;" onclick="next();return false;"/>
+                        <img src="/s.gif" onclick="next();return false;" style="cursor:pointer; cursor:hand; background-image: url('/img/paginationArrows.gif');background-position: -17px 1px; background-repeat: no-repeat;height: 12px; width: 9px;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!lastOff)}">
+                        <apex:outputLabel styleClass="display_inline" value="Next" style="cursor:text; color: #A8A8A8"/>
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: -17px -10px;background-repeat: no-repeat;height: 12px;width: 9px;"/>
+                    </apex:outputPanel>
+                </span>
+                <span style="margin: 0 3px;">
+                    <apex:outputPanel rendered="{!lastOff}">
+                        <img src="/s.gif" onclick="last();return false;" style="cursor:pointer; cursor:hand; background-image: url('/img/paginationArrows.gif'); background-position: -27px 1px;background-repeat: no-repeat;height: 12px;width: 9px;"/>
+                    </apex:outputPanel>
+                    <apex:outputPanel rendered="{!(!lastOff)}">
+                        <img src="/s.gif" style="cursor:text; background-image: url('/img/paginationArrows.gif');background-position: -27px -10px;background-repeat: no-repeat;height: 12px;width: 9px; "/>
+                    </apex:outputPanel>
+                </span>
+            </div>
+            <div class="span4 align_right">
+                <apex:outputLabel value="Page" styleClass="display_inline"/> &nbsp;
+                <apex:inputText id="pageNo" value="{!pageNumber}" style="width:20px; text-align:center" size="3" onkeydown="return runScript(event);"/>
+               
+                 &nbsp;
+                <apex:outputLabel value="of {!totalPage}" styleClass="display_inline"/>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+         </apex:outputpanel>
+  <script>
+        function runScript(obj){
+            //alert(obj.keyCode);
+            if(obj.keyCode == 13){
+                callAction();   // call action function
+                return false;
+            }else if((obj.keyCode > 34 && obj.keyCode < 40) || (obj.keyCode > 95 && obj.keyCode < 106) || (obj.keyCode > 47 && obj.keyCode < 58) || obj.keyCode == 8 || obj.keyCode == 46 ){
+                return true;
+            }else{
+                return false;
+            }
+        }
+    </script>
+     
+    <apex:outputPanel id="popup"> 
+        <apex:outputPanel styleClass="popupBg"  layout="block" rendered="{!displayPopUp}"/>
+            <apex:outputPanel styleClass="popup modal" layout="block" rendered="{!displayPopUp}">
+
+              <div class="modal-header">
+                <h3>Preview</h3>
+              </div>
+              <div class="modal-body">
+                            <script>
+                            function checkinlength(){
+                            var maxChars = 250;
+        if ($(".checkIn").val().length > maxChars) {
+            $(".checkIn").val($(".checkIn").val().substr(0, maxChars));
+            
+            //Take action, alert or whatever suits
+            alert("This field can take a maximum of 250 characters");
+        }
+        
+        var Notes=$(".checkIn").val();
+        var n=Notes.indexOf("\"");
+        if(n!=-1){
+        alert("Please do not use double quotes in Check-In notes");
+        $(".checkIn").val($(".checkIn").val().replace("\"", ""));
+        $(".checkIn").focus();
+        return false;
+        }else {return true;}
+                            }
+                            </script>
+                           <table class="table table-bordered table-striped">
+                           <tr>
+                           <td><apex:outputLabel value="Name" /></td>
+                           <td style="width:80%;"><apex:outputfield value="{!attrec.Name}"/></td>
+                           </tr>
+                           <tr>
+                           <td style="white-space:nowrap;"><apex:outputLabel value="Registration Level" /></td>
+                           <td><apex:outputfield value="{!attrec.Registration_level__r.name}"/></td>
+                           </tr>
+                           <tr>
+                           <td><apex:outputLabel value="Ticket Number" /></td>
+                           <td><apex:outputfield value="{!attrec.CnP_PaaS_EVT__Ticket_Number__c}" style="width:1000px"/></td>
+                           </tr>
+                           </table>                           
+                           <table><tr>
+                           <td style="width:27%;">Check-In Notes<br />(Max 250 Chars.)</td>
+                           <td>
+                           <apex:inputtextarea value="{!CheckInUpdate.CnP_PaaS_EVT__CheckIn_Notes__c}" styleclass="checkIn" onkeyup="return checkinlength()"/>
+                           </td>
+                           <td>
+                           <apex:actionStatus id="mySaveStatus_3">
+                           <apex:facet name="stop">
+                           <apex:commandbutton styleClass="btn btn-primary" value="Save" action="{!CheckInSave}" onclick="if(!checkinlength()) return false" reRender="siteform" status="mySaveStatus_3"></apex:commandbutton>
+                           </apex:facet>
+                           <apex:facet name="start">
+                 <apex:outputPanel >
+
+                 <apex:image value="/img/loading32.gif" style="height: 15px;"/>&nbsp;
+
+                 <apex:commandbutton styleClass="btn btn-primary" value="Saving..." status="mySaveStatus_3" disabled="true"/>
+                 
+               </apex:outputPanel>
+
+           </apex:facet>
+                           </apex:actionStatus>
+                           </td>
+                           </tr></table>
+                           <apex:outputPanel rendered="{!IF(attrec.C_P_Checkin_and_Checkout__r.size>0,true,false)}">                           
+                           <table class="table table-bordered table-striped">
+                           <tr><th>Device Address</th><th>History</th><th>Status</th></tr>
+                           <apex:repeat value="{!attrec.C_P_Checkin_and_Checkout__r}" var="b">
+                           <tr><td><apex:outputText value="{!b.Device__r.Name}" /></td>
+                           <td><apex:outputText value="{0,date,MMMMM dd, yyyy hh:mm a}"><apex:param value="{!b.CnP_PaaS_EVT__CheckIn_Checkout_Time__c}" /></apex:outputText></td>
+                           <td><apex:outputText value="{!b.CnP_PaaS_EVT__Check_Status__c}" /></td>
+                           </tr>
+                           </apex:repeat>
+                           </table>
+                           </apex:outputPanel>                
+                            
+                  </div>
+                  <div class="modal-footer">
+                  <apex:actionStatus id="mySaveStatus_2">
+                  <apex:facet name="stop">
+                  <apex:commandbutton styleClass="btn btn-primary" value="{!IF(attrec.CnP_PaaS_EVT__CheckIn_Status__c==null,'Check-In',if(attrec.CnP_PaaS_EVT__CheckIn_Status__c=='Checked-In','Check-Out','Check-In'))}" action="{!CheckMethod}" reRender="siteform" status="mySaveStatus_2"><apex:param id="CheckRecc" name="CheckRecc" value="{!attrec.id}" assignTo="{!AttendeeId}"/><apex:param id="CheckRec1" name="CheckRec1" value="{!IF(attrec.CnP_PaaS_EVT__CheckIn_Status__c==null,'Checked-In',if(attrec.CnP_PaaS_EVT__CheckIn_Status__c=='Checked-In','Checked-Out','Checked-In'))}" assignTo="{!attCheckInStatus}"/></apex:commandbutton>
+                  </apex:facet>
+                  <apex:facet name="start">
+                 <apex:outputPanel >
+
+                 <apex:image value="/img/loading32.gif" style="height: 15px;"/>&nbsp;
+
+                 <apex:commandbutton styleClass="btn btn-primary" value="Saving..." status="mySaveStatus_2" disabled="true"/>
+                 
+               </apex:outputPanel>
+
+           </apex:facet>
+        </apex:actionStatus>&nbsp;&nbsp;
+        <apex:actionStatus id="mySaveStatus_6">
+                  <apex:facet name="stop">
+                  <apex:commandButton styleClass="btn btn-primary" value="Cancel" action="{!closePopup}" status="mySaveStatus_6" rerender="popup"/>
+                  </apex:facet>
+                   <apex:facet name="start">
+                 <apex:outputPanel >
+
+                 <apex:image value="/img/loading32.gif" style="height: 15px;"/>&nbsp;
+
+                 <apex:commandbutton styleClass="btn btn-primary" value="...." status="mySaveStatus_6" disabled="true"/>
+                 
+               </apex:outputPanel>
+
+           </apex:facet>
+        </apex:actionStatus>
+                  </div>
+                  
+            </apex:outputPanel>
+        </apex:outputPanel> 
+ 
+        
+           
+     </div>
+     </div>
+     </div>
+     </div>
+      </apex:pageBlock>
+    </div>
+    </apex:form>
+     
+</apex:page>

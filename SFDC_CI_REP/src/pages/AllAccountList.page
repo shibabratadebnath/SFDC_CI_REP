@@ -1,0 +1,13 @@
+<apex:page standardController="Employee_s__c" extensions="AllAccountList">
+    <apex:form >
+    <apex:pageBlock title="All Accounts">
+    
+    <apex:pageBlockTable title="Page Block Table" value="{!AllAccnt}" var="f" >
+    
+    <apex:column title="{!ID}" value="{!f.Id}"/>
+   
+   
+    </apex:pageBlockTable>
+    </apex:pageBlock> 
+    </apex:form>
+</apex:page>

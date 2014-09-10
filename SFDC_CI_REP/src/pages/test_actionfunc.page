@@ -1,0 +1,18 @@
+<apex:page controller="test_actionfunc">
+<script>
+    function testcall()
+    {
+        alert('asdf');
+        var abc="test";
+        btnval.value=abc;
+    }
+</script>
+<apex:form >
+    <apex:actionFunction action="{!apexfunc}" name="testcall" rerender="view">
+        <apex:param name="myvalue" value=""/>
+    </apex:actionFunction>
+    <apex:commandButton value="Submit" onclick="testcall();"/>
+    <apex:outputText value="{!myvalue}" id="btnval"/>
+</apex:form>
+
+</apex:page>

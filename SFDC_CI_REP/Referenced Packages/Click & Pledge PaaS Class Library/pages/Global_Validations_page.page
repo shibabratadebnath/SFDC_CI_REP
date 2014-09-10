@@ -1,0 +1,25 @@
+<apex:page >
+ <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+        
+  </head>
+  <script>
+  function FormValidation(){
+  var TextBox=$(".TextBox").val();
+  
+  if(TextBox==""){
+  alert("Please enter valid value in textBox");
+   $(".TextBox").focus();
+                  return false;
+  }
+  
+   var FirstName=$(".FirstName").val();
+  if(FirstName==""){
+  alert("Please enter valid value in FirstName");
+   $(".FirstName").focus();
+                  return false;
+  }
+  }
+  </script>
+  
+</apex:page>

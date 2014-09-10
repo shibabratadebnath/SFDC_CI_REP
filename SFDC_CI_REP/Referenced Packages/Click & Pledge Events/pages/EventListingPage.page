@@ -1,0 +1,90 @@
+<apex:page controller="CnP_PaaS_EVT.EventListingPage_class" sidebar="false" showHeader="false" standardStylesheets="false">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__BootstrapFrontend,'BootstrapFrontend/frontend-html/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__BootstrapFrontend,'BootstrapFrontend/frontend-html/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__BootstrapFrontend,'BootstrapFrontend/frontend-html/css/main.css')}"/>
+ 
+
+
+ <script src="{!URLFOR($Resource.BootstrapFrontEnd,'BootstrapFrontend/frontend-html/js/jquery.js')}"></script>
+<script src="https://code.jquery.com/jquery-migrate-1.1.1.min.js"></script> 
+
+<title>Event Listing</title>
+<script>
+$(document).ready( function () {
+
+var numItems = $('.event-block').length;
+
+for(var i=1;i<=numItems;i++){
+$('#event-tabs'+i+' a:first').tab('show');
+    $('#event-tabs'+i+' a').click(function (e) {
+   
+    e.preventDefault();
+    $(this).tab('show');
+    });
+}
+});
+</script>
+
+<apex:outputpanel styleClass="CPEF">
+<!--<apex:outputtex value="{!themecontent[0]}" />-->
+<apex:dynamicComponent componentValue="{!HTMLContent0}"/>
+<apex:form id="eventlistingform" >
+ 
+
+
+<apex:outputpanel styleClass="row-fluid CPEF" id="CP_Ent_Fnt"> 
+  <apex:pageblock >
+    <apex:outputpanel id="Eventlistblock" rendered="{!checkeng}" > 
+        <apex:messages />                              
+      <apex:dataTable value="{!EventlistingJun}" var="event" columns="4" styleClass="table table-bordered table-hover" rendered="{!if(Eventlistvalidation=true,true,false)}">
+       
+                                       <apex:column headerClass="">
+                                            <apex:facet name="header">Event Name</apex:facet>    
+                                            <apex:outputText value="{!event.C_P_Event__r.CnP_PaaS_EVT__Event_title__c}" styleClass="eventname" />                                             
+                                       </apex:column>
+                                       <apex:column styleClass="white_space_nowrap">
+                                            <apex:facet name="header">Start Date</apex:facet>                                              
+                                            <!-- <apex:outputText value="{0,date,M/d/yyyy hh:mm a}">
+                                              <apex:param value="{!event.Start_date_and_time__c}"/>
+                                            </apex:outputText>-->
+                                            <c:Timeformate date_time_value="{!event.C_P_Event__r.CnP_PaaS_EVT__Start_date_and_time__c}"></c:Timeformate>                                           
+                                       </apex:column>
+                                       <apex:column styleClass="white_space_nowrap">
+                                            <apex:facet name="header">End Date</apex:facet>                                           
+                                           <!-- <apex:outputText value="{0,date,M/d/yyyy HH:MM a}">
+                                               <apex:param value="{!event.End_date_and_time__c}"/>
+                                            </apex:outputtext>-->
+                                           
+                                            <c:Timeformate date_time_value="{!event.C_P_Event__r.CnP_PaaS_EVT__End_date_and_time__c}"></c:Timeformate> 
+                                       </apex:column>
+                                       <apex:column styleClass="text_align_center" headerClass="text_align_center white_space_nowrap">
+                                            <apex:facet name="header">View / Register</apex:facet>                                              
+                                            <apex:outputLink value="{!event.C_P_Event__r.CnP_PaaS_EVT__Site_Url__c+'/CnP_PaaS_EVT__ExternalRegistrationPage?event_id='+event.CnP_PaaS_EVT__C_P_Event__c}" target="CnP_PaaS_EVT__ExternalRegistrationPage" styleClass="btn btn-small registerlink" >Register</apex:outputLink>
+                                           
+                                       </apex:column>
+                                  </apex:dataTable>
+                               
+         </apex:outputpanel>
+  
+  </apex:pageblock>
+  </apex:outputpanel>
+  
+  </apex:form>
+  <!--<apex:outputtext value="{!themecontent[1]}" />-->
+  <apex:dynamicComponent componentValue="{!HTMLContent1}"/>
+ <script src="{!URLFOR($Resource.BootstrapFrontEnd,'BootstrapFrontend/frontend-html/js/main.js')}"></script>
+ <script src="{!URLFOR($Resource.BootstrapFrontEnd,'BootstrapFrontend/frontend-html/js/bootstrap-tab.js')}"></script> 
+  </apex:outputpanel>
+  
+  <apex:pageBlock rendered="{!if(checkeng==false,true,false)}">
+<apex:outputpanel id="EventTemplatestyle1" styleClass="CPEF">
+<!--<apex:outputtext value="{!Themedisplaycontent}"  /> -->
+<apex:dynamicComponent componentValue="{!HTMLContent}"/>
+</apex:outputpanel>
+</apex:pageBlock>
+
+</apex:page>

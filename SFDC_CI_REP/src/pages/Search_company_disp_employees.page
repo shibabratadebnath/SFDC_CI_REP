@@ -1,0 +1,15 @@
+<apex:page Controller="Search_company_disp_employees">
+    <apex:form >
+        Enter Company name<apex:inputText value="{!comname}"/>
+        <apex:commandButton value="Submit" action="{!showrecords}"/>
+        <apex:pageblock title="Employee Details">
+            <apex:pageBlockTable value="{!emprec}" var="recs">
+                <apex:column title="Id" value="{!recs.Id}"/>
+                <apex:column title="Name" value="{!recs.Name}"/>
+                <apex:column title="Address" value="{!recs.Address__c}"/>
+                <apex:column title="Company" value="{!recs.Company__c}"/>
+                <apex:column title="Salary" value="{!recs.Salary__c}"/>
+            </apex:pageBlockTable>
+        </apex:pageblock>
+    </apex:form>
+</apex:page>

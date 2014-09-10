@@ -1,0 +1,214 @@
+<apex:page controller="CnP_PaaS.InvoiceSettings" sidebar="false" standardStylesheets="false" showHeader="false" action="{!loadhelpcontent}">
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+ <script type="text/javascript">
+ //jQuery=$.noConflict();
+
+ function calculate()
+ {
+ var condition=0;
+ var counterseed=jQuery.trim(jQuery(".counterseed").val());
+ var counterincrement=jQuery.trim(jQuery(".counterincrement").val());
+ var regcounter = /^([0-9])+$/;
+ var siteurl=jQuery.trim(jQuery(".siteurl").val());
+ var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+ var prefix=jQuery.trim(jQuery(".prefix").val());
+ var regname=/^([A-Za-z0-9\.\,\#\&\-\'\ ])+$/;
+ 
+ if(siteurl == '' || siteurl==null){
+     condition=1;
+     alert("Enter a SiteURL");
+     $(".siteurl").focus();
+     return false;
+ }else if(siteurl !='' && !regexp.test(siteurl)){
+     condition=1;
+     alert("Enter a Valid SiteURL");
+     $(".siteurl").focus();
+     return false;
+ }
+  if(counterseed!='' && isNaN(counterseed))
+  {
+     condition=1;
+           alert("Please Enter integer values only in Counter Seed");
+           jQuery(".counterseed").focus();
+           return false;
+  }
+  if((counterincrement!='' && parseInt(counterincrement)<=0) || (counterincrement!='' && !regcounter.test(counterincrement)))
+  {
+           condition=1;
+           alert("Please Enter Integer values greater than 0 in Counter Increment");
+           jQuery(".counterincrement").focus();
+           return false;
+  }
+ 
+  var prefix_sep1 = $('.prefix_sep1').val();
+  var prefix_sep2 = $('.prefix_sep2').val();
+  var prefix_sep3 = $('.prefix_sep3').val();
+  var prefix_sep4 = $('.prefix_sep4').val();
+  if(prefix=='' && prefix_sep1=='' && prefix_sep2=='' && prefix_sep3=='' && prefix_sep4=='' ){
+      condition=1;
+      alert("Please select at least on the Invoice Numbering Format");
+      $(".prefix").focus();
+      return false;
+  }
+  if(prefix_sep2!='Counter' && prefix_sep4!='Counter'){
+       condition=1;
+       alert("Please select at least one Counter value at Invoice Numbering Format");
+       $('.prefix_sep2').focus();
+       return false;
+  }
+  if(prefix!='' && !regname.test(prefix)){
+       condition=1;
+      alert("Enter a Valid Name");
+      $(".prefix").focus();
+      return false;  
+  }
+  if(condition == 0)
+  {
+    $("#light").attr('style','display:block');
+    $("#fade").attr('style','display:block');
+    return true;
+  }
+ else
+  {
+    return false;
+  }
+ }
+ function changedtohttps(url)
+{
+     //var Edition= $(".Edition").text();
+        
+     url_1 = /^(((ht){1}(tp:[/][/]){1})|((www.){1}))[-a-zA-Z0-9@:%_\+.~#?&//=]+$/;
+     if(url!="")
+     {
+            if(url.match(url_1))
+            {
+                var re_place = url.replace('http:','https:'); 
+               //if(Edition=='Enterprise Edition'){
+                   var re_place=re_place.replace('force.com','secure.force.com');                 
+               //}                  
+                $(".siteurl").attr('value',re_place);
+            }
+     }
+}
+ </script>
+  <script>
+function popitup(url) {    
+    newwindow=window.open(url,'name','height=400,width=350,scrollbars=yes');
+    if (window.focus) {newwindow.focus()}
+    return false;
+}
+</script>
+
+  <apex:form >
+     <!-------------help text content ------->
+ <div width="100%">
+    <div style="float:right">
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['Invoice']['Invoice Setting'].display=='true'}">  
+            <Apex:outputLabel value="C&P Help for this Page" style="margin-right:8Px;float:left;" onmouseover="jQuery('[id$=Foo]').css('display','block');"/>      
+            <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo]').css('display','block');" />                    
+      </apex:outputLink>
+      <apex:outputPanel id="Foo" styleClass="video"  >   
+        <ul style="padding-left:4px;" > {!subTab['Invoice']['Invoice Setting'].description} <br/> <br/>
+             <Apex:outputPanel rendered="{!subTab['Invoice']['Invoice Setting'].ActiveLink=='true'}">
+               <li><a href="{!subTab['Invoice']['Invoice Setting'].link}" target="_blank" >{!subTab['Invoice']['Invoice Setting'].strlink}</a> <br/></li></Apex:outputPanel>
+             <Apex:outputPanel rendered="{!subTab['Invoice']['Invoice Setting'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['Invoice']['Invoice Setting'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Invoice']['Invoice Setting'].strVideo}</a></li></Apex:outputPanel>
+        </ul>
+      </apex:outputPanel>
+     </div>
+    </div>
+    <!-------------help text content ------->
+    <apex:pageBlock mode="maindetail">
+    
+    <div class="row-fluid">
+    
+ 
+    
+         <div class="btn-block pagination-centered">
+             <apex:commandButton value="Update Invoice Settings" action="{!SaveSetting}" styleClass="btn btn-primary" onclick="if(!calculate()){return false;}" rerender="settingbox,numbering"/> 
+         </div>
+    
+        <apex:outputPanel id="settingbox">
+        <apex:pageMessages />
+        <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Site URL</h5>
+              </div>
+              <div class="widget-content">               
+
+               <apex:pageblockSection columns="1" collapsible="false">
+               
+                  <apex:pageblockSectionItem >
+                    <apex:outputLabel value="Invoice Base-Site URL" ></apex:outputLabel>
+                     <apex:outputPanel styleClass="requiredInput" layout="block">
+                      <apex:outputpanel styleClass="requiredBlock" layout="block"/>
+                          <!--<apex:outputText value="{!SalesforceEdition}" styleClass="Edition" style="display:none"></apex:outputText>  version 8.3053 -->
+                          <apex:inputtext value="{!Settings.CnP_PaaS__SiteUrl__c}" size="100" styleclass="siteurl" style="width:335px;" onblur="changedtohttps(this.value);"/>
+                          <a href="javascript:void(0);" onclick="return popitup('../0DM/o?setupid=CustomDomain&retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DDevToolsIntegrate')" style="margin-left:5px" class="btn"><apex:outputText value="Get the Site URL"></apex:outputText></a> 
+                          <!--<br/><apex:outputlabel value="e.g. https://yourdomain.SECURE.FORCE.COM/pagename" />      version 8.3053 -->     
+                          <apex:outputlabel value="[For Developer or Sandbox edition please remove .secure from the URL ]" /> 
+                      </apex:outputpanel> 
+                        
+                  </apex:pageblockSectionItem>     
+               </apex:pageblockSection>    
+               
+               </div><!-- widget-content -->
+           </div><!-- widget-box -->
+               
+           <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Invoice Numbering</h5>
+              </div>
+              <div class="widget-content">
+
+               <apex:pageblocksection columns="1" collapsible="false" id="numbering">
+                  <apex:pageblocksectionItem >         
+                    <apex:outputlabel value="Date Format"/>  
+                       <Apex:selectlist value="{!settings.CnP_PaaS__Date_Format__c}" size="1" style="width:120px;">
+                           <Apex:selectoptions value="{!datevalues}"></Apex:selectoptions>
+                       </Apex:selectlist> 
+                  </apex:pageblocksectionItem>       
+                  <apex:pageBlockSectionItem >
+                     <Apex:outputLabel value="Starting Number"></Apex:outputLabel>
+                     <apex:inputtext value="{!Settings.CnP_PaaS__Counter__c}" maxlength="8" styleclass="counterseed" disabled="{!counterstartingnumber}"/>
+                  </apex:pageBlockSectionItem>
+                  <apex:pageblockSectionItem >
+                     <apex:outputlabel value="Counter Increment"></apex:outputlabel>    
+                     <Apex:inputText value="{!Settings.CnP_PaaS__Incrementer__c}" styleclass="counterincrement" maxlength="3"/>
+                  </apex:pageblockSectionItem>                  
+                  <apex:pageblockSectionItem >                            
+                          <apex:outputlabel value="Invoice Numbering Format:" /> 
+                          <apex:outputPanel styleClass="requiredInput" layout="block">
+                          <apex:outputpanel styleClass="requiredBlock" layout="block"/>    
+                          <apex:inputtext value="{!settings.CnP_PaaS__Prefix__c}" size="7" styleclass="prefix" maxlength="60"/>  &nbsp; &nbsp;           
+                          <apex:inputhidden value="{!settings.CnP_PaaS__Counter_hidden__c}"/>
+                          <apex:selectlist value="{!settings.CnP_PaaS__Seperator__c}" size="1" styleclass="prefix_sep1" style="Width:100px">
+                          <apex:selectoptions value="{!seperateval}"> </apex:selectoptions>
+                          </apex:selectlist> &nbsp; &nbsp;
+                          <apex:selectlist value="{!settings.CnP_PaaS__DateValue__c}" size="1" styleclass="prefix_sep2" style="Width:100px">
+                          <apex:selectoptions value="{!dataval}"> </apex:selectoptions>
+                          </apex:selectlist> &nbsp; &nbsp;
+                          <apex:selectlist value="{!settings.CnP_PaaS__Seperator1__c}" size="1" styleclass="prefix_sep3" style="Width:75px">
+                          <apex:selectoptions value="{!seperateval}"> </apex:selectoptions>
+                          </apex:selectlist> &nbsp; &nbsp;
+                          <apex:selectlist value="{!settings.CnP_PaaS__DateValue1__c}" size="1" styleclass="prefix_sep4" style="Width:100px">
+                          <apex:selectoptions value="{!Dataval}"> </apex:selectoptions>
+                          </apex:selectlist> &nbsp; &nbsp;            
+                          </apex:outputPanel> 
+                  </apex:pageblockSectionItem>
+              </apex:pageblocksection>
+      
+           </div><!-- widget-content -->
+           </div><!-- widget-box -->
+          </apex:outputPanel> 
+         <div class="btn-block pagination-centered">
+             <apex:commandButton value="Update Invoice Settings" action="{!SaveSetting}" styleClass="btn btn-primary" onclick="if(!calculate()){return false;}"/> 
+         </div>           
+           
+      </div><!-- row-fluid -->
+      
+      
+    </apex:pageBlock>
+  </apex:form>
+  
+</apex:page>

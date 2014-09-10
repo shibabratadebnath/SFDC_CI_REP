@@ -1,0 +1,156 @@
+<apex:page controller="CnP_PaaS_EVT.UpcomingEvent_class" showHeader="false" sidebar="false" >
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+<!--<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap-responsive.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/main.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/grey.css"/>-->
+
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.dataTables.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/excanvas.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.ui.custom.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/bootstrap.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.flot.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.flot.resize.min.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.peity.min.js')}"/>
+<!-- <apex:includeScript value="{!URLFOR($Resource.bootstrap,'admin/js/main.js')}"/> -->
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/main.dashboard.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/scriptbreaker-multiple-accordion-1.js')}"/>
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/Column.js')}"/>
+<style>
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+
+.apexp .bPageBlock.apexDefaultPageBlock .pbBody {
+margin: 0px;
+background-color:#eee;
+}
+</style>
+
+<script>
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+</script>
+<apex:form >
+<apex:pageBlock >
+  
+  
+  <div id="content-header">
+    <h1><i class="icon icon-home"></i>Upcoming Events</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"> <!-- <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a>-->
+       <apex:outputLink styleClass="helpLink" rendered="{!subTab['Upcoming Events']['Upcoming Events'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Upcoming Events']['Upcoming Events'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Upcoming Events']['Upcoming Events'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Upcoming Events']['Upcoming Events'].link}" target="_blank" >{!subTab['Upcoming Events']['Upcoming Events'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Upcoming Events']['Upcoming Events'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Upcoming Events']['Upcoming Events'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Upcoming Events']['Upcoming Events'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel>  
+    </div>
+  </div>
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="current">Upcoming Events</a> </div>
+  
+  <div class="container-fluid">
+   
+    <div class="row-fluid">
+         <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__DataTables,'js/jquery.dataTables.js')}"/>
+        
+       <div class="span12">
+          
+          <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Upcoming  Events</h5>
+          </div>
+          <div class="widget-content">
+            
+              <table class="">
+            <tr>
+           
+              <apex:pageBlockTable value="{!eventlist}" var="eve" width="100%" id="Eventslist" styleClass="Eventslist" >
+                    <apex:column headerValue="Event Name(Internal)" styleClass="vert_align_top">
+                  <apex:outputField value="{!eve.Name}"/>
+                 
+                  </apex:column>
+                  <!-- <apex:column value="{!eve.Event_title__c}" styleClass="vert_align_top"/> -->
+                  <apex:column headerValue="Starts On" style="white-space:nowrap;" styleClass="vert_align_top"> 
+                  <apex:outputField value="{!eve.CnP_PaaS_EVT__Start_date_and_time__c}"/>
+                 
+                  </apex:column>
+                  
+                   <apex:column headerValue="Ends On" style="white-space:nowrap;" styleClass="vert_align_top">
+                   <apex:outputField value="{!eve.CnP_PaaS_EVT__End_date_and_time__c}"/>
+                  
+                  </apex:column>
+                 
+                  <apex:column headerValue="Publish On" style="white-space:nowrap;" styleClass="vert_align_top">
+                  <apex:outputField value="{!eve.CnP_PaaS_EVT__Publish_date__c}"/>
+                  
+                   
+                  </apex:column>
+                  
+                  <apex:column headerValue="Event Site" styleClass="vert_align_top">
+                  <apex:outputField value="{!eve.CnP_PaaS_EVT__Event_Site_2v__c}"  />
+                
+                  
+                  </apex:column>
+               </apex:pageBlockTable>
+               
+             <script type="text/javascript">
+            $(document).ready(function() {          
+
+                oTable = $('.Eventslist').dataTable({
+                    "bJQueryUI": true,                  
+                    aoColumnDefs: [
+                     { "bSortable": false, "aTargets": [ 1,2,3,4]}]                        
+                }
+                             
+                );
+               
+            } );
+            </script>
+           
+      
+            </tr>
+            </table>
+          </div>
+          </div>
+             
+       </div>       
+    </div>
+    </div>
+    </apex:pageBlock>
+</apex:form>
+ 
+</apex:page>

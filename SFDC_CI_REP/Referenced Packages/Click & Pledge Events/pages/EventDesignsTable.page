@@ -1,0 +1,528 @@
+<apex:page Controller="CnP_PaaS_EVT.EventsDesigner" sidebar="false" showHeader="false" standardStylesheets="false">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+<!--<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap-responsive.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/main.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/grey.css"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+
+<style>
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+
+.Required{
+color: #CC0000;
+}
+
+.ui-state-active{
+
+border: 1px solid #fbd850;
+    background: #ffffff;
+    font-weight: bold;
+    
+    color: red;
+
+}
+</style>
+
+
+<script>
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+
+
+function confirmdelete()
+    {
+         if(confirm("Are you sure you want to permanently delete this record?"))
+         {
+             return true;
+         }else{
+             return false;
+         }
+    }
+function checkvalidate()
+{
+   
+
+   var NumberIncrement =$(".TicketnoIncrement").val();
+  
+ if(NumberIncrement==0 || NumberIncrement=="") 
+ {
+    alert("Number increment should be greater than zero");
+    $(".TicketnoIncrement").focus();
+    return false;
+ }
+ 
+  var Ticketsubject=$(".TicketSubject").val();
+ Ticketsubject=Ticketsubject.trim();
+     
+     if(Ticketsubject==""){
+         alert("Ticket email subject should not be empty");
+         $(".TicketSubject").focus();
+      return false;
+     } else if(Ticketsubject!="" && Ticketsubject!=undefined && !Ticketsubject.indexOf(' ',0)){
+          alert("Ticket email subject should not be empty");
+          $(".TicketSubject").focus();
+          return false;
+     }
+     
+     var TicketEmail=$(".TicketReply").val();
+     TicketEmail=TicketEmail.trim();
+     var regEmail = /^([A-Za-z0-9_\-\.\+])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+     
+     if(TicketEmail==""){
+     alert("Ticket email reply to should a valid email");
+     $(".TicketReply").focus();
+     return false;
+     }else if(TicketEmail!=undefined && regEmail.test(TicketEmail)==false){
+         alert("Ticket email reply to should a valid email");
+         $(".TicketReply").focus();
+         return false;
+     }
+     
+     var TicketFromName=$(".TicketFromName").val();
+     TicketFromName=TicketFromName.trim();
+     if(TicketFromName==""){
+     alert("Ticket email from name should not be empty");
+      $(".TicketFromName").focus();
+      return false;
+     } else if(TicketFromName!=undefined && !TicketFromName.indexOf(' ',0) ){
+         alert("Ticket email from name should not be empty");
+          $(".TicketFromName").focus();
+          return false;
+     }
+     
+     
+  var Namebsubject=$(".namebadgeSubject").val();
+ Namebsubject=Namebsubject.trim();
+     
+     if(Namebsubject==""){
+         alert("Name badge subject should not be empty");
+         $(".namebadgeSubject").focus();
+      return false;
+     } else if(Namebsubject!="" && Namebsubject!=undefined && !Namebsubject.indexOf(' ',0)){
+          alert("Name badge subject should not be empty");
+          $(".namebadgeSubject").focus();
+          return false;
+     }
+     
+     var NamebEmail=$(".namebadgeReply").val();
+      NamebEmail=NamebEmail.trim();
+     var regEmail = /^([A-Za-z0-9_\-\.\+])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+     
+     if(NamebEmail==""){
+     alert("Name badge email reply to should a valid email");
+     $(".namebadgeReply").focus();
+     return false;
+     }else if(NamebEmail!=undefined && regEmail.test(NamebEmail)==false){
+         alert("Name badge reply to should a valid email");
+         $(".namebadgeReply").focus();
+         return false;
+     }
+     
+     var NamebFromName=$(".namebadgeFromName").val();
+     NamebFromName=NamebFromName.trim();
+     if(NamebFromName==""){
+     alert("Name badge email from name should not be empty");
+      $(".namebadgeFromName").focus();
+      return false;
+     } else if(NamebFromName!=undefined && !NamebFromName.indexOf(' ',0) ){
+         alert("Name badge email from name should not be empty");
+          $(".namebadgeFromName").focus();
+          return false;
+     }
+     
+
+}
+</script>
+<apex:form id="siteform">
+<div id="content-header">
+    <h1><i class="icon icon-tasks"></i> {!TableName}</h1>
+    
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"> <!-- <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a>-->
+        
+       <apex:outputLink styleClass="helpLink"  rendered="{!if(subTab['Active Events']['Sites'].display=='true' && ObjectType=='Sites' ,true,false)}"> 
+                       
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');"   >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  rendered="{!if(ObjectType=='Sites',true,false)}" >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Sites'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Sites'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Sites'].link}" target="_blank" >{!subTab['Active Events']['Sites'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Sites'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Sites'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Sites'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel> 
+                      
+        <apex:outputLink styleClass="helpLink"  rendered="{!if(subTab['Active Events']['Tickets'].display=='true' && ObjectType=='Tickets' ,true,false)}"> 
+                         
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo01]').css('display','block');"   >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo01" styleClass="video"  rendered="{!if(ObjectType=='Tickets',true,false)}" >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Tickets'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Tickets'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Tickets'].link}" target="_blank" >{!subTab['Active Events']['Tickets'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Tickets'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Tickets'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Tickets'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel> 
+                      
+           <apex:outputLink styleClass="helpLink"  rendered="{!if(subTab['Active Events']['Name Badges'].display=='true' && ObjectType=='NameBadges' ,true,false)}"> 
+                         
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo02]').css('display','block');"   >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo02" styleClass="video"  rendered="{!if(ObjectType=='NameBadges',true,false)}" >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Name Badges'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Name Badges'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Name Badges'].link}" target="_blank" >{!subTab['Active Events']['Name Badges'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Name Badges'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Name Badges'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Name Badges'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel>                            
+                      
+            <apex:outputLink styleClass="helpLink"  rendered="{!if(subTab['Event Listings']['Event Listings'].display=='true' && ObjectType=='EventListings' ,true,false)}"> 
+                         
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo03]').css('display','block');"   >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo03" styleClass="video"  rendered="{!if(ObjectType=='EventListings',true,false)}" >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Event Listings']['Event Listings'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Event Listings']['Event Listings'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Event Listings']['Event Listings'].link}" target="_blank" >{!subTab['Event Listings']['Event Listings'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Event Listings']['Event Listings'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Event Listings']['Event Listings'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Event Listings']['Event Listings'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel>            
+    
+    </div>
+  </div>
+    
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="current"> {!TableName}</a> </div>
+ <apex:outputpanel rendered="{!IF(EventId!=null,true,false)}">
+ <div class="eventdatebar">
+        <i class="icon-time"></i>&nbsp;&nbsp;
+        <span class="popover-startdate">Event:</span>
+        <span><strong>{!EventTemplate.Name} &nbsp;&nbsp;</strong></span>    
+        <span class="popover-startdate">Start Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Start_date_and_time__c}" /> &nbsp;&nbsp;</strong></span>                                   
+        <span class="popover-endson">End Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Start_date_and_time__c}" /> &nbsp;&nbsp;</strong></span>                             
+        <span class="popover-endson">Publish Date:</span>
+        <span><strong><apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Publish_date__c}" /></strong></span>                          
+    </div>
+    </apex:outputpanel>
+  
+<div id="frame-content" class="container-fluid"> 
+
+
+ <apex:pageBlock >
+ 
+  <div class="btn-block pagination-centered">
+  <apex:commandButton value="New" styleClass="btn btn-primary" action="{!newdesignrecord}"/>
+  </div>
+ 
+ <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5> {!TableName}</h5>
+            
+          </div>
+          <div class="widget-content">
+          
+ 
+
+ <!-- {!TempObjectType} -->
+ <apex:pageBlockTable value="{!EventsTicketTable}" var="f" styleClass="table table-bordered table-striped" id="DeleteRec" rendered="{!if(TableName!='Event Listings',true,false)}" >
+ 
+ <apex:column headerValue="Action" style="width:5%">
+ <a href="/apex/EventsDesigner?design=true&id={!f.id}&ObjType={!TempObjectType}&EventId={!TempEventId}" target="EventsIframe" class="icon-edit"></a> &nbsp; <apex:commandButton styleClass="icon-trash btn_none"  action="{!deletedesignrecord}"  onclick="if(!window.confirm('Are you sure you want to permanently delete this record?')) return false;" reRender="DeleteRec"><apex:param id="deletedesign" name="deletedesign" value="{!f.id}" assignTo="{!deletedesignid}"/></apex:commandButton></apex:column>
+<!-- <apex:column headerValue="Testing"><apex:outputText value="/apex/EventsDesigner?design=true&id={!f.id}&ObjType={!TempObjectType}&EventId={!TempEventId}"></apex:outputText></apex:column>-->
+ <!--<apex:column headerValue="Delete">
+ <apex:commandButton styleClass="icon-trash"  action="{!deletedesignrecord}"  onclick="if(!window.confirm('Are you sure?')) return false;" reRender="DeleteRec"><apex:param id="deletedesign" name="deletedesign" value="{!f.id}" assignTo="{!deletedesignid}"/></apex:commandButton></apex:column>-->
+ <!--<apex:column headerValue="Action"><apex:commandlink value="Edit" action="{!EditDesignRecord}"></apex:commandlink></apex:column>-->
+ <apex:column headerValue="C&P Template Name"><a href="/apex/EventsDesignerView?id={!f.id}&ObjType={!TempObjectType}&EventId={!TempEventId}" target="EventsIframe"><apex:outputText value="{!f.name}"></apex:outputText><apex:outputlabel value="(Selected)" rendered="{!IF(f.id==eventtemplate.CnP_PaaS_EVT__Select_Template__c,true,false)}"/></a></apex:column>
+ <apex:column headerValue="Library"><apex:outputText value="{!f.CnP_PaaS__Library__c}"></apex:outputText></apex:column>
+ <apex:column headerValue="Template Category"><apex:outputText value="{!f.CnP_PaaS__Select_Template_Cat__c}"></apex:outputText></apex:column>
+ <apex:column headerValue="Select Layout"><apex:outputText value="{!f.CnP_PaaS__Select_Layout__c}"></apex:outputText></apex:column>
+ 
+ </apex:pageBlockTable>
+ 
+  <apex:pageBlockTable value="{!EventListingsTable}" var="el" styleClass="table table-bordered table-striped" id="Eventlistingtable" rendered="{!if(TableName=='Event Listings',true,false)}" >
+ <apex:column headerValue="Action" style="width:5%">
+ <a href="/apex/EventsDesigner?design=true&id={!el.C_P_Designer__r.id}&ObjType={!TempObjectType}&Eventlistid={!el.id}&&EventId=test" target="EventsIframe" class="icon-edit"></a> &nbsp; <apex:commandButton styleClass="icon-trash btn_none"  action="{!deletedesignrecord}"  onclick="if(!window.confirm('Are you sure you want to permanently delete this record?')) return false;" reRender="Eventlistingtable">
+ <apex:param id="deletedesign" name="deletedesign" value="{!el.C_P_Designer__r.id}" assignTo="{!deletedesignid}"/>
+ <apex:param id="deleteeventlist" name="deleteeventlist" value="{!el.id}" assignTo="{!deleteeventlistid}"/>
+ </apex:commandButton></apex:column>
+<!-- <apex:column headerValue="Testing"><apex:outputText value="/apex/EventsDesigner?design=true&id={!f.id}&ObjType={!TempObjectType}&EventId={!TempEventId}"></apex:outputText></apex:column>-->
+ <!--<apex:column headerValue="Delete">
+ <apex:commandButton styleClass="icon-trash"  action="{!deletedesignrecord}"  onclick="if(!window.confirm('Are you sure?')) return false;" reRender="DeleteRec"><apex:param id="deletedesign" name="deletedesign" value="{!f.id}" assignTo="{!deletedesignid}"/></apex:commandButton></apex:column>-->
+ <!--<apex:column headerValue="Action"><apex:commandlink value="Edit" action="{!EditDesignRecord}"></apex:commandlink></apex:column>-->
+ <apex:column headerValue="C&P Template Name"><a href="/apex/EventsDesignerView?id={!el.C_P_Designer__r.id}&ObjType={!TempObjectType}&EventId={!TempEventId}&Eventlistid={!el.id}" target="EventsIframe"><apex:outputText value="{!el.C_P_Designer__r.name}"></apex:outputText></a></apex:column>
+ <apex:column headerValue="Library"><apex:outputText value="{!el.C_P_Designer__r.CnP_PaaS__Library__c}"></apex:outputText></apex:column>
+ <apex:column headerValue="Template Category"><apex:outputText value="{!el.C_P_Designer__r.CnP_PaaS__Select_Template_Cat__c}"></apex:outputText></apex:column>
+ <apex:column headerValue="Select Layout"><apex:outputText value="{!el.C_P_Designer__r.CnP_PaaS__Select_Layout__c}"></apex:outputText></apex:column>
+ <apex:column headerValue="Site"><apex:outputlink value="{!el.CnP_PaaS_EVT__Public_site__c}/CnP_PaaS_EVT__EventListingPage?elid={!el.id}" target="CnP_PaaS_EVT__EventListingPage">View</apex:outputlink></apex:column>
+ </apex:pageBlockTable>
+ 
+
+
+</div>
+</div>
+</div>
+</div>
+
+
+<div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+        <apex:outputpanel rendered="{!IF(SelectTableName!='Event Listing Details',true,false)}">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>{!SelectTableName}</h5>
+            
+          </div>
+          </apex:outputpanel>
+          <div class="widget-content">
+
+
+    
+ <apex:outputpanel rendered="{!if(TempObjectType=='Sites',true,false)}" >
+ <div class="pagination-centered">
+ 
+ <apex:outputlabel value="Select template for this Event:" style="display:inline;font-weight:bold;" />&nbsp;&nbsp;  
+ <apex:selectList value="{!EventTemplate.CnP_PaaS_EVT__Select_Template__c}" size="1">
+ <apex:selectOptions value="{!selectEventTemplate}"/>
+ </apex:selectList>&nbsp;&nbsp;
+ <apex:commandButton value="Save" action="{!SaveTemplateorTicket}" styleClass="btn btn-primary" /> &nbsp;&nbsp;
+ 
+ <apex:outputpanel rendered="{!if(EventTemplate.CnP_PaaS_EVT__Select_Template__c!=null || EventTemplate.CnP_PaaS_EVT__Select_Template__c!='',true,false)}">
+  
+               
+                &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!EventTemplate.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+  </apex:outputpanel>  
+ </div>
+             
+ </apex:outputpanel>
+ 
+ <apex:pageblockSection rendered="{!if(TempObjectType=='Tickets',true,false)}" columns="1">
+ <apex:pageblockSectionItem >
+ 
+ <apex:outputlabel >Ticket Start Number </apex:outputlabel>
+ <apex:outputpanel >
+ <apex:inputtext value="{!EventTemplate.CnP_PaaS_EVT__Ticket_Start_Number__c}" size="6" id="Ticketstartno" maxlength="6" onkeyup="javascript:this.value=this.value.replace(/[^0-9]/g, '');"/>
+ Max = 999999
+ </apex:outputpanel>
+ </apex:pageblockSectionItem>
+ <apex:pageblockSectionItem >
+ <apex:outputlabel >Number Increment </apex:outputlabel>
+ <apex:outputpanel >
+ <apex:inputtext value="{!EventTemplate.CnP_PaaS_EVT__Ticket_Increment_Number__c}" size="3" id="TicketnoIncrement" styleclass="TicketnoIncrement" maxlength="3" onkeyup="javascript:this.value=this.value.replace(/[^0-9]/g, '');"/>
+ Max = 999</apex:outputpanel>
+ </apex:pageblockSectionItem>
+ <apex:pageblocksectionItem >
+ <apex:outputLabel ></apex:outputLabel>
+ <apex:outputPanel >
+ <table class="list table table-bordered table-striped">
+ <tr><th>Level Name</th>
+ <th>Select Ticket</th>
+ <th>Ticket Number Prefix </th>
+ <th>Send Tickets </th>
+ </tr>
+ <!--<tr>
+ <td><apex:outputLabel >Payee</apex:outputLabel></td>
+  <td><apex:selectList value="{!EventTemplate.SelectTicket__c}" size="1">
+ <apex:selectOptions value="{!selectEventTemplate}"/>
+ </apex:selectList></td>
+ <td><apex:inputtext value="{!EventTemplate.Ticket_Number_Prefix__c }" maxlength="10"  id="TicketnoPrefix" onkeyup="javascript:this.value=this.value.replace(/[^a-zA-Z0-9]/g, '');" style="width:100px;"/> Max characters = 6 </td>
+ 
+ </tr>-->
+ <apex:repeat value="{!Registrationleveldetails}" var="selTic">
+  <tr>
+ <td><apex:outputLabel >{!selTic.Name}</apex:outputLabel></td>
+  <td><apex:selectList value="{!selTic.CnP_PaaS_EVT__Select_Ticket__c}" size="1">
+ <apex:selectOptions value="{!selectEventTemplate}"/>
+ </apex:selectList></td>
+ <td><apex:inputtext value="{!selTic.CnP_PaaS_EVT__Ticket_Number_Prefix__c}" maxlength="10"  onkeyup="javascript:this.value=this.value.replace(/[^a-zA-Z0-9:()-]/g, '');" style="width:100px;"  /></td>
+ <td><apex:inputfield value="{!selTic.CnP_PaaS_EVT__Send_Tickets__c}" />
+ <!--<input type="checkbox" name="{!selTic.CnP_PaaS_EVT__Send_Tickets__c}" value="{!selTic.CnP_PaaS_EVT__Send_Tickets__c}" ></input>-->
+ </td>
+ </tr>
+
+ </apex:repeat>
+ </table> 
+ </apex:outputPanel> 
+
+ </apex:pageblocksectionItem>
+ <apex:pageblockSectionItem >
+<apex:outputlabel >Ticket Email Subject<span class="Required">*</span></apex:outputlabel>
+
+<apex:inputText value="{!EventTemplate.CnP_PaaS_EVT__Ticket_Email_Subject__c}" id="TicketSubject" styleClass="TicketSubject"/>
+
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem >
+<apex:outputlabel >Ticket Email Reply To<span class="Required">*</span></apex:outputlabel>
+
+<apex:inputText value="{!EventTemplate.CnP_PaaS_EVT__Ticket_email_ReplyTo__c}" id="TicketReply" styleClass="TicketReply"/>
+
+</apex:pageblockSectionItem>
+<apex:pageblockSectionItem >
+<apex:outputlabel >Ticket Email From Name<span class="Required">*</span></apex:outputlabel>
+
+<apex:inputText value="{!EventTemplate.CnP_PaaS_EVT__Ticket_email_fromname__c}" id="TicketFromName" styleClass="TicketFromName"/>
+
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem >
+<apex:outputlabel >Ticket Email Body</apex:outputlabel>
+
+<apex:inputTextarea value="{!EventTemplate.CnP_PaaS_EVT__Ticket_Email_Body__c}" id="TicketBody" styleClass="TicketBody"/>
+
+</apex:pageblockSectionItem>
+ <!--<apex:repeat value="{!Registrationleveldetails}" var="selTic">
+ <apex:pageblockSectionItem >
+ <apex:outputLabel >{!selTic.Name}</apex:outputLabel>
+ <apex:outputpanel >
+ <apex:selectList value="{!selTic.SelectTicket__c}" size="1">
+ <apex:selectOptions value="{!selectEventTemplate}"/>
+ </apex:selectList>
+ </apex:outputpanel>
+ </apex:pageblockSectionItem>
+ </apex:repeat> -->
+
+ </apex:pageblockSection>
+ <apex:pageblockSection rendered="{!if(TempObjectType=='NameBadges',true,false)}" columns="1">
+ 
+ 
+ <apex:pageblocksectionItem >
+ <apex:outputLabel ></apex:outputLabel>
+ <apex:outputPanel >
+ <table class="list table table-bordered table-striped">
+ <tr><th>Level Name</th>
+ <th>Select Name Badge</th>
+ <th>Send Name Badges</th>
+ </tr>
+
+ <apex:repeat value="{!Registrationleveldetails}" var="selTic">
+  <tr>
+ <td><apex:outputLabel >{!selTic.Name}</apex:outputLabel></td>
+  <td><apex:selectList value="{!selTic.CnP_PaaS_EVT__Select_NameBadge__c}" size="1">
+ <apex:selectOptions value="{!selectEventTemplate}"/>
+ </apex:selectList></td>
+ <td><apex:inputfield value="{!selTic.CnP_PaaS_EVT__Send_NameBadges__c}" /></td>
+ </tr>
+
+ </apex:repeat>
+ </table> 
+ </apex:outputPanel> 
+
+ </apex:pageblocksectionItem>
+ <apex:pageblockSectionItem >
+<apex:outputlabel >Name Badge Email Subject<span class="Required">*</span></apex:outputlabel>
+
+<apex:inputText value="{!EventTemplate.CnP_PaaS_EVT__name_Badge_Email_Subject__c}" id="namebadgeSubject" styleClass="namebadgeSubject"/>
+
+</apex:pageblockSectionItem>
+
+<apex:pageblockSectionItem >
+<apex:outputlabel >Name Badge Email Reply To<span class="Required">*</span></apex:outputlabel>
+
+<apex:inputText value="{!EventTemplate.CnP_PaaS_EVT__Name_Badge_Email_ReplyTo__c}" id="namebadgeReply" styleClass="namebadgeReply"/>
+
+</apex:pageblockSectionItem>
+<apex:pageblockSectionItem >
+<apex:outputlabel >Name Badge Email From Name<span class="Required">*</span></apex:outputlabel>
+
+<apex:inputText value="{!EventTemplate.CnP_PaaS_EVT__Name_Badge_Email_FromName__c}" id="namebadgeFromName" styleClass="namebadgeFromName"/>
+
+</apex:pageblockSectionItem>
+ 
+ <apex:pageblockSectionItem >
+ <apex:outputlabel >Name Badge Email Body</apex:outputlabel>
+
+<apex:inputTextarea value="{!EventTemplate.CnP_PaaS_EVT__NameBadge_Email_Body__c}" id="NameBadgeBody" styleClass="NameBadgeBody"/>
+
+
+</apex:pageblockSectionItem>
+ </apex:pageblockSection>
+ 
+ 
+ 
+ <apex:outputPanel rendered="{!if(TempObjectType=='Tickets' || TempObjectType=='NameBadges',true,false)}">
+ <div class="btn-block pagination-centered">
+ <apex:commandButton value="Save" action="{!SaveTemplateorTicket}" styleClass="btn btn-primary" onclick="return checkvalidate();" />
+ </div>
+ </apex:outputPanel>
+
+</div>
+</div>
+</div>
+</div>
+
+
+<script type="text/javascript">
+              CKEDITOR.replace($(".TicketBody").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}}); 
+             CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+              CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+              CKEDITOR.config.contentsCss= ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+              CKEDITOR.config.language = 'en-us';  
+              CKEDITOR.config.customConfig = '{!$Resource.CnP_PaaS__ckconfig}';
+              CKEDITOR.config.toolbar='Custome';
+ 
+            </script>
+            <script type="text/javascript">
+             
+              CKEDITOR.replace($(".NameBadgeBody").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}});              
+              CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+              CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+              CKEDITOR.config.contentsCss= ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+              CKEDITOR.config.language = 'en-us';  
+              CKEDITOR.config.customConfig = '{!$Resource.CnP_PaaS__ckconfig}';
+              CKEDITOR.config.toolbar='Custome';
+ 
+            </script>
+</apex:pageBlock> 
+ 
+</div>
+</apex:form>
+</apex:page>

@@ -1,0 +1,31 @@
+<apex:page controller="CnP_PaaS_EVT.TempFindContacts">
+ <apex:form ><b>Need to run this page if the PAAS settings are Fully automatic mode.Other wise it will create dup temporary contacts.</b>
+ <apex:pageBlock >
+ <apex:pageBlockSection columns="1">
+ <apex:pageBlockSectionItem >
+ <apex:outputLabel value="Registrant ID"> </apex:outputLabel>
+ <apex:inputText value="{!regid}"/>
+ </apex:pageBlockSectionItem>
+ <apex:pageBlockSectionItem >
+ <apex:outputLabel value="C&P Data XML ID"> </apex:outputLabel>
+ <apex:inputText value="{!DataXMLId}"/>
+ </apex:pageBlockSectionItem>
+ <apex:pageBlockSectionItem >
+ <apex:outputLabel value="PaaS Setting for contact"> </apex:outputLabel>
+ <apex:inputText value="{!ContactOptionSelected}" disabled="true"/>
+ </apex:pageBlockSectionItem>
+ <apex:pageBlockSectionItem >
+ <apex:outputLabel value="Event ID"> </apex:outputLabel>
+ <apex:inputText value="{!EventId}"/>
+ </apex:pageBlockSectionItem>
+ <apex:pageBlockSectionItem >
+ <apex:outputLabel value="Registrant Status"> </apex:outputLabel>
+ <apex:inputText value="{!Status}"/>
+ </apex:pageBlockSectionItem>
+ <apex:pageBlockSectionItem >
+ <apex:commandButton value="Run Contacts" action="{!RunContactsTrigger}"/>
+ </apex:pageBlockSectionItem>
+ </apex:pageBlockSection>
+ </apex:pageBlock>
+ </apex:form>
+</apex:page>

@@ -1,0 +1,6 @@
+<apex:page standardController="CnP_PaaS_EVT__Event_attendee_session__c" extensions="CnP_PaaS_EVT.TicketSendingButton" action="{!SendingPDF}">
+ <apex:Message />
+ <!--<apex:form >
+ <apex:commandButton value="Run" />
+ </apex:form>-->
+</apex:page>

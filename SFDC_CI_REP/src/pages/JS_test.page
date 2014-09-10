@@ -1,0 +1,20 @@
+<apex:page controller="ActionFunctionComponent">
+    
+   <script>
+            function myFunction()
+            {
+                 document.getElementById("{!$Component.frm.txt1}").innerHTML="Hello";
+                
+            }
+    </script>
+        <apex:form id="frm">
+        
+        <apex:actionFunction name="MyFunction" action="{!myAction}" reRender="none">
+            <apex:param name="MyString" assignTo="{!enteredText1}" value=""/>
+        </apex:actionFunction>
+        
+        
+         <apex:outputText value="{!MyString}" id="txt1"/>
+         <apex:commandButton value="Submit" onclick="myFunction();" reRender="none"/>
+     </apex:form>
+</apex:page>

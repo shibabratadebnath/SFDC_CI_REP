@@ -1,0 +1,637 @@
+<apex:page controller="CnP_PaaS_EVT.AdditionalInformation_class" standardStylesheets="false" showHeader="false" sidebar="false" action="{!loadhelpContent}" >
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/main.js')}"/> 
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.min.js')}"/>
+ <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+ 
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+<!--
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap-responsive.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/main.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/grey.css"/>-->
+
+<script src="/ckeditor/ckeditor-3.6.2/ckeditor.js?t=3.6.2.1"></script>
+<script src="{!URLFOR($Resource.JsColor, '/jscolor/jscolor.js')}" type="text/javascript"/>
+
+<style>
+
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+.Required{
+color: #CC0000;
+}
+
+</style>
+<script>
+ function CreditOptions()
+ {
+    
+    if($(".donation").is(':checked')==true){
+      $(".donationname").css("display","block");
+      $(".donationsku").css("display","block");
+      $(".donationdeductible").css("display","block");
+       $(".donationname_label").css("display","block");
+      $(".donationsku_label").css("display","block");
+      $(".donationdeductible_label").css("display","block");
+    }
+    else
+    {
+      $(".donationname").css("display","none");
+      $(".donationdeductible").css("display","none");
+      $(".donationsku").css("display","none");
+      $(".donationname_label").css("display","none");
+      $(".donationsku_label").css("display","none");
+      $(".donationdeductible_label").css("display","none");
+    }
+ }
+ function checkvalidate_Level()
+ {
+    reg_levelname=/^([a-zA-Z0-9\'\,\.\-\&\#\ ])+$/;
+    
+   var levelname=$(".EventLevelinfo_LevelNameReports").val();
+  
+   
+   if(levelname=="" || !levelname.indexOf(' ',0) || !reg_levelname.test(levelname))
+   {
+     alert('Please enter a valid Level name');
+     $(".EventLevelinfo_LevelNameReports").focus();
+     return false;
+   }
+   if(levelname.length > 20)
+   {
+     alert('Level Report Name Should not exceed 20 Characters');
+     $(".EventLevelinfo_LevelNameReports").focus();
+     return false;
+   }
+   
+ }
+ function checkvalidate_Event()
+ {
+   
+  
+   var donationname=$(".donationname").val();
+   var donationsku= $(".donationsku").val();
+   var donationdeductible= $(".donationdeductible").val();
+    var donation=$(".donation").is(':checked');
+    
+   
+    reg_text1=/^([a-zA-Z0-9\,\.\#\&\-\'\ ])+$/;
+    
+     if(donation==true)
+     {
+          if(donationname=="" || !donationname.indexOf(' ',0) || !reg_text1.test(donationname))
+          {
+              alert("Please Enter a Valid Additional Donation Name");
+              $(".donationname").focus();
+              return false;
+          }
+         
+         if(donationname.length<2 || donationname.length>100)
+         {
+         alert("Additional Donation Name Should Be 2 to 100 Characters Only.");
+          $(".donationname").focus();
+          return false;
+         }
+         
+         if(donationsku.length>100)
+         {
+         alert("Additional Donation SKU Should Be 100 Characters Only.");
+          $(".donationsku").focus();
+          return false;
+         }
+         
+         if(isNaN(donationdeductible) || donationdeductible<0 || donationdeductible>100)
+         {
+         alert("Please Enter Valid Donation Tax Deductible");
+         $(".donationdeductible").focus();
+          return false;
+         }
+     }
+ }
+ function trimvalue(value,fieldclass)
+    {
+     var replace=value.trim();
+     $("."+fieldclass).attr('value',replace);
+    }
+</script>
+<apex:form >
+
+ <div id="content-header">
+    <h1><i class="icon icon-tasks"></i> Additional Information </h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;">                        
+    <!--<a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a>-->
+     <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Additional Information'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Additional Information'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Additional Information'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Additional Information'].link}" target="_blank" >{!subTab['Active Events']['Additional Information'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Additional Information'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Additional Information'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Additional Information'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel> 
+     </div>
+  </div>
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="tip-bottom" data-original-title="{!Eventdetails1.Name}">{!Eventdetails1.Name}</a> <a class="current">Additional Information</a></div>
+    <div class="eventdatebar">
+        <span class="popover-startdate">Event:</span>
+        <span><strong>{!Eventdetails1.Name}&nbsp;&nbsp;</strong></span>    
+        <span class="popover-startdate">Start Date:</span>
+        <span><strong>{!startdate} &nbsp;&nbsp;</strong></span>                                   
+        <span class="popover-endson">End Date:</span>
+        <span><strong>{!enddate}&nbsp;&nbsp;</strong></span>                             
+        <span class="popover-endson">Publish Date:</span>
+        <span><strong>{!publishdate}</strong></span>
+                                  
+    </div>
+                        
+<div id="frame-content" class="container-fluid">
+
+
+<apex:pageBlock >                    
+    
+    <apex:selectRadio value="{!selectedoption}" styleClass="tabletabs">
+    <apex:actionSupport event="onchange" action="{!dispalyeventorlevel}" />
+    <apex:selectOptions value="{!options}">
+    </apex:selectOptions>
+    </apex:selectRadio>
+    
+
+    
+
+     <!-- EVENT INFROMATION START-->
+     <apex:outputPanel id="eventblock">
+     <apex:pageBlock rendered="{!Eventadd}">
+     <div class="tab-content">
+         <div class="tab-pane active noborder" id="tab1">
+        
+             <div class="btn-block pagination-centered">
+             <apex:commandButton value="Save" action="{!SaveEvent}" styleClass="btn btn-primary" onclick="return checkvalidate_Event();"/>
+              &nbsp;&nbsp;<apex:commandButton value="Cancel" action="{!cancelevent}" styleClass="btn btn-primary"/>
+             </div>
+         
+             <div class="detailstable">
+              <apex:pageBlockSection columns="1" id="display" rendered="{!Eventadd}" >                                             
+                     <apex:pageBlockSectionItem helpText="Person who in charge of the event or main event contact person" dataStyle="width:75%">
+                           
+                        <apex:outputLabel value="Event Coordinator" />
+                        
+                        <apex:outputPanel >  
+                        <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__event_coordinator__c}" id="Eventinfo_Coordinator" />
+                        </apex:outputPanel>
+                        
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem helpText="Type of event">
+                        <apex:outputLabel value="Category"/>
+                        
+                        <apex:outputPanel >
+                        <span class="catlook"> <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__category__c}" style="float:left;" id="Eventinfo_Category"/>
+                            <span>
+                            <apex:commandLink value="Add New" action="{!AddNewCategory}" target="_new" styleClass="btn btn-primary" style="text-decoration:none;float:left;postion:relative;" immediate="true">
+                            </apex:commandLink>
+                            </span>
+                        </span>
+                        </apex:outputPanel>
+                        
+                        </apex:pageBlockSectionItem>  
+                        <apex:pageBlockSectionItem helpText="Type of Compaign">
+                           <apex:outputLabel value="Campaign"></apex:outputLabel>
+                               <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__Campaign__c}"  id="EventLevelinfo_Campaign"/>
+                           
+                         </apex:pageBlockSectionItem>  
+        
+                          <apex:pageBlockSectionItem helpText="a PDF file that can be uploaded to the site with event brochure or additional information">
+                                <apex:outputPanel >
+                                <apex:outputLabel value="Agenda (PDF only)" />
+                                </apex:outputPanel>
+                                <apex:outputPanel >
+                                <apex:inputfile value="{!MyAjenda.body}" filename="{!MyAjenda.Name}" styleClass="agenda" /><br/>(Maximum size 5 MB) </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem helpText="The name displayed on the event public page for the uploaded file">
+                                <apex:outputLabel value="Agenda Display Name" />
+                          <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__Agenda_Display_Name__c}"  style="width:250px" id="Eventinfo_ajendaName"/>
+                                 </apex:pageBlockSectionItem> 
+                                 
+                         <apex:pageBlockSectionItem >
+                      <apex:outputLabel value="Event Description"> </apex:outputLabel>
+                      <apex:inputTextarea value="{!Eventdetails1.CnP_PaaS_EVT__Event_description__c}" id="Event_Description" styleClass="Event_Description" />
+                      </apex:pageBlockSectionItem>         
+                                 
+                                 
+                     <apex:pageBlockSectionItem id="Additionaldonation">
+                    <apex:outputLabel value="Additional Donation"/>
+                    <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__Additional_Donation__c}" styleclass="donation" id="Eventinfo_Adddonation" onchange="CreditOptions();"/>
+                  
+                    </apex:pageBlockSectionItem>
+                      
+                    <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Label" styleClass="donationname_label" style="float:right"></apex:outputLabel>
+                    <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__Label_for_additional_donation__c}" styleclass="donationname"/>
+                    </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="SKU" styleClass="donationsku_label" style="float:right"></apex:outputLabel>
+                    <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__SKU_for_additional_donation__c}" styleclass="donationsku"/>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Tax Deductible Portion" styleClass="donationdeductible_label" style="float:right"></apex:outputLabel>
+                    <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__Donation_tax_deductible__c}" styleclass="donationdeductible"/>
+                    </apex:pageBlockSectionItem>
+                         
+                    <apex:pageBlockSectionItem >
+                    <apex:outputLabel value="Campaign" styleClass="donationdeductible_label" style="float:right"></apex:outputLabel>
+                    <apex:inputField value="{!Eventdetails1.CnP_PaaS_EVT__Additonal_Donation_Campaign__c}" styleclass="donationdeductible"/>
+                    </apex:pageBlockSectionItem>
+             </apex:pageBlockSection>
+             </div>
+              <div class="btn-block pagination-centered">
+              <apex:commandButton value="Save" action="{!SaveEvent}" styleClass="btn btn-primary" onclick="return checkvalidate_Event();"/>
+             &nbsp;&nbsp; <apex:commandButton value="Cancel" action="{!cancelevent}" styleClass="btn btn-primary"/>
+             </div>
+         </div>
+     </div>
+      <script type="text/javascript" charset="utf-8">
+      $(document).ready(function() {
+           if($(".donation").is(':checked')==false){
+        $(".donationname").css("display","none");
+        $(".donationdeductible").css("display","none");
+        $(".donationsku").css("display","none");
+        $(".donationname_label").css("display","none");
+          $(".donationsku_label").css("display","none");
+        $(".donationdeductible_label").css("display","none");
+      }
+      else
+      {
+       $(".donationname").css("display","block");
+       $(".donationdeductible").css("display","block");
+       $(".donationsku").css("display","block");
+       $(".donationname_label").css("display","block");
+       $(".donationdeductible_label").css("display","block");
+       $(".donationsku_label").css("display","block");
+      }
+      
+        
+      
+      function addtblstyle() {
+       $(".detailstable table").attr("class","table table-bordered table-striped");
+         }
+         addtblstyle();
+      });
+    </script> 
+     <script type="text/javascript">
+  
+          CKEDITOR.replace($(".Event_Description").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}}); 
+           CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+            CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+            CKEDITOR.config.contentsCss= ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+            CKEDITOR.config.language = 'en-us';  
+            CKEDITOR.config.customConfig = '{!$Resource.ckconfig}';
+            CKEDITOR.config.toolbar='Custome'; 
+          
+ 
+    </script>     
+     </apex:pageBlock> 
+     
+
+     <apex:pageBlock id="eventeditB" rendered="{!EditEventadd}">
+     <div class="tab-content">
+         <div class="tab-pane active noborder" id="tab1">    
+           
+              <div class="btn-block pagination-centered">
+              <apex:commandButton value="Edit" action="{!EditEvent}" styleClass="btn btn-primary" />
+              &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!Eventdetails1.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+
+              </div>
+         
+                 <div class="detailstable">
+                  <apex:pageBlockSection columns="1" id="display" >
+            
+                         <apex:pageBlockSectionItem helpText="Person who in charge of the event or main event contact person" dataStyle="width:75%">
+                             
+                             <apex:outputLabel value="Event Coordinator" />
+                             <apex:outputPanel >  
+                         
+                           <apex:outputLink value="/{!Eventdetails1.CnP_PaaS_EVT__event_coordinator__c}" target="_new" style="cursor: pointer;"><apex:outputLabel value="{!Eventdetails1.event_coordinator__r.Name}"></apex:outputLabel></apex:outputLink> 
+                           </apex:outputPanel>
+                            </apex:pageBlockSectionItem>
+                            <apex:pageBlockSectionItem helpText="Type of event">
+                            <apex:outputLabel value="Category"/>
+                            <apex:outputPanel >
+                            <span  class="catlook"> 
+                              <apex:outputLink value="/{!Eventdetails1.CnP_PaaS_EVT__category__c}" target="_new" style="cursor:pointer;"><apex:outputLabel value="{!Eventdetails1.category__r.Name}"></apex:outputLabel></apex:outputLink> 
+                          
+                            </span>
+            
+                            </apex:outputPanel>
+                            </apex:pageBlockSectionItem>  
+                            <apex:pageBlockSectionItem helpText="Type of Compaign">
+                               <apex:outputLabel value="Campaign"></apex:outputLabel>
+                              
+                             
+                              <apex:outputLink value="/{!Eventdetails1.CnP_PaaS_EVT__Campaign__c}" target="_new" ><apex:outputLabel value="{!Eventdetails1.Campaign__r.Name}" ></apex:outputLabel></apex:outputLink> 
+                          
+                             </apex:pageBlockSectionItem>  
+                             
+                            <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="iFrame Code"></apex:outputLabel>
+                            <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__iFrame_Code_2__c}" />
+                            </apex:pageBlockSectionItem>  
+                              
+                              <apex:pageBlockSectionItem helpText="a PDF file that can be uploaded to the site with event brochure or additional information">
+                                    <apex:outputPanel >
+                                    <apex:outputLabel value="Agenda (PDF only)" />
+                                   
+                                    </apex:outputPanel>
+                                  
+                                 <apex:outputPanel >
+                              <apex:outputLink value="/servlet/servlet.FileDownload?file={!doc.Id}" target="_new">{!doc.Name} </apex:outputLink>
+                              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<apex:commandButton value="Delete" action="{!Deleteagenda}" rendered="{!IF( Eventdetails1.CnP_PaaS_EVT__Pdf_Name__c!=null,true,false)}" styleClass="btn btn-primary">
+                             
+                               </apex:commandButton>
+                                  </apex:outputPanel>
+                                    </apex:pageBlockSectionItem>
+                                    
+                                    <apex:pageBlockSectionItem helpText="The name displayed on the event public page for the uploaded file">
+                                    
+                                    <apex:outputLabel value="Agenda Display Name" />
+                                      <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Agenda_Display_Name__c}"  style="width:250px" id="Eventinfo_ajendaName"/>
+                                     </apex:pageBlockSectionItem> 
+                                     
+                                     
+                                     
+                      <apex:pageBlockSectionItem >
+                      <apex:outputLabel value="Event Description"> </apex:outputLabel>
+                                
+                     <apex:outputPanel >
+                     <span class="titleandinfo">
+                      <apex:outputText value="{!Eventdetails1.CnP_PaaS_EVT__Event_description__c}" style="display:none"></apex:outputText>
+                      </span>
+                     </apex:outputPanel>
+                      </apex:pageBlockSectionItem>          
+                                
+                                     
+                    <apex:pageBlockSectionItem id="Additionaldonation">
+                    <apex:outputLabel value="Additional Donation"/>
+                    <apex:outputField value="{!Eventdetails1.CnP_PaaS_EVT__Additional_Donation__c}"  id="Eventinfo_Adddonation" />
+                  
+                    </apex:pageBlockSectionItem>
+               
+                    <apex:pageBlockSectionItem rendered="{!IF(Eventdetails1.CnP_PaaS_EVT__Additional_Donation__c==true,true,false)}">
+                    <apex:outputLabel value="Label" style="float:right"></apex:outputLabel>
+                  
+                    <apex:outputLabel value="{!Eventdetails1.CnP_PaaS_EVT__Label_for_additional_donation__c}" styleclass="donationname_label"></apex:outputLabel>
+                    </apex:pageBlockSectionItem>
+                     <apex:pageBlockSectionItem rendered="{!IF(Eventdetails1.CnP_PaaS_EVT__Additional_Donation__c==true,true,false)}">
+                    <apex:outputLabel value="SKU" styleClass="donationsku" style="float:right"></apex:outputLabel>
+                    <apex:outputLabel value="{!Eventdetails1.CnP_PaaS_EVT__SKU_for_additional_donation__c}" ></apex:outputLabel>
+                   
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem rendered="{!IF(Eventdetails1.CnP_PaaS_EVT__Additional_Donation__c==true,true,false)}">
+                    <apex:outputLabel value="Tax Deductible Portion" styleClass="donationdeductible" style="float:right"></apex:outputLabel>
+                    <apex:outputLabel value="{!Eventdetails1.CnP_PaaS_EVT__Donation_tax_deductible__c}" ></apex:outputLabel>
+                    
+                    </apex:pageBlockSectionItem>
+                       
+                        <apex:pageBlockSectionItem rendered="{!IF(Eventdetails1.CnP_PaaS_EVT__Additional_Donation__c==true,true,false)}">
+                    <apex:outputLabel value="Campaign" styleClass="donationdeductible" style="float:right"></apex:outputLabel>
+                    <apex:outputLabel value="{!Eventdetails1.Additonal_Donation_Campaign__r.Name}" ></apex:outputLabel>
+                    
+                    </apex:pageBlockSectionItem> 
+                       
+                         
+                     </apex:pageBlockSection>
+                 </div>
+             <div class="btn-block pagination-centered">
+              <apex:commandButton value="Edit" action="{!EditEvent}" styleClass="btn btn-primary" reRender="eventblock"/>
+              &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!Eventdetails1.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+              </div>     
+         </div>
+     </div>
+     <script>
+      $(document).ready(function () {  
+            var titleandinfo=$(".titleandinfo").text();
+                      $(".titleandinfo").html(titleandinfo);
+       });  
+      </script>   
+     </apex:pageBlock> </apex:outputPanel>
+      <!-- EVENT INFORMATION END------> 
+      
+</apex:pageBlock>      
+    
+    
+    <!-- LEVEL INFORMATION START--> 
+    <apex:outputPanel id="levelblock">
+    <apex:pageBlock rendered="{!Leveldis}">
+    <div class="tab-content">
+
+    <div class="tab-pane active noborder" id="tab2"> 
+    
+    <div class="btn-block pagination-centered" style="border-bottom: 1px solid #eee;">
+         <apex:outputLabel value="Select Registration Level :" styleClass="display_inline"></apex:outputLabel>
+         <apex:selectList value="{!Everegname}" size="1"  styleClass="display_inline" >
+         <apex:actionSupport event="onchange" action="{!Getvalues}" />
+         <apex:selectOptions value="{!acclist}" ></apex:selectOptions>
+         </apex:selectList>
+
+         <apex:outputLabel value="Copy From :" styleClass="display_inline"></apex:outputLabel>
+         <apex:selectList value="{!Everegnamecopy}" size="1" styleClass="display_inline" rendered="{!Leveldis}">
+         <apex:actionSupport event="onchange" action="{!Getvaluescopy}" />
+         <apex:selectOptions value="{!copyadditionalinfo}" ></apex:selectOptions>
+         </apex:selectList>
+    </div>    
+    </div>
+    
+    <apex:pageBlock rendered="{!Leveladd}">
+    
+    <div class="tab-pane active noborder" id="tab1">
+    
+        <div class="btn-block pagination-centered">
+       
+        <apex:commandButton value="Save" action="{!SaveLevel}" styleClass="btn btn-primary" onclick="return checkvalidate_Level();"/>
+         &nbsp;&nbsp;<apex:commandButton value="Cancel" action="{!cancellevel}" styleClass="btn btn-primary"/>
+        </div>
+    
+    <div class="detailstable">
+    <apex:pageBlockSection columns="1" >
+    
+     <apex:pageBlockSectionItem helpText="Registration level name as it should appear on reports" dataStyle="width:80%;">
+                        <apex:outputLabel value="Name on Reports"><span class="Required">*</span></apex:outputlabel>  
+                        <apex:outputPanel >                     
+                        <apex:inputField value="{!reglevel.CnP_PaaS_EVT__Name_on_reports__c}" onblur="trimvalue(this.value,'EventLevelinfo_LevelNameReports');" required="false" style="width:250px" styleClass="EventLevelinfo_LevelNameReports" id="EventLevelinfo_LevelNameReports" />
+                           &nbsp;&nbsp;&nbsp;(max length is 20 characters)
+                        </apex:outputPanel>
+                        </apex:pageBlockSectionItem> 
+                        <apex:pageBlockSectionItem >
+                        <apex:outputLabel value="Report Color"></apex:outputLabel>
+                        <apex:inputField value="{!reglevel.CnP_PaaS_EVT__Report_Color__c}" styleClass="color {hash:true}" style="width:63px" id="Eventreport"/>
+                        </apex:pageBlockSectionItem>  
+                        <apex:pageBlockSectionItem >
+                         <apex:outputLabel value="SKU"></apex:outputLabel>
+                         <apex:inputField value="{!reglevel.CnP_PaaS_EVT__SKU_Code_Level__c}" style="width:250px" id="EventLevelinfo_SKU" styleClass="skucode"/>
+                         </apex:pageBlockSectionItem>
+                        
+                       
+                        <apex:inputField value="{!reglevel.CnP_PaaS_EVT__Campaign__c}" id="EventLevelinfo_Campaign"/>
+                         
+                                                                                                                                                                                                                                                                                                                                               
+                        
+                        <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="Level Description"></apex:outputLabel>
+                         
+                           <apex:inputTextarea value="{!reglevel.CnP_PaaS_EVT__Description__c}" id="EventLevelinfo_Description" styleClass="EventLevelinfo_Description" style="width:95%" rows="4"/>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+                          </apex:pageBlockSectionItem>
+                          
+                 
+            </apex:pageBlockSection>                     
+             </div>
+             <div class="btn-block pagination-centered">
+       
+        <apex:commandButton value="Save" action="{!SaveLevel}" styleClass="btn btn-primary" onclick="return checkvalidate_Level();"/>
+       &nbsp;&nbsp; <apex:commandButton value="Cancel" action="{!cancellevel}" styleClass="btn btn-primary"/>
+        </div>
+             </div>
+           <script type="text/javascript">
+  
+          CKEDITOR.replace($(".EventLevelinfo_Description").attr('id'),{sharedSpaces : { top : 'cke_topSpace', bottom : ' cke_bottomSpace' },sfdcLabels : { sfdcSwitchToText : { sfdcSwitchToTextAlt : 'Use plain text'}, CkeImageDialog : { uploadTab : 'Upload Image', infoTab_url : 'URL', error : 'Error:', uploadTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_desc : 'Description', infoTab_url_info : 'Example: http://www.mysite.com/myimage.jpg', btn_insert : 'Insert', missingUrlError : 'You must enter a URL', uploadTab_file : 'Select Image', infoTab_desc : 'Description', wrongFileTypeError : 'You can insert only .gif .jpeg and .png files.', btn_upadte : 'Update', infoTab : 'Web Address', title : 'Insert Image', infoTab_desc_info : 'Enter a description of the image for visually impaired users', uploadTab_file_info : 'Maximum size 1 MB. Only png, gif or jpeg'}}}); 
+        
+            CKEDITOR.config.baseHref = '/apexpages/ckeditor/';  
+            CKEDITOR.config.filebrowserImageUploadUrl = '/_ui/common/request/servlet/RtaImageUploadServlet';  
+            CKEDITOR.config.contentsCss= ['/sCSS/24.0/sprites/1329331264000/Theme3/default/gc/HtmlDetailElem.css']; 
+            CKEDITOR.config.language = 'en-us';  
+            CKEDITOR.config.customConfig = '{!$Resource.CnP_PaaS_EVT__ckconfig}';
+            CKEDITOR.config.toolbar='Custome'; 
+          
+ 
+    </script>     
+     </apex:pageBlock>
+ 
+ 
+    <apex:pageBlock id="leveleditB" rendered="{!EditLeveladd}">
+    <div class="tab-pane active noborder" id="tab1"> 
+        
+        <div class="btn-block pagination-centered">
+        <apex:commandButton value="Edit" action="{!EditLevel}" styleClass="btn btn-primary" />
+        
+        &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!Eventdetails1.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+        </div>
+    
+    <div class="detailstable">
+    <apex:pageBlockSection columns="1" >
+     <apex:pageBlockSectionItem helpText="Registration level name as it should appear on reports" dataStyle="width:80%;">
+                           <apex:outputLabel value="Name on Reports"/>  
+                           <apex:outputPanel >                     
+                          <apex:outputField value="{!reglevel.CnP_PaaS_EVT__Name_on_reports__c}"   />
+                           
+                        </apex:outputPanel>
+                        </apex:pageBlockSectionItem> 
+                        <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Report Color"></apex:outputLabel>
+                        <apex:outputField value="{!reglevel.CnP_PaaS_EVT__Report_Color__c}" styleClass="color {hash:true}" style="width:63px" id="Eventreport"/>
+                       </apex:pageBlockSectionItem>  
+                        <apex:pageBlockSectionItem >
+                         <apex:outputLabel value="SKU"></apex:outputLabel>
+                         <apex:outputField value="{!reglevel.CnP_PaaS_EVT__SKU_Code_Level__c}" />
+                         </apex:pageBlockSectionItem>
+                        
+                        <apex:pageBlockSectionItem >
+                        <!--<apex:outputField value="{!reglevel.CnP_PaaS_EVT__Campaign__c}" id="EventLevelinfo_Campaign"/>-->
+                           <apex:outputLabel value="Campaign"></apex:outputLabel>
+                         <apex:outputLink value="/{!reglevel.CnP_PaaS_EVT__Campaign__c}" target="_new" style="cursor: pointer;"><apex:outputLabel >{!reglevel.Campaign__r.Name}</apex:outputLabel> </apex:outputLink>                                                                                                                                                                                                                                                                                                                      
+                         </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="Level Description"></apex:outputLabel>
+                          <apex:outputPanel >
+                         <span class="titleandinfolevel">
+                          <apex:outputText value="{!reglevel.CnP_PaaS_EVT__Description__c}" style="display:none"></apex:outputText>
+                          </span>
+                         </apex:outputPanel>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+                          </apex:pageBlockSectionItem>
+                          
+                          <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="Total Inventory"></apex:outputLabel>
+                         
+                         <apex:outputField value="{!reglevel.CnP_PaaS_EVT__Limit_for_this_type__c}"/>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+                          </apex:pageBlockSectionItem> 
+                          
+                       <apex:pageBlockSectionItem >
+                       
+                           <apex:outputLabel value="Inventory Sold"></apex:outputLabel>
+                         
+                         <apex:outputField value="{!reglevel.CnP_PaaS_EVT__Inventory_Sold__c}"  />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+                          </apex:pageBlockSectionItem>
+                          
+                          <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="Available Inventory"></apex:outputLabel>
+                         
+                         <apex:outputField value="{!reglevel.CnP_PaaS_EVT__Available_Inventory__c}" />
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+                          </apex:pageBlockSectionItem> 
+          
+    </apex:pageBlockSection>                     
+                
+    </div>
+     <div class="btn-block pagination-centered">
+        <apex:commandButton value="Edit" action="{!EditLevel}" styleClass="btn btn-primary" />
+        &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!Eventdetails1.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+        </div>
+     </div>
+     </apex:pageBlock>
+     <!-- LEVEL INFORMATION END-->
+   </div>
+    <script>
+      $(document).ready(function () {  
+            var titleandinfolevel=$(".titleandinfolevel").text();
+                      $(".titleandinfolevel").html(titleandinfolevel);
+       });  
+      </script> 
+   </apex:pageBlock>
+
+ </apex:outputPanel>
+
+</div>
+</apex:form>
+
+<script>
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+</script>
+ 
+</apex:page>

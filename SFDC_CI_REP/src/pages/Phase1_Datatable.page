@@ -1,0 +1,14 @@
+<apex:page controller="Phase1_Datatable">
+    <h1>Datatable demo</h1>
+    <apex:form >
+        Enter the number:<apex:inputText value="{!num}"/>
+        <apex:commandButton value="Submit" action="{!series}"/><br/>
+        Result:<br/>
+        <apex:pageBlock >
+        <apex:pageBlockTable value="{!totallist}" var="number">
+            <apex:column value="{!number.numlist}"  headerValue="Number"/>
+            <apex:column value="{!number.mullist}" headerValue="Multiplied by 2"/>
+        </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

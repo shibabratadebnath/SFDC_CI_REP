@@ -1,0 +1,14 @@
+<apex:page controller="CnP_PaaS.Broadcaster" tabStyle="Broadcaster__tab">
+
+ <apex:form >    
+ <apex:pageblock >     
+     <apex:pageblocksection title="Verification" columns="1" >
+   <apex:outputLabel style="color:#328400;position: relative;font-weight: bold;">
+    Your MailChimp account has been verified.Click here to continue
+    </apex:outputLabel>
+          <apex:commandButton action="{!Verification}" value="Verification" />       
+             
+       </apex:pageblocksection>
+        </apex:pageblock>
+     </apex:form>
+</apex:page>

@@ -1,0 +1,138 @@
+<apex:page controller="CnP_PaaS.SettingsController" action="{!loadhelpContent}">
+
+<script type="text/javascript">
+
+      /******* Auto Responder Settings Start Here*********/
+  function AutoresponderSettingvalidation()
+  {
+          var valid=0;
+         // reg_email = /^([A-Za-z0-9_\+\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+           reg_email = /^([A-Za-z0-9_\-\+\&\.\!\#\$\%\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9\-\.])+\.([A-Za-z]{2,4})$/; // remove ; and _ adding &
+          reg_text=/^([a-zA-Z0-9\'\,\.\-\_\ ])+$/;
+          var selecttags=jQuery(".selecttags").val();         
+          if(selecttags==null)
+          {    
+         
+               valid=valid+1;
+               alert("please select at least one Autoresponder Tag");
+               jQuery(".selecttags").focus();
+               return false;
+          }                                                   
+          
+           
+            var replytoaddress=jQuery.trim(jQuery(".replytoaddress").val());
+          
+            if(!reg_email.test(replytoaddress) && replytoaddress != "")
+            {   valid=valid+1;
+                 alert("Please enter a valid reply to email address");
+                 jQuery(".replytoaddress").focus();
+                 return false;  
+            }          
+          
+             var emaildata=jQuery.trim(jQuery(".bcclist").val());
+           if(emaildata!='')
+           {
+            var emailsdata=jQuery(".bcclist").val().split(';'); 
+             for(var i=0;i<emailsdata.length;i++)
+             {
+                   if(!reg_email.test(emailsdata[i]))
+                   {
+                        valid=valid+1;
+                        alert("Please Enter the Valid Email ids");
+                        jQuery(".bcclist").focus();
+                        return false;
+                   }
+             }
+           } 
+                                            
+       if(valid==0)
+       {  
+           processstart();
+           SaveTags();   
+           return true;
+       }else{
+           return false;
+       }         
+          
+  }      
+  </script>
+
+<apex:form >
+                   
+            <div class="padding_5" style="float:right;">        
+            <apex:outputLink styleClass="helpLink align_right" rendered="{!subTab['Settings']['AutoResponder Defaults'].display=='true'}"    >
+              <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo6]').css('display','block');" />
+              <apex:image value="/s.gif" styleClass="helpIcon"  onmouseover="jQuery('[id$=Foo6]').css('display','block');" style="display:inline;" />
+            </apex:outputLink>
+            <apex:outputPanel id="Foo6" styleClass="video"  >
+              <ul style="padding-left:5px;" >
+                {!subTab['Settings']['AutoResponder Defaults'].description}
+                <br/>
+                <apex:outputpanel rendered="{!subTab['Settings']['AutoResponder Defaults'].ActiveLink=='true'}">
+                  <li> <a href="{!subTab['Settings']['AutoResponder Defaults'].link}" target="_blank" >{!subTab['Settings']['AutoResponder Defaults'].strlink}</a> <br/>
+                  </li>
+                </apex:outputpanel>
+                <apex:outputpanel rendered="{!subTab['Settings']['AutoResponder Defaults'].ActiveVideo=='true'}">
+                  <li><a href="{!subTab['Settings']['AutoResponder Defaults'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['AutoResponder Defaults'].strvideo}</a> </li>
+                </apex:outputpanel>
+              </ul>
+            </apex:outputPanel>
+            </div>
+            
+            
+            <apex:actionFunction action="{!SaveTags}" name="SaveTags" id="SaveTags" reRender="statusautomesg" oncomplete="processcomplete();"/>
+
+<div id="content-header">
+    <h1><img alt="Autoresponder" title="Autoresponder" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/autoresponder_icon.png" style="display:inline;vertical-align:top;" width="25" /> Autoresponder Defaults</h1>                                    
+</div>
+<div class="container-fluid">  
+         
+        
+             <apex:pageBlock id="statusautomesg" mode="maindetail">
+             
+             <apex:pageMessages />
+             
+                    <div class="btn-block pagination-centered">
+                      <a class="btn btn-primary" href="javascript:void(0)" onclick="AutoresponderSettingvalidation();" ><i class="icon-edit icon-white"></i> Update Settings</a>                                                        
+                    </div>
+                     
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>C&amp;P Autoresponder Settings</h5>
+                      </div>
+                      <div class="widget-content"> 
+                                           
+                       <apex:pageBlockSection columns="1" collapsible="true">
+                          <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Show Tags in Autoresponder"></apex:outputLabel>
+                            <apex:outputPanel styleClass="requiredInput" layout="block"   >
+                            <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                            <apex:selectList value="{!selectedtags}" multiselect="true" size="10" styleClass="selecttags">
+                              <apex:selectOptions value="{!showTags}"></apex:selectOptions>
+                            </apex:selectList>
+                            </apex:outputPanel>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Reply To Address"></apex:outputLabel>
+                            <apex:inputText value="{!autosettings.CnP_PaaS__Replay_To_Address__c}" size="50" maxlength="100" styleClass="replytoaddress"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="Subject"></apex:outputLabel>
+                            <apex:inputText value="{!autosettings.CnP_PaaS__Subject__c}" size="80" maxlength="255" styleClass="subjectsetting"/>
+                          </apex:pageBlockSectionItem>
+                          <apex:pageBlockSectionItem >
+                            <apex:outputLabel value="BCC the following email addresses when the message goes out (type email addresses separated by semicolon) "></apex:outputLabel>
+                            <apex:outputPanel >
+                                <apex:inputTextarea value="{!autosettings.CnP_PaaS__BCC_Email_Address__c}" rows="5" cols="50" styleClass="bcclist" onkeypress="return imposeMaxLength(event, this, 255);" onkeyup="return imposeMaxLength(event, this, 255);"/>
+                                <apex:outputLabel style="float:right;padding-top:15px;" value="(Does not apply to Salesforce SMTP selection in the Autoresponder setting.)"/>
+                            </apex:outputPanel>
+                          </apex:pageBlockSectionItem>
+                        </apex:pageBlockSection>
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                        
+                        
+             </apex:pageBlock>
+</div>      
+</apex:form>
+  
+</apex:page>

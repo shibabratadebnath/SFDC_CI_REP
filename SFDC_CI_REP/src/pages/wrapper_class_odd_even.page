@@ -1,0 +1,12 @@
+<apex:page controller="wrapper_class_odd_even">
+    <apex:form >
+        Enter a number:<apex:inputtext value="{!num}"/>
+        <apex:commandButton value="Submit" action="{!evenoddnums}"/>
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!wrapperlist}" var="wraplist">
+                <apex:column headervalue="Even" value="{!wraplist.evennum}"/>
+                <apex:column headervalue="Odd" value="{!wraplist.oddnum}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

@@ -1,0 +1,70 @@
+<apex:page controller="CnP_PaaS.SettingsController">
+<script type="text/javascript">
+function updatebutton(){
+    updatebutton1();
+    processstart();
+}
+</script>
+<apex:form >
+
+<div id="content-header">
+    <h1><img alt="C&amp;P Apps" title="C&amp;P Apps" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/about_apps_icon.png" style="display:inline;vertical-align:top;" width="25" /> About C&amp;P Apps</h1>                                    
+</div>
+<div class="container-fluid">
+
+<apex:pageBlock mode="maindetail">  
+  
+                <div id="light" class="white_content">
+                  <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="We are processing your request. Please wait..." style="width: 32px;"  />
+                  <br/>
+                </div>
+                <div id="fade" class="black_overlay"></div>
+
+
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Applications Installed</h5>
+                      </div>
+                      <div class="widget-content">
+                          
+                          <apex:actionFunction action="{!updatebutton}" id="Button1" name="updatebutton1" reRender="abouttable" oncomplete="processcomplete();"/>
+                          <div class="cmd_button btn-block pagination-centered" >
+                              <a class="btn btn-primary" href="#" onclick="updatebutton();">  <i class="icon-refresh icon-white"></i> Sync for Updates</a> 
+                          </div>
+                         
+                         <apex:outputPanel id="abouttable">
+                         
+                          <apex:pageblocktable value="{!existingpackdetails}" var="app" styleClass="table table-bordered table-striped">
+                            <apex:column headerValue="Application Name"> 
+                                 <apex:outputLink value="{!app.CnP_PaaS__Appexchange_Link__c}" target="_blank">{!app.Name} </apex:outputLink>
+                            </apex:column>
+                            <apex:column headerValue="Namespace">
+                               <apex:outputText value="{!app.CnP_PaaS__Namespace__c}"/>
+                            </apex:column>
+                            <apex:column headerValue="Version Number">
+                               <apex:outputText value="{!app.CnP_PaaS__Version_Number__c}"/></apex:column>
+
+                              <apex:column headervalue="Latest Version Available"  ><!-- headerClass="align_center" -->
+                                  <div class="cmd_button btn-block" style="display:{!IF(aboutMap[app.CnP_PaaS__Namespace__c].releasenotes != null,'block','none')};padding-bottom: 0px;">
+                                       <apex:outputText value="{!aboutMap[app.CnP_PaaS__Namespace__c].versionnumber}"/> &nbsp; 
+                                       <apex:outputlink value="{!aboutMap[app.CnP_PaaS__Namespace__c].releasenotes}" target="_blank">[Release notes]</apex:outputlink> &nbsp; 
+                                       <apex:outputlink value="{!aboutMap[app.CnP_PaaS__Namespace__c].upgradever}" target="_blank" rendered="{!IF(aboutMap[app.CnP_PaaS__Namespace__c].versionnumber!=app.CnP_PaaS__Version_Number__c,true,false)}" >[Upgrade]</apex:outputlink>
+                                  </div>                          
+                               </apex:column>
+                               <apex:column headervalue="Additional Resources" ><!--  headerClass="align_center" -->
+                                 <apex:outputLink styleClass="btn" style="text-decoration:none;postion:relative;" value="{!aboutMap[app.CnP_PaaS__Namespace__c].forum}" rendered="{!IF(aboutMap[app.CnP_PaaS__Namespace__c].forum!=null,true,false)}">Forum</apex:outputLink> &nbsp;      
+                                 <apex:outputLink styleClass="btn" style="text-decoration:none;postion:relative;" value="{!aboutMap[app.CnP_PaaS__Namespace__c].manual}" rendered="{!IF(aboutMap[app.CnP_PaaS__Namespace__c].manual!=null,true,false)}">Manual</apex:outputLink>     
+                        
+                              </apex:column>                            
+                          </apeX:pageblocktable>
+                         </apex:outputPanel>
+
+
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                        
+
+
+</apex:pageBlock>
+</div>
+</apex:form>
+</apex:page>

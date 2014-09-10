@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>S8e_Services_Digital_S3s_Aid_oauth</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <modules>
+        <module>
+            <label>S8e_Services_Digital_S3s_Aid_oauth</label>
+            <moduleType>connected</moduleType>
+            <name>S8e_Services_Digital_S3s_Aid_oauth</name>
+            <types>
+                <members>S8e_Services_Digital_S3s_Aid_oauth_devConfig</members>
+                <name>ConnectivityDevConfigMetadata</name>
+            </types>
+            <types>
+                <members>ModelM__S8e_Services_Digital_S3s_Aid_oauth</members>
+                <name>Module</name>
+            </types>
+            <version>7.0</version>
+        </module>
+    </modules>
+    <namespacePrefix>ModelM</namespacePrefix>
+    <version>31.0</version>
+</Package>

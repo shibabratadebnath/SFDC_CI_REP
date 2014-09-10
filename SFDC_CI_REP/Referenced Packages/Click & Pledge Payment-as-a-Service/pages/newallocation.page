@@ -1,0 +1,344 @@
+<apex:page standardcontroller="CnP_PaaS__Allocations__c" extensions="CnP_PaaS.ledgercontroller" action="{!loadhelpContent}">
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+<style>
+.helpLink {
+       position:relative;       
+    }
+
+    .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+     /* margin-left:920Px;*/
+    }
+      a.filelink {
+
+         display:block;
+         text-decoration:none;
+         color:#333333;
+         padding:5px;
+         background-color:#FAFAFA;
+         border:solid 1px #666666;
+         margin-top:15px;
+         float:left;
+         margin-left:20px;
+    }
+a.filelink:hover {
+         background-color:#333333;
+         color:#FFFFFF;
+    }
+.items {
+    font-size:13px;
+    color:#000;
+    width: auto;
+    text-align: left;
+    border-collapse: collapse;
+    box-shadow: 0 0 5px #CCC;
+    border: 1px solid #666;
+  }
+.items thead {
+     background:#999;
+}
+.items th {
+        font-size: 12px;
+        background:#999;        
+        background-repeat:repeat-x;
+        padding:6px 6px 0px 6px;
+        font-weight:600;
+        color:#FFF;
+         
+}
+.items td {
+    padding:10px 10px 0px 10px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #CCC;
+    color:#666;
+    
+
+}
+.items tbody td {
+  height:20px;
+  padding-bottom:2px;  
+
+}
+
+.items .requiredInput .requiredBlock{
+  bottom:1px;
+
+}
+
+
+.items .btn {
+ padding:0px;
+}
+.black_overlay{
+    display: none;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index:1001;
+    -moz-opacity: 0.8;
+    opacity:.40;
+    filter: alpha(opacity=80);
+}
+.white_content {
+        display: none;
+        position: absolute;
+        text-align: center;
+        top: 30%;
+        left: 35%;
+        /*width: 25%;
+        height: 12%;*/
+        padding: 16px;
+        background-color: white;
+        z-index:1002;
+        overflow: auto;
+        border-radius:20px;
+        -webkit-border-radius: 20px;
+        -moz-border-radius: 20px;
+        border:1px solid #000;
+    } 
+</style>
+<script>
+jQuery=$.noConflict();
+  jQuery(function(){
+          jQuery(".video").mouseout(function(){
+             
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+ /* function hidesubclass(value){
+            
+            var classname = jQuery(".classname"+value).val();
+            var subclassname=jQuery(".subclassname"+value).val();
+            var classid = jQuery(".classid"+value).val();
+   
+          if(classname != ''){
+              if(classid != ''){
+                   subclasseslist(classid);
+               }
+                  jQuery(".subclassname"+value).attr('disabled',false);  
+            
+          }else{   
+              jQuery(".subclassname"+value).attr('disabled',true); 
+            }
+
+   }*/
+   
+   /* function hidesubclasstotal(){
+ 
+     var rowNumSubAllocation= jQuery(".rowNumSubAllocation").val();
+      
+        for(var i=0;i<=rowNumSubAllocation;i++){
+            var classname = jQuery(".classname"+i).val();
+            var subclassname=jQuery(".subclassname"+i).val();
+          if(classname != ''){
+              jQuery(".subclassname"+i).attr('disabled',false);  
+          }else{   
+              jQuery(".subclassname"+i).attr('disabled',true); 
+            }
+        }
+   }*/
+
+    function processcomplete(){
+           jQuery("#light").attr('style','display:none');
+           jQuery("#fade").attr('style','display:none');
+    }
+    function countryprocess(){
+           jQuery("#light").attr('style','display:block');
+           jQuery("#fade").attr('style','display:block');
+           return true;
+    }   
+
+   
+    function saveskuallocation(){
+   
+        var t=0;
+ 
+        var rowNumSubAllocation = jQuery(".rowNumSubAllocation").val();
+        var oppamt=parseFloat(jQuery(".oppamt").val());
+        var totalamt=0;
+        for(var i=0;i<rowNumSubAllocation;i++){
+      
+           var percentamount= jQuery(".percentamount"+i).val();
+           totalamt+=parseFloat(jQuery(".percentamount"+i).val());
+           var ledgernumber= jQuery(".ledgernumber"+i).val();
+           var ledgerid= jQuery(".ledgerid"+i).val();
+           var classname= jQuery(".classname"+i).val();
+           var classid= jQuery(".classid"+i).val();
+           var reg_percent = /^([0-9.])+$/;
+           if(classname == ''){
+                t= t+1;
+                alert('Please enter Class Name');
+                jQuery(".classname"+i).focus();
+                return false;
+           }
+           if(classname != '' && classid == ''){
+                t=t+1;
+                alert('Please enter correct Class Name');
+                jQuery(".classname"+i).focus();
+                return false;
+             }
+            if(ledgernumber == ''){
+                t= t+1;
+                alert('Please enter Account Number');
+                jQuery(".ledgernumber"+i).focus();
+                return false;
+           }
+            
+             if(ledgerid == ''){
+               t = t+1;
+               alert('Please Enter Proper Ledger Number');
+               jQuery(".ledgernumber"+i).focus();
+               return false;
+             }
+             
+           if(percentamount == ''){
+               t=t+1;
+               alert('Please enter allocation');
+               jQuery(".percentamount"+i).focus();
+               return false;
+           }
+    
+           if(percentamount != '' && !reg_percent.test(percentamount)){
+               t=t+1;
+               alert("Please Enter only Numeric values in Percentage field");
+               jQuery(".percentamount"+i).focus();
+               return false;
+           }
+          /* if(percentamount> 100){
+                t = 1;
+                alert("Please enter percentage less than 100");
+                jQuery(".percentamount"+i).focus();
+                return false;
+            }*/
+           
+             
+            
+        }
+   if(totalamt>oppamt)
+    {
+    t=t+1;
+    alert("Auto Allocation should not exceed the Opportunity Total Amount");
+     jQuery(".percentamount"+i).focus();
+                return false;
+    }
+       if(t == 0){
+       countryprocess();
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+</script>
+ <apeX:form >
+    <!-------------help text content ------->
+ <div width="100%">
+    <div style="float:right">
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['Opportunity-Allocation']['Opportunity-Allocation'].display=='true'}">  
+            <Apex:outputLabel value="C&P Help for this Page" style="font-size:90%;margin-right:5Px;" onmouseover="jQuery('[id$=Foo]').css('display','block');"/>      
+            <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo]').css('display','block');" />                    
+      </apex:outputLink>
+      <apex:outputPanel id="Foo" styleClass="video"  >   
+        <ul style="padding-left:4px;" > {!subTab['Opportunity-Allocation']['Opportunity-Allocation'].description} <br/> <br/>
+             <Apex:outputPanel rendered="{!subTab['Opportunity-Allocation']['Opportunity-Allocation'].ActiveLink=='true'}">
+               <li><a href="{!subTab['Opportunity-Allocation']['Opportunity-Allocation'].link}" target="_blank" >{!subTab['Opportunity-Allocation']['Opportunity-Allocation'].strlink}</a> <br/></li></Apex:outputPanel>
+             <Apex:outputPanel rendered="{!subTab['Opportunity-Allocation']['Opportunity-Allocation'].ActiveVideo=='true'}">
+               <li> <a href="{!subTab['Opportunity-Allocation']['Opportunity-Allocation'].video}"  onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Opportunity-Allocation']['Opportunity-Allocation'].strVideo}</a></li></Apex:outputPanel>
+        </ul>
+      </apex:outputPanel>
+     </div>
+    </div>
+    <!-------------help text content ------->
+    <apeX:pageblock title="Allocations">
+    <div id="light" class="white_content">   
+            <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="height: 15px;width: 20px;"  /><br/>
+            <apex:outputlabel value="we are processing your request. please wait...                  "  />
+    </div>
+    <div id="fade" class="black_overlay"></div>
+       <apex:actionFunction action="{!subclasseslist}" name="subclasseslist" rerender="subclasslistid">
+     <apex:param name="classallocationid" value="" assignTo="{!classallocationid}"/>
+     </apex:actionfunction>
+      <apex:outputPanel >
+          &nbsp;&nbsp;&nbsp;&nbsp; <apex:outputLabel value="Opportunity :"></apex:outputLabel>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <apex:outputLink value="/{!oppname[0].Id}" target="_top">{!oppname[0].Name}</apex:outputLink> 
+       </apex:outputPanel><br/><br/>
+       <apex:outputPanel >
+          &nbsp;&nbsp;&nbsp;&nbsp; <apex:outputLabel value="Opportunity Total Amount :"></apex:outputLabel>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <apex:outputField value="{!oppname[0].Amount}" />
+              <apex:inputtext value="{!oppname[0].Amount}" styleClass="oppamt" style="display:none"/>
+       </apex:outputPanel><br/><br/>
+       <apex:outputPanel id="RefreshBlockall_1">
+          <apex:variable value="0" var="rowNumSubAllocation"/>
+          <apex:datatable columns="10" value="{!Allocationlistdetails}" var="suballocation" cellspacing="-10px"  cellpadding="3" style="margin-left:40px;margin-top:10px;" styleclass="items">
+            <apex:column headerValue="Class Name">
+                <apex:inputText value="{!suballocation.classname}" styleclass="classname{!rowNumSubAllocation}" style="width:110px;"><!-- onblur="hidesubclass('{!rowNumSubAllocation}');">-->
+                 <c:PaymentAutoCompleteSettings objecttype="class" autocomplete_textbox="classname{!rowNumSubAllocation}" autocomplete_id="classid{!rowNumSubAllocation}" autocomplete_process="0" /> 
+                </apex:inputText>
+             </apex:column>
+             <apex:column headerValue="Sub Class Name"  >
+             
+<!--             <apex:outputPanel id="subclasslistid">
+                    <apex:selectList value="{!suballocation.subclassid}" styleclass="subclassname{!rowNumSubAllocation}" size="1" >
+                           <apex:selectoptions value="{!Subclasses}"/>
+                       </apex:selectList>
+                       </apex:outputPanel>-->
+            
+             
+               <apex:inputText value="{!suballocation.subclassname}" styleclass="subclassname{!rowNumSubAllocation}" style="width:110px;">
+                   <c:PaymentAutoCompleteSettings objecttype="subclass" autocomplete_textbox="subclassname{!rowNumSubAllocation}" autocomplete_id="subclassid{!rowNumSubAllocation}" autocomplete_process="classid{!rowNumSubAllocation}" /> 
+                 </apex:inputText>
+             </apex:column>
+            <apex:column headerValue="Account Number{!suballocation.ledgernumber}" >
+                <apex:inputText value="{!suballocation.ledgernumber}" styleclass="ledgernumber{!rowNumSubAllocation}" style="width:110px;">
+                 <c:PaymentAutoCompleteSettings objecttype="ledger" autocomplete_textbox="ledgernumber{!rowNumSubAllocation}" autocomplete_id="{!rowNumSubAllocation}" autocomplete_process="0" /> 
+                 </apex:inputText>
+              </apex:column>
+              <apex:column headerValue="Account Name"><apex:outputtext value="{!suballocation.ledgername}" styleClass="ledgername{!rowNumSubAllocation}"  style="width:110px;"/></apex:column>
+              <apex:column headerValue=""><apex:inputtext value="{!suballocation.ledgerid}" styleClass="ledgerid{!rowNumSubAllocation}"  style="display:none;"/></apex:column>
+              <apex:column headerValue="Auto Allocation"><apex:inputText value="{!suballocation.percentageamount}" size="4" styleClass="percentamount{!rowNumSubAllocation}" style="width:80px;"/></apex:column>
+              <apex:column ><apex:inputText value="{!suballocation.classid}" styleClass="classid{!rowNumSubAllocation}" style="display:none;"/></apex:column>
+              <apex:column ><apex:inputText value="{!suballocation.subclassid}" styleClass="subclassid{!rowNumSubAllocation}" style="display:none;" /></apex:column>
+              <apex:column ><apex:inputHidden value="{!suballocation.suballocationid}"/></apex:column>
+          <!--    <apex:column >
+              <apex:commandButton value="Delete" action="{!DeleteAllocationOpportunity}" reRender="RefreshBlockledger_1" rendered="{!IF(VALUE(rowNumSubAllocation) > 0,true,false)}">
+                       <apex:param name="contIdParamCamp" value="{!rowNumSubAllocation}" assignTo="{!DeleteIdSubopppAllocation}"/>
+                       <apex:param name="contIdParam1Camp" value="{!suballocation.suballocationid}" assignTo="{!DeleteFromSuboppAllocationId}"/>
+
+                    </apex:commandButton>
+              </apex:column>-->
+            
+               <apex:column >
+                     <apex:commandButton value="Delete" action="{!DeleteAllocationOpportunity}" reRender="RefreshBlockall_1">
+                       <apex:param name="contIdParam" value="{!rowNumSubAllocation}" assignTo="{!DeleteoppallocationId}"/>
+                       <apex:param name="contIdParam1" value="{!suballocation.suballocationid}" assignTo="{!DeleteFromSuballocationoppId}"/>
+                     </apex:commandButton><br />
+                     <apex:actionstatus id="statusIdForDeleteA" startText="Please wait.."/>&nbsp;&nbsp;&nbsp;                                
+                   </apex:column> 
+               
+              
+              <apex:column ><apex:variable var="rowNumSubAllocation" value="{!VALUE(rowNumSubAllocation) + 1}"/></apex:column>
+               
+            </apex:datatable> 
+  <input type="hidden" value="{!rowNumSubAllocation}" class="rowNumSubAllocation" name="rowNumSubAllocation"/>    
+           <apex:commandButton action="{!addallocationopp}" value="Add New" style="margin-top:20px;" reRender="RefreshBlockall_1">
+                             <apex:param name="" value="{!rowNumSubAllocation}" assignTo="{!submaprowallocationid}"/>
+                         </apex:commandbutton>
+                         
+         </apex:outputPanel>     
+                 
+<apex:commandButton value="Save" action="{!saveallocationopportunity}"    rerender="RefreshBlockall_1" onclick="if(!saveskuallocation()) return false;" oncomplete="processcomplete();"/>
+       
+     <!--  <script> hidesubclasstotal();</script>-->
+    </apeX:pageblock>
+ </apex:form>
+</apex:page>

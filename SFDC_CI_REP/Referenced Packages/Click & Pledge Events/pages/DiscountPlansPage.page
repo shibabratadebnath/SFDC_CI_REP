@@ -1,0 +1,269 @@
+<apex:page controller="CnP_PaaS_EVT.DiscountPlans_class" standardStylesheets="false" showHeader="false" sidebar="false" action="{!loadhelpContent}" >
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__jqplot, 'js/jquery-1.3.2.min.js')}"/>
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+<!--
+<apex:includeScript value="{!URLFOR($Resource.bootstrap,'admin/js/main.js')}"/>-->
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+<script src="{!URLFOR($Resource.DateTimePicker, "DateTimePicker/jquery.calendar.js")}" type="text/javascript"></script>   
+ <link type="text/css" rel="stylesheet"  href="{!URLFOR($Resource.DateTimePicker, "DateTimePicker/jquery.calendar.css")}" />
+
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/jquery.dataTables.js')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'jquery-ui-1.8.4.custom.css')}"/>
+<style>
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+</style>
+<script>
+function reportdelete()
+{
+  if(confirm("Are you sure you want to permanently delete this record?")==true)
+  {
+    return true;
+  }
+}
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+function changediscount()
+{
+ discounttypechange();
+}         
+ function changediscountradio()
+{
+ discounttypechangeradio();
+}         
+</script>
+
+
+<apex:form >
+
+<apex:actionFunction name="discounttypechange" action="{!save}" reRender="leveldis,eventdis,radioid" oncomplete="gridchange();"/>
+<apex:actionFunction name="discounttypechangeradio"  reRender="leveldis,eventdis,radioid" oncomplete="gridchange();"/>
+  <div id="content-header">
+    <h1><i class="icon icon-tasks"></i> Discount Plans</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"><!-- <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a>-->
+     <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Discount Plans'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Discount Plans'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Discount Plans'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Discount Plans'].link}" target="_blank" >{!subTab['Active Events']['Discount Plans'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Discount Plans'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Discount Plans'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Discount Plans'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel>  
+    </div>
+  </div>
+    
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a >{!eventname}</a> <a class="current">Discount Plans</a> </div>
+  <div class="eventdatebar">
+        <i class="icon-time"></i>&nbsp;&nbsp;
+        <span class="popover-startdate">Event:</span>
+        <span><strong>{!eventname} &nbsp;&nbsp;</strong></span>    
+        <span class="popover-startdate">Start Date:</span>
+        <span><strong>{!startdate} &nbsp;&nbsp;</strong></span>                                   
+        <span class="popover-endson">End Date:</span>
+        <span><strong>{!enddate} &nbsp;&nbsp;</strong></span>                             
+        <span class="popover-endson">Publish Date:</span>
+        <span><strong>{!publishdate}</strong></span>                          
+    </div>
+    
+  <div id="frame-content" class="container-fluid">
+           
+           <div class="row-fluid">
+              <div class="span12">
+                
+                <div class="widget-box">
+                  <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                    <h5>Discount Plans</h5>                    
+                  </div>
+                
+                  <div class="widget-content">  
+                    
+                    <div class="btn-block pagination-centered">
+                      <strong>Active Discount Type &nbsp;</strong> <apex:selectList value="{!event.CnP_PaaS_EVT__Discount_Type__c}" onchange="changediscount();" size="1" styleClass="tabletabs">
+                      <apex:selectOption itemLabel="Level Discount Plans" itemValue="Level"></apex:selectOption>
+                       <apex:selectOption itemLabel="Global Discount Plans" itemValue="Global"></apex:selectOption>
+                      </apex:selectList> &nbsp; (Only one discount type may apply to event)
+                    </div>
+    
+                  <apex:selectRadio id="radioid" value="{!selecteddiscounttype}" onchange="changediscountradio();" styleClass="tabletabs">
+                   <apex:selectOption itemLabel="{!if(event.CnP_PaaS_EVT__Discount_Type__c=='Level' || event.CnP_PaaS_EVT__Discount_Type__c==null,'Level Discount Plans (Active)','Level Discount Plans')}" itemValue="Level"></apex:selectOption>
+                   <apex:selectOption itemLabel="{!if(event.CnP_PaaS_EVT__Discount_Type__c=='Global' ,'Global Discount Plans (Active)','Global Discount Plans')}" itemValue="Global"></apex:selectOption>
+                   </apex:selectRadio>
+                   
+                   <div class="tab-content">                   
+                   
+                    <div class="btn-block pagination-centered">
+                      <apex:commandButton value="New" styleClass="btn btn-primary" action="{!NewRecord}" reRender="Createpage,main,ShowChildRelatedList">
+                        <apex:param name="url" value="{!eventid}" assignTo="{!urlnew}"/>
+                      </apex:commandButton>
+                      &nbsp;
+                      <span class="btn btn-primary" >
+                      <apex:outputfield value="{!event.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+                      </span>
+                    </div>
+                    
+                            
+                              <apex:pageBlock id="test"  >
+                                <apex:outputPanel id="leveldis" >
+                                  <apex:pageblockTable value="{!discountlist}" var="dis" styleclass="Eventslist1 detailList" rendered="{!if(selecteddiscounttype=='Level',true,false)}" ><!-- rendered="{!if((event.Discount_Type__c=='Level' || event.Discount_Type__c==null) && selecteddiscounttype=='Level',true,false)}"-->
+                                    <apex:column headerValue="Action" >
+                                      <apex:outputLink value="/apex/Discount_page_2?id={!dis.id}&Event_Id={!eventid}&Event_name={!eventname}&dtype={!selecteddiscounttype}" target="_self" styleClass="icon-edit"></apex:outputLink>
+                                      &nbsp;
+                                      <apex:commandLink value="" styleClass="icon-trash" style="cursor: pointer;" action="{!deletediscountplan}" onclick="if(!reportdelete()) return false;" >
+                                        <apex:param name="Custrepid" value="{!dis.id}" />
+                                      </apex:commandLink>
+                                    </apex:column>
+                                    <apex:column headerValue="Discount Name" >
+                                      <apex:outputLink value="/{!dis.id}" target="_new">{!dis.Name}</apex:outputLink>
+                                    </apex:column>
+                                    <apex:column headerValue="Discount %">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__discount__c}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Fixed Discount">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__fixed_discount__c}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Total Inventory">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__Total_Inventory__c}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Start Date">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__Start_date__c}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="End Date">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__expire_date__c}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Level Name on the Form">
+                                      <apex:outputField value="{!dis.Registration_level__r.Name}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Coupon Code">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__Coupon_Code_value__c}"/>
+                                    </apex:column>
+                                  </apex:pageblockTable>
+                                </apex:outputPanel>
+                                
+                                <apex:outputPanel id="eventdis">
+                                  <apex:pageblockTable value="{!eventdiscountlist}"  var="dis" styleclass="Eventslist detailList" rendered="{!if(selecteddiscounttype!='Level',true,false)}">
+                                    <apex:column headerValue="Action" >
+                                      <apex:outputLink value="/apex/Discount_page_2?id={!dis.id}&Event_Id={!eventid}&Event_name={!eventname}&dtype={!selecteddiscounttype}" target="_self" styleClass="icon-edit"></apex:outputLink>
+                                      &nbsp;
+                                      <apex:commandLink value="" styleClass="icon-trash" style="cursor: pointer;" action="{!deletediscountplan}" onclick="if(!reportdelete()) return false;" >
+                                        <apex:param name="Custrepid" value="{!dis.id}" />
+                                      </apex:commandLink>
+                                    </apex:column>
+                                    <apex:column headerValue="Discount Name" >
+                                      <apex:outputLink value="/{!dis.id}" target="_new">{!dis.Name}</apex:outputLink>
+                                    </apex:column>
+                                    <apex:column headerValue="Discount %">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__discount__c}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Fixed Discount">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__fixed_discount__c}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Total Inventory">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__Total_Inventory__c}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="Start Date">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__Start_date__c}"/>
+                                    </apex:column>
+                                    <apex:column headerValue="End Date">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__expire_date__c}"/>
+                                    </apex:column>
+                                  <!--  <apex:column headerValue="Level Name on the Form">
+                                      <apex:outputField value="{!dis.Registration_level__r.Name}"/>
+                                    </apex:column>-->
+                                    <apex:column headerValue="Coupon Code">
+                                      <apex:outputField value="{!dis.CnP_PaaS_EVT__Coupon_Code_value__c}"/>
+                                    </apex:column>
+                                  </apex:pageblockTable>
+                                </apex:outputPanel>
+                                
+                                <script type="text/javascript">
+                                
+                                $(document).ready(function() {          
+                                
+                                    oTable = $('.Eventslist1').dataTable({
+                                        "bJQueryUI": true,                  
+                                        aoColumnDefs: [
+                                          { aTargets: [0], bSortable: false}]                           
+                                    }
+                                                 
+                                    );
+                                   
+                                } );
+                                $(document).ready(function() {          
+                                
+                                    oTable = $('.Eventslist').dataTable({
+                                        "bJQueryUI": true,                  
+                                        aoColumnDefs: [
+                                          { aTargets: [0], bSortable: false}]                           
+                                    }
+                                                 
+                                    );
+                                   
+                                } );
+                                
+                                function gridchange()
+                                {
+                                            
+                                
+                                    oTable = $('.Eventslist1').dataTable({
+                                        "bJQueryUI": true,                  
+                                        aoColumnDefs: [
+                                          { aTargets: [0], bSortable: false}]                           
+                                    }
+                                                 
+                                    );
+                                   
+                               
+                                          
+                                
+                                    oTable = $('.Eventslist').dataTable({
+                                        "bJQueryUI": true,                  
+                                        aoColumnDefs: [
+                                          { aTargets: [0], bSortable: false}]                           
+                                    }
+                                                 
+                                    );
+                                   
+                                
+                                }
+                                
+                                </script> 
+                              </apex:pageBlock>
+                   
+                   </div> <!-- tab-content -->
+                  </div> <!-- widget-content -->
+                  </div> <!-- widget-box -->
+                </div> <!-- span12 -->
+            </div> <!-- row-fluid -->
+    </div> <!-- container-fluid --> 
+            
+</apex:form>                            
+</apex:page>

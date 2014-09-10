@@ -1,0 +1,18 @@
+<apex:page controller="action_support_checkbox_delete" action="{!meths}">
+   <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!wrapperlist}" var="wraplist">
+                <apex:column >
+                    <apex:inputCheckbox value="{!wraplist.checkboxvar}">
+                        <apex:actionSupport action="{!deleterows}" event="onchange"/>
+                    </apex:inputCheckbox>
+                </apex:column>
+                <apex:column headervalue="Id" value="{!wraplist.empdata.Id}"/>
+                <apex:column headervalue="Name" value="{!wraplist.empdata.Name}"/>
+                <apex:column headervalue="Address" value="{!wraplist.empdata.Address__c}"/>
+                <apex:column headervalue="Company" value="{!wraplist.empdata.Company__c}"/>
+                <apex:column headervalue="Salary" value="{!wraplist.empdata.Salary__c}"/>
+                </apex:pageBlockTable>          
+         </apex:pageBlock>
+    </apex:form>
+</apex:page>

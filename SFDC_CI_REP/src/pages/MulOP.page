@@ -1,0 +1,11 @@
+<apex:page controller="ShowingMoreValues">
+     <apex:form >
+        Enter Number :<apex:inputText value="{!MyNumber}"/><br/>
+        <apex:commandButton value="Submit" action="{!MyMethod}"/><br/>
+        <apex:pageBlock >
+            <apex:pageblocktable value="{!allNumbers}" var="VarNumbers"> 
+                <apex:column value="{!VarNumbers}" headerValue="MYNUMBERS"/>
+            </apex:pageblocktable>
+        </apex:pageBlock>
+     </apex:form>
+</apex:page>

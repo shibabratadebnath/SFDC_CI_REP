@@ -1,0 +1,16 @@
+<apex:page >
+ <script>
+function Demo() 
+        {
+           document.getElementById("{!$Component.frm.txt1}").innerHTML="Hello";
+           }
+    </script>
+    <apex:form id="frm">
+   
+
+            <apex:outputText value="Value one:" id="txt1" /><br/>
+
+        <apex:commandButton value="Submit" onclick="Demo()" rerender="none"/>
+        
+    </apex:form>
+</apex:page>

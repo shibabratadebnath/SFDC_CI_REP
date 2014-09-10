@@ -1,0 +1,280 @@
+<apex:page standardController="Contact" extensions="CnP_PaaS.Connectreports" >
+ <script type="text/javascript" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Library/Extjs/bootstrap.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://s3.amazonaws.com/clickandpledge/Salesforce/Library/Extjs/resources/css/ext-all.css" />
+   <script>
+        Ext.require(['Ext.data.*','Ext.chart.*', 'Ext.chart.axis.Gauge', 'Ext.chart.series.*', 'Ext.Window']);
+        Ext.onReady(function () {
+           Ext.define('GaugePoint', {
+                extend: 'Ext.data.Model',
+                fields: ['name', 'data1']
+          });
+            var store_total = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Total', data1:{!JSENCODE(TEXT(totalvalue))}},
+                  ]
+            });
+             var store_total_intrinsic = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Totalintrinsic', data1:{!JSENCODE(TEXT(totalintrinsicvalue))}},
+                  ]
+            });
+             var store_total_extrinsic= Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Totalextrinsic', data1:{!JSENCODE(TEXT(totalintrinsicvaluedonors))}},
+                  ]
+            });
+            var store_per_amount = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Total', data1:{!JSENCODE(TEXT(totalpersonalreceipts))}},
+                  ]
+            });
+            var store_per_count = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Total', data1:{!JSENCODE(TEXT(totalpersonalcount))}},
+                  ]
+            });
+            var store_rai_amount = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Total', data1:{!JSENCODE(TEXT(totalamount))}},
+                  ]
+            });
+            var store_rai_count = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Total', data1:{!JSENCODE(TEXT(totaldonors))}},
+                  ]
+            });
+            var store_my_per_amount = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Total', data1:{!JSENCODE(TEXT(totalpersonalreceiptsdonors))}},
+                  ]
+            });
+            var store_my_per_count = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Total', data1:{!JSENCODE(TEXT(totalpersonalcountdonors))}},
+                  ]
+            });
+            var store_my_rai_amount = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Total', data1:{!JSENCODE(TEXT(totalamountdonors))}},
+                  ]
+            });
+            var store_my_rai_count = Ext.create('Ext.data.Store', {
+                  model: 'GaugePoint',
+                  data : [
+                  {name: 'Total', data1:{!JSENCODE(TEXT(totaldonordonors))}},
+                  ]
+            }); 
+             gaugechartloding(150,310,'Total',0,{!JSENCODE(TEXT(max_totalvalue))},Math.floor({!JSENCODE(TEXT(max_totalvalue))}/5) <=0 ? {!JSENCODE(TEXT(max_totalvalue))} : 5,store_total,'Total');           
+             gaugechartloding(150,310,'Totalintrinsic',0,{!JSENCODE(TEXT(max_intrinsic_value))},Math.floor({!JSENCODE(TEXT(max_intrinsic_value))}/5) <=0 ? {!JSENCODE(TEXT(max_intrinsic_value))} : 5,store_total_intrinsic,'Total Personal');           
+             gaugechartloding(150,310,'Totalextrinsic',0,{!JSENCODE(TEXT(max_extrinsic_value))},Math.floor({!JSENCODE(TEXT(max_extrinsic_value))}/5) <=0 ? {!JSENCODE(TEXT(max_extrinsic_value))} : 5,store_total_extrinsic,'Total Network');           
+             gaugechartloding(130,250,'PersonalAmount',0,{!JSENCODE(TEXT(max_per_total))},Math.floor({!JSENCODE(TEXT(max_per_total))}/5) <=0 ? {!JSENCODE(TEXT(max_per_total))} : 5,store_per_amount,'Amount');
+             gaugechartloding(130,250,'PersonalCount',0,{!JSENCODE(TEXT(max_per_count))},Math.floor({!JSENCODE(TEXT(max_per_count))}/5) <=0 ? {!JSENCODE(TEXT(max_per_count))} : 5,store_per_count,'Count');
+             gaugechartloding(130,250,'RaisedAmount',0,{!JSENCODE(TEXT(max_rai_total))},Math.floor({!JSENCODE(TEXT(max_rai_total))}/5) <=0 ? {!JSENCODE(TEXT(max_rai_total))} : 5,store_rai_amount,'Amount');
+             gaugechartloding(130,250,'RaisedCount',0,{!JSENCODE(TEXT(max_rai_count))},Math.floor({!JSENCODE(TEXT(max_rai_count))}/5) <=0 ? {!JSENCODE(TEXT(max_rai_count))} : 5,store_rai_count,'Count');
+             gaugechartloding(130,250,'Mypersonalamount',0,{!JSENCODE(TEXT(max_my_per_total))},Math.floor({!JSENCODE(TEXT(max_my_per_total))}/5) <=0 ? {!JSENCODE(TEXT(max_my_per_total))} : 5,store_my_per_amount,'Amount');  
+             gaugechartloding(130,250,'MyPersonalcount',0,{!JSENCODE(TEXT(max_my_per_count))},Math.floor({!JSENCODE(TEXT(max_my_per_count))}/5) <=0 ? {!JSENCODE(TEXT(max_my_per_count))} : 5,store_my_per_count,'Count');
+             gaugechartloding(130,250,'MyRaisedamount',0,{!JSENCODE(TEXT(max_my_rai_total))},Math.floor({!JSENCODE(TEXT(max_my_rai_total))}/5) <=0 ? {!JSENCODE(TEXT(max_my_rai_total))} : 5,store_my_rai_amount,'Amount');
+             gaugechartloding(130,250,'MyRaisedcount',0,{!JSENCODE(TEXT(max_my_rai_count))},Math.floor({!JSENCODE(TEXT(max_my_rai_count))}/5) <=0 ? {!JSENCODE(TEXT(max_my_rai_count))} : 5,store_my_rai_count,'Count');  
+                      
+        
+        });      
+       
+       
+        function gaugechartloding(height,width,renderid,min,max,step,store,title){
+            Ext.create('Ext.chart.Chart', {
+                    width: width,
+                    height: height,
+                    minWidth: 200,
+                    minHeight: 100,
+                    renderTo: renderid,
+                    animated:true,
+                    title: 'Gauge Charts',
+                    xtype: 'chart',
+                    store: store,                       
+                    insetPadding: 25,
+                    flex: 1,                    
+                    axes: [{
+                        title:title,
+                        type: 'gauge',
+                        position: 'gauge',
+                        minimum: min,
+                        maximum: max,
+                        steps: step,
+                        margin: 0
+                    }],
+                    series: [{
+                        type: 'gauge',
+                        field: 'data1',
+                        donut: 80,
+                        colorSet: ['#F49D10', '#ddd']
+                    }]                    
+             })
+        }
+    </script>
+    <apex:pageBlock title="Patron Value Rank">
+    
+       <apex:pageblockSection columns="1" >
+      <apex:outputPanel >
+             <apex:outputPanel style="float:left">
+                  <apex:outputLabel style="font-weight:bold" value="Summary:"></apex:outputLabel> <br/><br/>
+                  <apex:outputPanel style="margin-left:40px;margin-top:10px;">
+                      <apex:outputlabel value="Total Personal Value=  "/>
+                      <apex:outputtext value="{0, number, #,###,###.00}">
+                          <apex:param value="{!totalintrinsicvalue}" />
+                      </apex:outputtext>
+                  </apex:outputpanel><br/><br/>
+      
+                   <apex:outputPanel style="margin-left:40px;margin-top:10px;">
+                      <apex:outputlabel value="Total Network Value=  "/>
+                     
+                       <apex:outputtext value="{0, number,  #,###,###.00}">
+                          <apex:param value="{!totalintrinsicvaluedonors}" />
+                      </apex:outputtext>
+                  </apex:outputpanel><br/><br/>
+                   <apex:outputPanel style="margin-left:40px;margin-top:10px;">
+                      <apex:outputlabel value="Total Value= "/>                     
+                       <apex:outputtext value="{0, number,  #,###,###.00}">
+                          <apex:param value="{!totalvalue}" />
+                       </apex:outputtext>
+                  </apex:outputpanel><br/><br/>
+                  <apex:outputPanel style="margin-left:40px;margin-top:10px;">
+                      <apex:outputlabel value="Patron Value Rank= "/>
+                      <apex:outputtext value="NR*" rendered="{!if(globalrank == null || globalrank== 0, true,false)}"/>
+                      <apex:outputtext value="{!globalrank}" rendered="{!if(globalrank == null || globalrank== 0, false,true)}"/>
+                  </apex:outputpanel><br/><br/>
+          </apex:outputPanel>
+          <apex:outputPanel >     
+                 <div style="float:left">
+                    <div id="Totalintrinsic" style="float:left;padding-left:10px;margin-top:20px;"></div>
+                    <div id="Totalextrinsic" style="float:left;padding-left:30px;margin-top:20px;"></div>
+                    <div id="Total" style="float:left;margin-left:20px;margin-top:20px;"></div>
+                 </div>
+          </apex:outputPanel>
+     </apex:outputPanel>
+     
+     <!-- <apex:chart height="150" width="280" animate="true" data="{!total_list}" legend="false" >
+          <apex:axis type="Gauge" position="gauge" title="Total" minimum="0" maximum="{!connectstat_max[0].Total__c}" steps="5" margin="7"  />
+         <apex:gaugeSeries dataField="total" donut="80" colorSet="#78c953,#ddd" />
+      </apex:chart>-->   
+      
+    </apex:pageblocksection>  
+    
+    <table class="list"  border="0" cellpadding="9" width="100%" >
+    <thead>
+       <tr class="headerRow">
+          <th colspan="2" class="headerRow">My Contributions</th>
+          <th colspan="2" class="headerRow">My Donors' Contributions</th>
+       </tr>
+    </thead>
+   
+    <tbody>
+   <tr>
+    <td width="15%">
+          <i>Personal: </i>
+          <table class="list" border="0" style="margin-top:20px" >    
+              <tr>
+                <td colspan="2">Total= <apex:outputtext value="{0, number,  #,###,###.00}">
+                          <apex:param value="{!totalpersonalreceipts}" />
+                       </apex:outputtext>&nbsp;[Rank=&nbsp;<apex:outputText value="NR*" rendered="{!if(personaldonationsamountrank == null || personaldonationsamountrank == 0, true,false)}"/>
+                       <apex:outputText value="{!personaldonationsamountrank}" rendered="{!if(personaldonationsamountrank == null || personaldonationsamountrank == 0, false,true)}"/>]
+                       
+                       </td>
+              </tr>
+              <tr>
+                <td>Contributions Count= {!totalpersonalcount}&nbsp; [Rank= &nbsp;<apex:outputText value="NR*" rendered="{!if(personaldonationscountrank== null || personaldonationscountrank== 0, true,false)}"/>
+                       <apex:outputText value="{!personaldonationscountrank}" rendered="{!if(personaldonationscountrank== null || personaldonationscountrank== 0, false,true)}"/> ]</td>
+              </tr>
+          </table>
+    </td>
+    <td width="35%"> <div id="PersonalAmount" style="float:left;margin-left:0px;margin-top:10px;"></div>
+          <div id="PersonalCount" style="float:left;margin-left:0px;margin-top:10px;"></div>
+    </td>
+    
+    <td width="15%">
+         <i>Personal: </i>
+        <table class="list" border="0" cellpadding="9" style="margin-top:20px">
+          <tr>
+            <td >Total= <apex:outputtext value="{0, number,  #,###,###.00}">
+                          <apex:param value="{!totalpersonalreceiptsdonors}" />
+                       </apex:outputtext>&nbsp; [Rank= &nbsp;<apex:outputText value="NR*" rendered="{!if(personaldonationsamountrankdonors== null || personaldonationsamountrankdonors== 0, true,false)}"/>
+                       <apex:outputText value="{!personaldonationsamountrankdonors}" rendered="{!if(personaldonationsamountrankdonors== null || personaldonationsamountrankdonors== 0, false,true)}"/> ]</td>
+          </tr>
+          <tr>
+            <td>Contributions Count= {!totalpersonalcountdonors}&nbsp; [Rank= &nbsp;<apex:outputText value="NR*" rendered="{!if(personaldonationscountrankdonors== null || personaldonationscountrankdonors== 0, true,false)}"/>
+                       <apex:outputText value="{!personaldonationscountrankdonors}" rendered="{!if(personaldonationscountrankdonors== null || personaldonationscountrankdonors== 0, false,true)}"/> ]</td>
+          </tr>
+        </table>
+     </td>
+     <td width="35%">
+          <div id="Mypersonalamount" style="float:left;margin-left:0px;margin-top:10px;"></div>
+          <div id="MyPersonalcount" style="float:left;margin-left:0px;margin-top:10px;"></div>
+     </td>
+  </tr>
+  <tr>   
+    <td width="180">
+    <i>Raised:</i>
+    <table class="list" border="0" cellpadding="9" style="margin-top:20px">
+      <tr>        
+        <td>Total= <apex:outputtext value="{0, number,  #,###,###.00}">
+                          <apex:param value="{!totalamount}" />
+                       </apex:outputtext> &nbsp; [Rank=&nbsp; <apex:outputText value="NR*" rendered="{!if(rank== null || rank== 0, true,false)}"/>
+                       <apex:outputText value="{!rank}" rendered="{!if(rank== null || rank== 0, false,true)}"/> ]</td>
+      </tr>
+      <tr>       
+        <td>Donor Count= {!totaldonors}&nbsp; [Rank= &nbsp;<apex:outputText value="NR*" rendered="{!if(raiseddonationscountrank== null || raiseddonationscountrank== 0, true,false)}"/>
+                       <apex:outputText value="{!raiseddonationscountrank}" rendered="{!if(raiseddonationscountrank== null || raiseddonationscountrank== 0, false,true)}"/> ]</td> 
+      </tr>
+    </table></td>
+    <td width="450"> 
+          <div id="RaisedAmount" style="float:left;margin-left:0px;margin-top:10px;"></div>
+          <div id="RaisedCount" style="float:left;margin-left:0px;margin-top:10px;"></div>
+    </td>
+    <td>
+    <i>Raised:</i>
+    <table class="list" border="0" cellpadding="9" style="margin-top:20px">
+      <tr>       
+        <td>Total= <apex:outputtext value="{0, number,  #,###,###.00}">
+                          <apex:param value="{!totalamountdonors}" />
+                       </apex:outputtext>&nbsp; [Rank= &nbsp;<apex:outputText value="NR*" rendered="{!if(rankdonors== null || rankdonors== 0, true,false)}"/>
+                       <apex:outputText value="{!rankdonors}" rendered="{!if(rankdonors== null || rankdonors== 0, false,true)}"/> ]</td>
+      </tr>
+      <tr>     
+        <td>Donor Count= {!totaldonordonors} [Rank= &nbsp;<apex:outputText value="NR*" rendered="{!if(raiseddonationscountrankdonors == null || raiseddonationscountrankdonors == 0, true,false)}"/>
+                       <apex:outputText value="{!raiseddonationscountrankdonors}" rendered="{!if(raiseddonationscountrankdonors == null || raiseddonationscountrankdonors == 0, false,true)}"/> ]</td>
+      </tr>
+    </table></td>
+    <td> 
+          <div id="MyRaisedamount" style="float:left;margin-left:0px;margin-top:10px;"></div>
+          <div id="MyRaisedcount" style="float:left;margin-left:0px;margin-top:10px;"></div>
+    </td>
+  </tr>
+  <tr>
+     <td colspan="2">Total Personal Value= <apex:outputtext value="{0, number,  #,###,###.00}">
+                          <apex:param value="{!totalintrinsicvalue}" />
+                       </apex:outputtext></td>
+     <td colspan="2">Total Network value= <apex:outputtext value="{0, number,  #,###,###.00}">
+                          <apex:param value="{!totalintrinsicvaluedonors}" />
+                       </apex:outputtext></td>
+  </tr>
+  <tr>
+     <td colspan="2">Overall Personal Rank= &nbsp;<apex:outputText value="NR*" rendered="{!if(totalrank== null || totalrank == 0, true,false)}"/>
+                       <apex:outputText value="{!totalrank}" rendered="{!if(totalrank== null || totalrank== 0, false,true)}"/> </td>
+     <td colspan="2">Overall Network Rank= &nbsp;<apex:outputText value="NR*" rendered="{!if(totalmydonorsrank== null || totalmydonorsrank== 0, true,false)}"/>
+                       <apex:outputText value="{!totalmydonorsrank}" rendered="{!if(totalmydonorsrank== null || totalmydonorsrank== 0, false,true)}"/> </td>
+  </tr>
+ </tbody>
+</table>   <br/>
+ <apex:outputText style="color:#328400;padding-left: 70px;position: relative;">*NR = Not Ranked since no contributions are recorded.</apex:outputText><br/>
+ <apex:outputText style="color:#328400;padding-left: 70px;position: relative;">*Note:  Statistics are updated once a day at 3:00 a.m.</apex:outputText>
+ </apex:pageBlock> 
+</apex:page>

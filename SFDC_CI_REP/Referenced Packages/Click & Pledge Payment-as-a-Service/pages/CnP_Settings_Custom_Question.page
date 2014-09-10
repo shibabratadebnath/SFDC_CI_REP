@@ -1,0 +1,1110 @@
+<apex:page controller="CnP_PaaS.SettingsController" extensions="CnP_PaaS.ContactMapController" action="{!loadhelpContent}">
+<style>
+.datePicker{
+margin-left: -143px;
+}
+.datePicker select {
+width: initial!important;
+}
+</style>
+<script type="text/javascript">
+ 
+    function changecondition(rowvalue){
+       var campconditions = jQuery(".condition"+rowvalue).val();
+       if(campconditions == 'Is Recurring' || campconditions == 'Any SKU' ){
+             $(".sku"+rowvalue).val(''); 
+             $(".sku"+rowvalue).attr('disabled',true); 
+       }else{
+            $(".sku"+rowvalue).attr('disabled',false); 
+           
+       }
+    }
+   
+     function changevaluecustom(rowvalue){
+       if(rowvalue!=''){
+            $(".replacedanswer"+rowvalue).val(''); 
+            $(".replacedanswerinteger"+rowvalue).val(''); 
+            $(".replacedanswerdouble"+rowvalue).val(''); 
+            $(".replacedanswercurrency"+rowvalue).val(''); 
+        }
+     }  
+    
+    function DynamicDatePicker(d_id){
+        DatePicker.pickDate(false,d_id.id,false);
+    }
+    function DynamicDatePicker1(d_id){
+        DatePicker.pickDate(false,d_id.id,true);
+     }
+    function skuchangeobject_function(value){
+         if(value!=''){
+            processstart();
+            skuchangeobject(value);  
+         }
+    }
+   
+    function skuchangefield_function(value1,value2,previousval,rowid)
+    {  
+      if(value1!='' && value2!=''){
+   if(value1!=previousval){
+        jQuery('.customtextlookup'+rowid).val('');
+      } 
+       processstart();
+        skuchangefield(value1,value2); }
+   }
+   function changeobject_function(value){
+       if(value!=''){
+            processstart();
+            changeobject(value);  
+         }
+    }
+    function changefield_function(value1,value2){
+        if(value1!='' && value2!=''){
+           processstart();
+           changefield(value1,value2);
+        }
+   }
+    
+    function skucalculatecurr(){
+      var rownum = jQuery(".rownumquestion").val();
+       for(var i=0;i<rownum ;i++){
+             var customtextcurrency = jQuery(".customtextcurrency"+i).val().replace(',','');
+             jQuery(".customtextcurrency"+i).val(parseFloat(customtextcurrency).toFixed(2));
+        }
+    }
+    
+    function calculatecurr(){
+   var customquestionrowvalue = jQuery(".customquestionrowvalue").val();
+ for(var i=0;i<customquestionrowvalue ;i++)
+     {
+     var replacedanswercurrency= jQuery(".replacedanswercurrency"+i).val().replace(',','');
+     
+     jQuery(".replacedanswercurrency"+i).val(parseFloat(replacedanswercurrency).toFixed(2));
+     }
+  }
+  
+   function trimvalue(value,fieldclass){
+     var replace=jQuery.trim(value); 
+     jQuery("."+fieldclass).attr('value',replace);
+     } 
+     
+function ValidateCustomQuestion()
+  {
+   
+   var customquestionrowvalue = jQuery(".customquestionrowvalue").val();
+   var valid=0;
+   var reg_ino=/^([0-9])+$/; 
+   var validformat= /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+ // var validformattime=/^(([0]?[1-9]|1[0-2])/([0-2]?[0-9]|3[0-1])/[1-2]\d{3}) (20|21|22|23|[0-1]?\d{1}):([0-5]?\d{1})$/;
+  //var validformattime=/^(([0]?[1-9]|1[0-2])/([0-2]?[0-9]|3[0-1])/([1-2]\d{3}) (20|21|22|23|[0-1]?\d{1}):([0-5]?\d{1}))$/;
+
+     for(var i=0;i<customquestionrowvalue ;i++)
+    {     
+            var customquestionname = jQuery.trim(jQuery(".customquestionname"+i).val());
+          var reg_customquestionname =/^([a-zA-Z0-9\.\,\#\-\'\@\$\^\%\*\(\)\{\}\[\]\_\;\:\"\<\>\?\/\`\|\!\+\ ])+$/;
+             var originalans = jQuery.trim(jQuery(".originalans"+i).val());
+             var replacedanswer = jQuery.trim(jQuery(".replacedanswer"+i).val());
+              var replacedanswerinteger = jQuery.trim(jQuery(".replacedanswerinteger"+i).val());
+               var replacedanswerdouble = jQuery.trim(jQuery(".replacedanswerdouble"+i).val());
+                var replacedanswerboolean = jQuery.trim(jQuery(".replacedanswerboolean"+i).val());
+                var replacedanswercurrency = jQuery.trim(jQuery(".replacedanswercurrency"+i).val());
+                var replacedanswerdate = jQuery.trim(jQuery(".replacedanswerdate"+i).val());
+                var replacedanswerdatetime = jQuery.trim(jQuery(".replacedanswerdatetime"+i).val());
+                
+                 var customquestionobject = jQuery(".customquestionobject"+i).val(); 
+              var customquestionfield = jQuery(".customquestionfield"+i).val(); 
+              var customfieldlen=jQuery(".customfieldlen"+i).val();
+              var todaydate= jQuery(".todaydate"+i).val(); 
+              
+              var todaydatetime = jQuery(".todaydatetime"+i).val();
+              if(customquestionobject == "")
+              {
+                    valid=1;
+                    alert("Please select the Object");
+                    jQuery(".customquestionobject"+i).focus();
+                    return false;
+              }
+              if(customquestionfield == "")
+              {
+                     valid=1;
+                     alert("Please select the Field");                    
+                     jQuery(".customquestionfield"+i).focus();
+                     return false;
+              }
+              if(customquestionname == "")
+              {
+                    valid=1;
+                    alert("Please enter the Question");
+                    jQuery(".customquestionname"+i).focus();
+                    return false;
+              }
+       if(customquestionname!='' && !reg_customquestionname.test(customquestionname)){
+        valid=1;
+            alert("Enter valid data for Custom Question");
+            jQuery(".customquestionname"+i).focus();
+            return false;
+    
+    }
+     if(originalans!='' && !reg_customquestionname.test(originalans)){
+            valid=1;
+            alert("Enter valid data for Custom Answer");
+            jQuery(".originalans"+i).focus();
+            return false;
+    
+    }
+    /******* Test fields *********/
+/*if(replacedanswer=="" && typeof jQuery(".replacedanswer"+i).val()!='undefined' ){
+   valid = 1;
+   alert("Please enter the data in Custom Text");
+   jQuery(".replacedanswer"+i).focus();
+   return false;
+}*/
+if(replacedanswer!="" && typeof jQuery(".replacedanswer"+i).val()!='undefined' && !reg_customquestionname.test(replacedanswer)){
+                    valid=1;
+                    alert("Please enter the valid data in Custom Text");
+                    jQuery(".replacedanswer"+i).focus();
+                    return false;
+}
+if (customfieldlen!=0  && replacedanswer.length > 80 && replacedanswer!='' && typeof jQuery(".replacedanswer"+i).val()!='undefined')
+{
+                 valid=1;              
+                 alert("Custom text value length should not be exceeded to 80 characters ");
+                 jQuery(".replacedanswer"+i).focus();
+                 return false;
+}
+/************ end here ********/
+/********** Integer field *******/
+if(replacedanswerinteger=="" && typeof jQuery(".replacedanswerinteger"+i).val()!='undefined' ){
+               valid=1;
+               alert("Please enter the data in Custom Text"); 
+               jQuery(".replacedanswerinteger"+i).focus();
+               return false;
+}
+if(replacedanswerinteger!='' && replacedanswerinteger<=0 && typeof jQuery(".replacedanswerinteger"+i).val()!='undefined')
+  {
+                      valid= 1;
+                      alert("Value must be greater than 0");
+                      jQuery(".replacedanswerinteger"+i).focus();
+                      return false;
+  }
+ if(isNaN(replacedanswerinteger) && typeof jQuery(".replacedanswerinteger"+i).val()!='undefined')
+    {
+             valid=1;
+            alert("Please Enter a Number ");
+          jQuery(".replacedanswerinteger"+i).focus();
+            return false;
+    }
+
+ if(replacedanswerinteger!='' && typeof jQuery(".replacedanswerinteger"+i).val()!='undefined' && !reg_ino.test(replacedanswerinteger)){
+                  valid=1;
+                 alert("Please Enter integer values only ");
+                 jQuery(".replacedanswerinteger"+i).focus();
+                 return false;
+            } 
+if(replacedanswerinteger!='' && typeof jQuery(".replacedanswerinteger"+i).val()!='undefined' && customfieldlen!=0  && replacedanswerinteger.length > customfieldlen)
+{
+                 valid=1;
+                 alert("Custom text value length should not be grater than the selected field length ");
+                 jQuery(".replacedanswerinteger"+i).focus();
+                 return false;
+}
+/********** end here *********/
+/************ Double filed ********/
+if(replacedanswerdouble=="" && typeof jQuery(".replacedanswerdouble"+i).val()!='undefined'){
+    valid = 1;
+    alert("Please enter the data in Custom Text");
+    jQuery(".replacedanswerdouble"+i).focus();
+}
+
+if(replacedanswerdouble!='' && typeof jQuery(".replacedanswerdouble"+i).val()!='undefined' && !reg_ino.test(replacedanswerdouble))
+   {
+            valid=1;
+            alert("Please Enter a Number ");
+          jQuery(".replacedanswerdouble"+i).focus();
+            return false;
+   } 
+if (replacedanswerdouble!='' && typeof jQuery(".replacedanswerdouble"+i).val()!='undefined' && replacedanswerdouble<=0)
+  {
+                     valid= 1;
+                      alert("Value must be greater than 0");
+                      jQuery(".replacedanswerdouble"+i).focus();
+                      return false;
+  }
+ 
+if(replacedanswerdouble!='' && typeof jQuery(".replacedanswerdouble"+i).val()!='undefined' && customfieldlen!=0  && replacedanswerdouble.length > customfieldlen)
+{
+ valid=1;
+                 alert("Custom text value length should not be grater than the selected field length ");
+                 jQuery(".replacedanswerdouble"+i).focus();
+                 return false;
+} 
+/************* end here **********/
+/************* Currency Fields *******/
+if(replacedanswercurrency=="" && typeof jQuery(".replacedanswercurrency"+i).val()!='undefined'){
+       valid=1;
+       alert("Please enter the data in Custom Text");
+       jQuery(".replacedanswercurrency"+i).focus();
+}
+if(isNaN(replacedanswercurrency) && typeof jQuery(".replacedanswercurrency"+i).val()!='undefined')
+   {
+            valid=1;
+            alert("Please Enter a Number ");
+          jQuery(".replacedanswercurrency"+i).focus();
+            return false;
+   } 
+if(replacedanswercurrency!='' && replacedanswercurrency<=0 && typeof jQuery(".replacedanswercurrency"+i).val()!='undefined')
+  {
+                     valid= 1;
+                      alert("Value must be greater than 0");
+                      jQuery(".replacedanswercurrency"+i).focus();
+                      return false;
+  }
+if( customfieldlen!=0 && replacedanswercurrency.length > customfieldlen&& typeof jQuery(".replacedanswercurrency"+i).val()!='undefined')
+{
+                     valid= 1;
+                 alert("Custom text value length should not be grater than the selected field length ");
+                      jQuery(".replacedanswercurrency"+i).focus();
+                      return false;
+}
+/************* End here **************/
+/**************** Date fields ************/
+todaydate = jQuery('.todaydate'+i).val();
+/*
+if(todaydate=="" && typeof jQuery(".todaydate"+i).val()!='undefined'&& todaydate !='Select Date' && todaydate !='Date Now' && todaydate != 'DateNow Plus'  && todaydate != 'DateNow Minus') {
+        valid=1;
+        alert("Please select Custom Text");
+        jQuery(".todaydate"+i).focus();
+        return false;
+}*/
+replacetextfixeddate = jQuery('.replacetextfixeddate'+i).val();
+
+if(replacetextfixeddate == "" && todaydate=='Select Date' && typeof jQuery(".replacetextfixeddate"+i).val()!='undefined'){
+        valid=1;
+        alert("Please Enter the Date field value");
+        jQuery(".replacetextfixeddate"+i).focus();
+        return false;
+}
+if(todaydate=='Select Date' && !validformat.test(replacetextfixeddate) && typeof jQuery(".replacetextfixeddate"+i).val()!='undefined')
+{
+        valid=1;
+        alert("Invalid Date Format. Please correct and submit again.");
+        jQuery(".replacetextfixeddate"+i).focus();
+        return false;
+}
+replacedatenowplus = jQuery('.replacedatenowplus'+i).val();
+if(todaydate=='DateNow Plus' && replacedatenowplus=="" && typeof jQuery(".replacedatenowplus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter the no of the days");
+     jQuery(".replacedatenowplus"+i).focus();
+     return false;
+}
+if(todaydate=='DateNow Plus' && replacedatenowplus=="" && !reg_ino.test(replacedatenowplus) && typeof jQuery(".replacedatenowplus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter valid number at no of the days");
+     jQuery(".replacedatenowplus"+i).focus();
+     return false;
+}
+replacedatenowminus = jQuery('.replacedatenowminus'+i).val();
+if(todaydate=='DateNow Minus' && replacedatenowminus=="" && typeof jQuery(".replacedatenowminus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter the no of the days");
+     jQuery(".replacedatenowminus"+i).focus();
+     return false;
+}
+if(todaydate=='DateNow Minus' && replacedatenowminus!="" && !reg_ino.test(replacedatenowminus) && typeof jQuery(".replacedatenowminus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter valid number at no of the days");
+     jQuery(".replacedatenowminus"+i).focus();
+     return false;
+}
+
+
+/**************** End here ***************/
+/**************** Date Time fields ************/
+todaydatetime = jQuery(".todaydatetime"+i).val();
+if(todaydatetime=="" && typeof jQuery(".todaydatetime"+i).val()!='undefined'){
+        valid=1;
+        alert("Please select Custom Text");
+        jQuery(".todaydatetime"+i).focus();
+        return false;
+}
+replacetextfixeddate = jQuery('.replacetextfixeddate'+i).val();
+if(replacetextfixeddate == "" && todaydatetime=='Select Date' && typeof jQuery(".replacetextfixeddate"+i).val()!='undefined'){
+        valid=1;
+        alert("Please Enter the Date field value");
+        jQuery(".replacetextfixeddate"+i).focus();
+        return false;
+}
+if(todaydatetime=='Select Date' && !validformat.test(replacetextfixeddate) && typeof jQuery(".replacetextfixeddate"+i).val()!='undefined')
+{
+        valid=1;
+        alert("Invalid Date Format. Please correct and submit again.");
+        jQuery(".replacetextfixeddate"+i).focus();
+        return false;
+}
+replacedatenowplus = jQuery('.replacedatenowplus'+i).val();
+if(todaydatetime=='DateNow Plus' && replacedatenowplus=="" && typeof jQuery(".replacedatenowplus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter the no of the days");
+     jQuery(".replacedatenowplus"+i).focus();
+     return false;
+}
+if(todaydatetime=='DateNow Plus' && replacedatenowplus!="" && !reg_ino.test(replacedatenowplus) && typeof jQuery(".replacedatenowplus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter valid number at no of the days");
+     jQuery(".replacedatenowplus"+i).focus();
+     return false;
+}
+replacedatenowminus = jQuery('.replacedatenowminus'+i).val();
+if(todaydatetime=='DateNow Minus' && replacedatenowminus=="" && typeof jQuery(".replacedatenowminus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter the no of the days");
+     jQuery(".replacedatenowminus"+i).focus();
+     return false;
+}
+if(todaydatetime=='DateNow Minus' && replacedatenowminus!="" && !reg_ino.test(replacedatenowminus) && typeof jQuery(".replacedatenowminus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter valid number at no of the days");
+     jQuery(".replacedatenowminus"+i).focus();
+     return false;
+}
+
+
+/**************** End here ***************/
+        
+  }    
+        if(valid==0)
+        {
+            processstart();
+            saveQuestions1();
+            return true;
+        }else{
+            return false;
+        }
+         
+    }
+    
+  function ValidateSkuQuestion()
+    {
+        
+         var rownum = jQuery(".rownumquestion").val();
+         var valid=0;
+        var reg_ino=/^([0-9])+$/; 
+       var validformat= /^\d{1,2}\/\d{1,2}\/\d{4}$/;
+     // var validformattime=/^(([0]?[1-9]|1[0-2])/([0-2]?[0-9]|3[0-1])/[1-2]\d{3}) (20|21|22|23|[0-1]?\d{1}):([0-5]?\d{1})$/;
+         reg_sku=/^([a-zA-Z0-9\_\:\-\ ])+$/;
+         for(var i=0;i<rownum;i++)
+         {
+              var reg_questionname =/^([a-zA-Z0-9\.\,\#\-\'\@\$\^\%\*\(\)\{\}\[\]\_\;\:\"\<\>\?\/\`\|\!\+\ ])+$/;
+              var condition = jQuery(".condition"+i).val();
+              var sku = jQuery.trim(jQuery(".sku"+i).val());
+              var custometext = jQuery.trim(jQuery(".custometext"+i).val());
+              var customtextinteger = jQuery.trim(jQuery(".customtextinteger"+i).val());
+              var customtextdouble = jQuery.trim(jQuery(".customtextdouble"+i).val());
+              var customtextcurrency = jQuery.trim(jQuery(".customtextcurrency"+i).val());
+              var customtextboolean = jQuery.trim(jQuery(".customtextboolean"+i).val());
+              var objectmap = jQuery(".objectmap"+i).val();
+              var fieldmap = jQuery(".fieldmap"+i).val();
+              var fieldlen = jQuery(".fieldlen"+i).val();
+              var customtextdate=jQuery(".customtextdate"+i).val();
+              var customtextdatetime=jQuery(".customtextdatetime"+i).val();
+               var customtextfixeddate = jQuery(".customtextfixeddate"+i).val();
+             var customansdateplus= jQuery(".customansdateplus"+i).val();
+              var customansdateminus= jQuery(".customansdateminus"+i).val();
+             var customtextlookup= jQuery.trim(jQuery(".customtextlookup"+i).val());
+             var customlookupqtn=jQuery.trim(jQuery(".customlookupqtn"+i).val());
+              var todaydate= jQuery(".todaydate"+i).val();
+             
+              if(objectmap=="")
+              {
+                    valid=1;
+                    alert("Please select the Object");
+                    jQuery(".objectmap"+i).focus();
+                    return false;
+              }
+              if(fieldmap=="")
+              {
+                    valid=1;
+                    alert("Please select the Field");
+                    jQuery(".fieldmap"+i).focus();
+                    return false;
+              }     
+              if(sku=="" && condition !='Any SKU' && condition!='Is' && condition !='Is Recurring')
+              {
+                   valid=1;
+                   alert("Please enter the SKU");
+                   jQuery(".sku"+i).focus();
+                   return false;
+              }
+              if(!reg_sku.test(sku) && sku!="" && condition !='Any SKU'  && condition !='Is Recurring')
+              {    
+                      valid=1;
+                      alert("Please enter the only Alphanumeric _ - : and space for SKU");
+                      jQuery(".sku"+i).focus();
+                      return false;
+              }
+ /******* Test fields *********/
+if(custometext=="" && typeof jQuery(".custometext"+i).val()!='undefined' ){
+   valid = 1;
+   alert("Please enter the data in Custom Text");
+   jQuery(".custometext"+i).focus();
+   return false;
+}
+if(custometext=="" && typeof jQuery(".custometext"+i).val()!='undefined' && !reg_questionname.test(custometext)){
+                    valid=1;
+                    alert("Please enter the valid data in Custom Text");
+                    jQuery(".custometext"+i).focus();
+                    return false;
+}
+if (fieldlen!=0  && custometext.length > 80 && custometext!='' && typeof jQuery(".custometext"+i).val()!='undefined')
+{
+                 valid=1;              
+                 alert("Custom text value length should not be exceeded to 80 characters ");
+                 jQuery(".custometext"+i).focus();
+                 return false;
+}
+/************ end here ********/
+/**********Lookup Fields************/
+if(customtextlookup=="" && typeof jQuery(".customtextlookup"+i).val()!='undefined' ){
+               valid=1;
+               alert("Please enter the data in Custom Text"); 
+               jQuery(".customtextlookup"+i).focus();
+               return false;
+}
+if(customtextlookup=='')
+            { 
+               customlookupqtn=  jQuery(".customlookupqtn"+i).val('');
+            }
+         
+            customlookupqtn= jQuery(".customlookupqtn"+i).val();
+            
+  if((customtextlookup!= '' && customlookupqtn== '')|| (customtextlookup== '' && customlookupqtn!= '')){
+     valid=1;
+                 alert("Please Enter the valid data in Custom Text");
+                 jQuery(".customtextlookup"+i).focus();
+                 return false;
+    } 
+/**********End Here***************/
+/********** Integer field *******/
+if(customtextinteger=="" && typeof jQuery(".customtextinteger"+i).val()!='undefined' ){
+               valid=1;
+               alert("Please enter the data in Custom Text"); 
+               jQuery(".customtextinteger"+i).focus();
+               return false;
+}
+if(customtextinteger!='' && customtextinteger<=0 && typeof jQuery(".customtextinteger"+i).val()!='undefined')
+  {
+                      valid= 1;
+                      alert("Value must be greater than 0");
+                      jQuery(".customtextinteger"+i).focus();
+                      return false;
+  }
+ if(isNaN(customtextinteger) && typeof jQuery(".customtextinteger"+i).val()!='undefined')
+    {
+             valid=1;
+            alert("Please Enter a Number ");
+          jQuery(".customtextinteger"+i).focus();
+            return false;
+    }
+
+ if(customtextinteger!='' && typeof jQuery(".customtextinteger"+i).val()!='undefined' && !reg_ino.test(customtextinteger)){
+                  valid=1;
+                 alert("Please Enter integer values only ");
+                 jQuery(".customtextinteger"+i).focus();
+                 return false;
+            } 
+if(customtextinteger!='' && typeof jQuery(".customtextinteger"+i).val()!='undefined' && fieldlen!=0  && customtextinteger.length > fieldlen)
+{
+                 valid=1;
+                 alert("Custom text value length should not be grater than the selected field length ");
+                 jQuery(".customtextinteger"+i).focus();
+                 return false;
+}
+/********** end here *********/
+/************ Double filed ********/
+if(customtextdouble=="" && typeof jQuery(".customtextdouble"+i).val()!='undefined'){
+    valid = 1;
+    alert("Please enter the data in Custom Text");
+    jQuery(".customtextdouble"+i).focus();
+}
+
+if(customtextdouble!='' && typeof jQuery(".customtextdouble"+i).val()!='undefined' && !reg_ino.test(customtextdouble))
+   {
+            valid=1;
+            alert("Please Enter a Number ");
+          jQuery(".customtextdouble"+i).focus();
+            return false;
+   } 
+if (customtextdouble!='' && typeof jQuery(".customtextdouble"+i).val()!='undefined' && customtextdouble<=0)
+  {
+                     valid= 1;
+                      alert("Value must be greater than 0");
+                      jQuery(".customtextdouble"+i).focus();
+                      return false;
+  }
+ 
+if(customtextdouble!='' && typeof jQuery(".customtextdouble"+i).val()!='undefined' && fieldlen!=0  && customtextdouble.length > fieldlen)
+{
+ valid=1;
+                 alert("Custom text value length should not be grater than the selected field length ");
+                 jQuery(".customtextdouble"+i).focus();
+                 return false;
+} 
+/************* end here **********/
+/************* Currency Fields *******/
+if(customtextcurrency=="" && typeof jQuery(".customtextcurrency"+i).val()!='undefined'){
+       valid=1;
+       alert("Please enter the data in Custom Text");
+       jQuery(".customtextcurrency"+i).focus();
+}
+if(isNaN(customtextcurrency) && typeof jQuery(".customtextcurrency"+i).val()!='undefined')
+   {
+            valid=1;
+            alert("Please Enter a Number ");
+          jQuery(".customtextcurrency"+i).focus();
+            return false;
+   } 
+if(customtextcurrency!='' && customtextcurrency<=0 && typeof jQuery(".customtextcurrency"+i).val()!='undefined')
+  {
+                     valid= 1;
+                      alert("Value must be greater than 0");
+                      jQuery(".customtextcurrency"+i).focus();
+                      return false;
+  }
+if( fieldlen!=0 && customtextcurrency.length > fieldlen && typeof jQuery(".customtextcurrency"+i).val()!='undefined')
+{
+                     valid= 1;
+                 alert("Custom text value length should not be grater than the selected field length ");
+                      jQuery(".customtextcurrency"+i).focus();
+                      return false;
+}
+/************* End here **************/
+/**************** Date fields ************/
+
+if(customtextdate=="" && typeof jQuery(".customtextdate"+i).val()!='undefined'){
+        valid=1;
+        alert("Please select Custom Text");
+        jQuery(".customtextdate"+i).focus();
+        return false;
+}
+//customtextfixeddate = jQuery('.customtextfixeddate'+i).val();
+if(customtextfixeddate == "" && customtextdate=='Select Date' && typeof jQuery(".customtextfixeddate"+i).val()!='undefined'){
+        valid=1;
+        alert("Please Enter the Date field value");
+        jQuery(".customtextfixeddate"+i).focus();
+        return false;
+}
+if(customtextdate=='Select Date' && !validformat.test(customtextfixeddate) && typeof jQuery(".customtextdate"+i).val()!='undefined')
+{
+        valid=1;
+        alert("Invalid Date Format. Please correct and submit again.");
+        jQuery(".customtextfixeddate"+i).focus();
+        return false;
+}
+//customansdateplus = jQuery('.customansdateplus'+i).val();
+if(customtextdate=='DateNow Plus' && customansdateplus=="" && typeof jQuery(".customansdateplus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter the no of the days");
+     jQuery(".customansdateplus"+i).focus();
+     return false;
+}
+if(customtextdate=='DateNow Plus' && customansdateplus!="" && !reg_ino.test(customansdateplus) && typeof jQuery(".customansdateplus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter valid number at no of the days");
+     jQuery(".customansdateplus"+i).focus();
+     return false;
+}
+if(customtextdate=='DateNow Minus' && customansdateminus=="" && typeof jQuery(".customansdateminus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter the no of the days");
+     jQuery(".customansdateminus"+i).focus();
+     return false;
+}
+if(customtextdate=='DateNow Minus' && customansdateminus!="" && !reg_ino.test(customansdateminus) && typeof jQuery(".customansdateminus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter valid number at no of the days");
+     jQuery(".customansdateminus"+i).focus();
+     return false;
+}
+
+
+/**************** End here ***************/
+/**************** Date Time fields ************/
+//customtextdatetime = jQuery(".customtextdatetime"+i).val();
+if(customtextdatetime=="" && typeof jQuery(".customtextdatetime"+i).val()!='undefined'){
+        valid=1;
+        alert("Please select Custom Text");
+        jQuery(".customtextdate"+i).focus();
+        return false;
+}
+//customtextfixeddate = jQuery('.customtextfixeddate'+i).val();
+if(customtextfixeddate == "" && customtextdatetime=='Select Date' && typeof jQuery(".customtextfixeddate"+i).val()!='undefined'){
+        valid=1;
+        alert("Please Enter the Date field value");
+        jQuery(".customtextfixeddate"+i).focus();
+        return false;
+}
+if(customtextdatetime=='Select Date' && !validformat.test(customtextfixeddate) && typeof jQuery(".customtextfixeddate"+i).val()!='undefined')
+{
+        valid=1;
+        alert("Invalid Date Format. Please correct and submit again.");
+        jQuery(".customtextfixeddate"+i).focus();
+        return false;
+}
+//customansdateplus = jQuery('.customansdateplus'+i).val();
+if(customtextdatetime=='DateNow Plus' && customansdateplus=="" && typeof jQuery(".customansdateplus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter the no of the days");
+     jQuery(".customansdateplus"+i).focus();
+     return false;
+}
+if(customtextdatetime=='DateNow Plus' && customansdateplus!="" && !reg_ino.test(customansdateplus) && typeof jQuery(".customansdateplus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter valid number at no of the days");
+     jQuery(".customansdateplus"+i).focus();
+     return false;
+}
+if(customtextdatetime=='DateNow Minus' && customansdateminus=="" && typeof jQuery(".customansdateminus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter the no of the days");
+     jQuery(".customansdateminus"+i).focus();
+     return false;
+}
+if(customtextdatetime=='DateNow Minus' && customansdateminus!="" && !reg_ino.test(customansdateminus) && typeof jQuery(".customansdateminus"+i).val()!='undefined'){
+     valid =1 ;
+     alert("Please enter valid number at no of the days");
+     jQuery(".customansdateminus"+i).focus();
+     return false;
+}
+
+
+/**************** End here ***************/
+        
+              for(var j=i+1;j<rownum;j++){
+                  var condition_dup = jQuery(".condition"+j).val();
+                  var sku_dup = jQuery.trim(jQuery(".sku"+j).val());
+                  var custometext = jQuery(".custometext"+j).val();
+                  var objectmap_dup = jQuery(".objectmap"+j).val();
+                  var fieldmap_dup = jQuery(".fieldmap"+j).val();  
+                if(sku == sku_dup && condition == condition_dup && objectmap == objectmap_dup && fieldmap == fieldmap_dup)
+                {
+                     valid=1;
+                     alert("Duplicate record found please change the Object/Field Map");
+                     jQuery(".fieldmap"+j).focus();
+                     return false;
+                } 
+             }  
+             
+         }
+        
+        if(valid==0)
+        {
+            processstart();         
+            SaveQuestionSku();
+             return true;
+        }else{
+             return false;
+        } 
+    }
+    function addskuQuestionsprocess(){
+    processstart(); 
+    addskuQuestions();
+}
+
+function addCustomQuestionsprocess(){
+    processstart();
+    addCustomQuestions();
+}
+
+function DeleteCustomQuestionprocess(val1,val2){
+    if(confirm("Are you sure you want to delete this record?")==true){
+        processstart();
+        DeleteCustomQuestion(val1,val2);
+    }
+}
+function DelCustomQuestionprocess(val1,val2){
+    if(confirm("Are you sure you want to delete this record?")==true){
+        processstart();
+        DelCustomQuestion(val1,val2);
+    }
+}
+</script> 
+    
+<apex:form >
+           
+         <div class="padding_5" style="float:right;">
+          <apex:outputLink styleClass="helpLink align_right" rendered="{!subTab['Settings']['Custom Question Mapping'].display=='true'}" >         
+             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo9]').css('display','block');" />
+              <apex:image value="/s.gif" styleClass="helpIcon"  onmouseover="jQuery('[id$=Foo9]').css('display','block');" style="display:inline;" />
+           </apex:outputLink>
+
+           <apex:outputPanel id="Foo9" styleClass="video"  >
+                               <ul style="padding-left:5px;" > 
+                     {!subTab['Settings']['Custom Question Mapping'].description} <br/>
+                                 <apex:outputpanel rendered="{!subTab['Settings']['Custom Question Mapping'].ActiveLink=='true'}">
+                                     <li><a href="{!subTab['Settings']['Custom Question Mapping'].link}" target="_blank" >{!subTab['Settings']['Custom Question Mapping'].strlink}</a> <br/></li></apex:outputpanel>
+                                  <apex:outputpanel rendered="{!subTab['Settings']['Custom Question Mapping'].ActiveVideo=='true'}">   
+                                     <li> <a href="{!subTab['Settings']['Custom Question Mapping'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['Custom Question Mapping'].strvideo}</a></li></apex:outputpanel> 
+                               </ul>
+           </apex:outputPanel> 
+           </div>
+           
+           
+            <apex:actionFunction action="{!ChangeObject}"  name="skuchangeobject" reRender="refreshblocksku" oncomplete="processcomplete();" >
+              <apex:param assignTo="{!questionobjectname}" value="" name="questionobjectname"/>
+            </apex:actionFunction>
+            <apex:actionFunction action="{!changefield}"  name="skuchangefield" reRender="refreshblocksku" oncomplete="processcomplete();">
+              <apex:param assignTo="{!fieldobjectname}" value="" name="fieldobjectname"/>
+              <apex:param assignTo="{!questionobjectname1}" value="" name="questionobjectname1"/>
+            </apex:actionFunction>
+            <apex:actionFunction action="{!ChangeObject}"  name="changeobject" reRender="refreshblockqn" oncomplete="processcomplete();">
+              <apex:param assignTo="{!questionobjectname}" value="" name="questionobjectname"/>
+            </apex:actionFunction>
+            <apex:actionFunction action="{!changefield}"  name="changefield" reRender="refreshblockqn" oncomplete="processcomplete();" >
+              <apex:param assignTo="{!fieldobjectname}" value="" name="fieldobjectname"/>
+              <apex:param assignTo="{!questionobjectname1}" value="" name="questionobjectname1"/>
+            </apex:actionFunction>           
+                                  
+            <apex:actionFunction action="{!addskuQuestions}" id="addskuQuestions" name="addskuQuestions" reRender="refreshblocksku" oncomplete="processcomplete();"/>
+            <apex:actionFunction action="{!addCustomQuestions}" id="addCustomQuestions" name="addCustomQuestions" reRender="refreshblockqn" oncomplete="processcomplete();"/>
+            <apex:actionFunction action="{!saveQuestions}" id="saveQuestions1" name="saveQuestions1"   reRender="refreshblockqn,savestaus" oncomplete="processcomplete();"/>
+            <apex:actionFunction action="{!SaveQuestionSku}" id="SaveQuestionSku" name="SaveQuestionSku" reRender="refreshblocksku,changefieldtype,savestausanswer" oncomplete="processcomplete();"/>
+            <apex:actionFunction action="{!DeleteCustomQuestion}" name="DeleteCustomQuestion" id="DeleteCustomQuestion" reRender="refreshblocksku" oncomplete="processcomplete();">
+                 <apex:param name="DeleteIdCustomQuestion" value="" assignTo="{!DeleteIdCustomQuestion}"/>
+                 <apex:param name="DeleteFromObjectIdCustomQuestion" value="" assignTo="{!DeleteFromObjectIdCustomQuestion}"/>
+            </apex:actionFunction>
+            <apex:actionFunction action="{!DelCustomQuestion}" name="DelCustomQuestion" id="DelCustomQuestion" reRender="refreshblockqn" oncomplete="processcomplete();">
+                 <apex:param name="DelIdCustomQuestion" value="" assignTo="{!DelIdCustomQuestion}"/>
+                 <apex:param name="DelFromObjectIdCustomQuestion" value="" assignTo="{!DelFromObjectIdCustomQuestion}"/>
+            </apex:actionFunction>
+            
+<div id="content-header">
+    <h1><img alt="Custom Question" title="Custom Question" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/custom_question_icon.png" style="display:inline;vertical-align:top;" width="25" /> Custom Question</h1>                                    
+</div>
+<div class="container-fluid"> 
+             
+              <apex:pageBlock id="customquestionblock" mode="maindetail">
+              <div class="alert alert-info">
+              <apex:outputLabel value="*Opportunity creation is a requirement for custom question matching. In the absence of an opportunity no custom question matching will be performed." style="color:#328400;padding-left: 30px;position: relative;font-weight:bold;font-size:12px;"/>
+              <apex:outputLabel value="*Contact mapping is not available for Person Accounts and is provided for backward compatibility." style="color:#328400;padding-left: 30px;position: relative;font-weight:bold;font-size:12px;"/>
+              <apex:outputLabel value="*Limits: Maximum of 100 total picklists is available for Opportunity, Account, and Contact." style="color:#328400;padding-left: 30px;position: relative;font-weight:bold;font-size:12px;"/>
+              </div>
+              
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Custom Answer Map Field Settings</h5>
+                      </div>
+                      <div class="widget-content">               
+
+                            <apex:outputPanel id="refreshblocksku">
+                            <apex:variable value="0" var="rowNumquestion"/>
+                            
+                            <apex:dataTable value="{!customquestionlistsku}" var="cq" styleclass="table table-bordered table-striped">
+                              <!--<apex:outputLabel value="to "></apex:outputLabel>-->
+                              <apex:column headerValue="Object Map">
+                                <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:selectList styleClass="objectmap{!rowNumquestion}" value="{!cq.questionobject}" size="1" onchange="skuchangeobject_function(this.value);" style="width:100px;">
+                                  <apex:selectOptions value="{!Objectlist}"> </apex:selectOptions>
+                                </apex:selectList>
+                                </apex:outputPanel>
+                              </apex:column>
+                              <apex:column >
+                                <apex:outputLabel value=">>"></apex:outputLabel>
+                              </apex:column>
+                              <apex:column headerValue="Field Map">
+                                <apex:outputPanel id="SkuQuestionfields">
+                                <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:selectList value="{!cq.questionfield}" size="1" styleClass="fieldmap{!rowNumquestion}" rendered="{!IF(cq.questionobject!=null,true,false)}"  onchange="skuchangefield_function (this.value,'{!cq.questionobject}','{!cq.questionfield}','{!rowNumquestion}');"  >
+                                  <apex:selectOption rendered="{!IF(cq.questionobject!=null,true,false)}" itemLabel="--Select--" itemValue=""  ></apex:selectOption>
+                                  <apex:selectOptions rendered="{!IF(cq.questionobject!=null,true,false)}" value="{!fieldlistmap[cq.questionobject]}"  ></apex:selectOptions>
+                                </apex:selectList>
+                                </apex:outputPanel>
+                                </apex:outputPanel>
+                              </apex:column>
+                              <apex:column >
+                                <apex:outputLabel >If</apex:outputLabel>
+                              </apex:column>
+                              <apex:column headerValue="Condition">
+                                <apex:selectList value="{!cq.questioncondition}" size="1" styleClass="condition{!rowNumquestion}" onchange="changecondition('{!rowNumquestion}');"   style="width:130px;">
+                                  <apex:selectOptions value="{!showQuestionConditions}"></apex:selectOptions>
+                                </apex:selectList>
+                              </apex:column>
+                              <apex:column headerValue="SKU" >
+                                <apex:inputText value="{!cq.questionsku}"  size="45" styleClass="sku{!rowNumquestion}"  maxlength="100" style="width:150px;"/>
+                                <script> changecondition('{!rowNumquestion}');</script> 
+                              </apex:column>
+                              <apex:column >
+                                <apex:outputLabel value="add "></apex:outputLabel>
+                              </apex:column>
+                              <apex:column headerValue="Custom Text">
+                                <apex:outputpanel id="changefieldtype" rendered="{!IF(cq.questionfield!=null,true,false)}">
+                                <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='picklist',true,false)}">
+                                  <apex:selectList value="{!cq.questionname}" size="1" styleClass="custometext{!rowNumquestion}"  rendered="{!IF(cq.questionfield!=null,true,false)}" >
+                                    <apex:selectOptions value="{!pickfieldlistmap[cq.questionfield]}" rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='picklist',true,false)}"  />
+                                  </apex:selectList>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='string',true,false)}">
+                                  <apex:inputText value="{!cq.questionname}"  size="40" maxlength="80" styleClass="custometext{!rowNumquestion} input-block-level"  />
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='textarea',true,false)}">
+                                  <apex:inputTextarea value="{!cq.questionname}"  styleClass="custometext{!rowNumquestion} input-block-level" />
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='integer',true,false)}">
+                                  <apex:inputText value="{!cq.questionname}"  styleClass="customtextinteger{!rowNumquestion} input-block-level"   />
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='double',true,false)}"  >
+                                  <apex:inputText value="{!cq.questionname}"  styleClass="customtextdouble{!rowNumquestion} input-block-level" maxlength="10"/>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='currency',true,false)}"  >
+                                  <apex:inputText value="{!cq.questionname}"  styleClass="customtextcurrency{!rowNumquestion} input-block-level"  maxlength="8" onblur="skucalculatecurr();"/>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='boolean',true,false)}"  >
+                                  <apex:inputcheckbox value="{!cq.questionname}" styleclass="customtextboolean{!rowNumquestion}" />
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='Lookup',true,false)}">
+                                  <apex:inputText value="{!cq.questionname}"  styleClass="customtextlookup{!rowNumquestion}"  >
+                                    <c:Lookupautocomplete objectname="{!cq.questionobject}" autocomplete_textbox="customtextlookup{!rowNumquestion}" additionalfield="{!cq.questionfield}" autocomplete_id="customlookupqtn{!rowNumquestion}"/>
+                                  </apex:inputtext>
+                                </apex:outputpanel>
+                                <apex:inputtext style="display:none" value="{!cq.questionlookup}" styleclass="customlookupqtn{!rowNumquestion}"/>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='date',true,false)}"  >
+                                  <apex:selectList value="{!cq.questionname}" size="1" styleclass="customtextdate{!rowNumquestion}">
+                                    <apex:actionsupport event="onchange" rerender="thedateval,refreshblocksku"/>
+                                    <apex:selectoption itemlabel="--Select--" itemValue=""/>
+                                    <apex:selectoptions value="{!selectclosedateval}"/>
+                                  </apex:selectList>
+                                  <!--    <apex:outputPanel id="thedateval">    
+                                                                          <apex:inputtext rendered="{!cq.selectdateformat =='Select Date'}" onclick="DynamicDatePicker(this);" id="time" style="width:70px;" size="3" value="{!cq.selecteddate}"/>  
+                                                                          <apex:inputtext rendered="{!cq.selectdateformat =='DateNow Plus'}" size="3" value="{!cq.datenowplusnumber}" style="width:40px;"/>
+                                                                          <apex:selectlist value="{!cq.daysmonths}" rendered="{!cq.selectdateformat=='DateNow Plus'}" size="1" style="width:85px;">
+                                                                              <apex:selectOptions value="{!selectdatenowval}"></apex:selectOptions>
+                                                                          </apex:selectlist>
+                                                                          <apex:inputtext rendered="{!cq.selectdateformat =='DateNow Minus'}" size="5" value="{!cq.datenowminusnumber}"/>
+                                                                          <apex:selectlist value="{!cq.daysmonths}" rendered="{!cq.selectdateformat =='DateNow Minus'}" size="1" style="width:85px;" >
+                                                                              <apex:selectOptions value="{!selectdatenowval}"></apex:selectOptions>
+                                                                          </apex:selectlist>
+                                                                  </apex:outputPanel>--> 
+                                  
+                                  <!-- <apex:inputtext value="{!cq.questionname}" styleclass="customtextdate{!rowNumquestion}"  onclick="DynamicDatePicker(this);" size="11" id="time" style="width:85px;" />
+                                                                   <apex:inputtext value="{!syst}"  style="display:none" styleclass="todaydate{!rowNumquestion}" />--> 
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='datetime',true,false)}"  > 
+                                  <!-- <apex:inputtext value="{!cq.questionname}" styleclass="customtextdatetime{!rowNumquestion}"  onclick="DynamicDatePicker1(this);" size="20" id="datetime" style="width:120px;" />
+                                                                 <apex:inputtext value="{!systnow}"  style="display:none" styleclass="todaydatetime{!rowNumquestion}" /> -->
+                                  <apex:selectList value="{!cq.questionname}" size="1" styleclass="customtextdatetime{!rowNumquestion}">
+                                    <apex:actionsupport event="onchange" rerender="thedateval,refreshblocksku"/>
+                                    <apex:selectoption itemlabel="--Select--" itemValue=""/>
+                                    <apex:selectoptions value="{!selectclosedateval}"/>
+                                  </apex:selectList>
+                                </apex:outputpanel>
+                                <apex:inputtext value="{!fieldlengthcheck[cq.questionfield]}" rendered="{!IF(cq.questionfield!=null,true,false )}" styleclass="fieldlen{!rowNumquestion}" style="display:none" />
+                                </apex:outputpanel>
+                                </apex:outputpanel>
+                              </apex:column>
+                              <apex:column styleClass="white_space_nowrap" >
+                                <apex:outputPanel id="thedateval">
+                                  <Apex:outputPanel rendered="{!IF(cq.questionfield!=null && ( picklistchecking[cq.questionfield]=='datetime' || picklistchecking[cq.questionfield]=='date'),true,false)}">
+                                    <apex:inputtext rendered="{!IF(cq.questionname=='Select Date',true,false)}" onclick="DynamicDatePicker(this);" id="time" style="width:70px;" size="3" value="{!cq.selecteddate}" styleclass="customtextfixeddate{!rowNumquestion}"/>
+                                    <apex:inputtext rendered="{!IF(cq.questionname=='DateNow Plus',true,false )}" maxlength="3" size="3" value="{!cq.datenowplusnumber}" style="width:23px;" styleclass="customansdateplus{!rowNumquestion}"/>
+                                    <apex:selectlist value="{!cq.daysmonths}" rendered="{!IF(cq.questionname=='DateNow Plus',true,false)}" size="1" style="padding: 5px 6px;margin-left:3px;" styleClass="width_initial" >
+                                      <apex:selectOptions value="{!selectdatenowval}"></apex:selectOptions>
+                                    </apex:selectlist>
+                                    <apex:inputtext rendered="{!IF(cq.questionname=='DateNow Minus',true,false)}" maxlength="3" size="5" value="{!cq.datenowminusnumber}" style="width:23px;" styleclass="customansdateminus{!rowNumquestion}"/>
+                                    <apex:selectlist value="{!cq.daysmonths}" rendered="{!IF(cq.questionname=='DateNow Minus',true,false)}" size="1" style="padding: 5px 6px;margin-left:3px;" styleClass="width_initial" >
+                                      <apex:selectOptions value="{!selectdatenowval}"></apex:selectOptions>
+                                    </apex:selectlist>
+                                  </Apex:outputPanel>
+                                </apex:outputPanel>
+                              </apex:column>
+                              <apex:column headervalue="Action" style="text-align:center;" headerClass="align_center">
+                                <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="DeleteCustomQuestionprocess('{!rowNumquestion}','{!cq.questionid}');"><i class="icon-trash"></i></a></div>
+                                <!-- <apex:commandButton value="Delete" action="{!DeleteCustomQuestion}" reRender="refreshblocksku" status="DeleteCustomAnswer" >
+                                                               <apex:param name="contIdParamCamp" value="{!rowNumquestion}" assignTo="{!DeleteIdCustomQuestion}"/>
+                                                               <apex:param name="contIdParam1Camp" value="{!cq.questionid}" assignTo="{!DeleteFromObjectIdCustomQuestion}"/>
+                                                            </apex:commandButton>--> 
+                                
+                              </apex:column>
+                             <apex:column >
+                                <apex:variable var="rowNumquestion" value="{!VALUE(rowNumquestion) + 1}"/>
+                              </apex:column>
+                            </apex:dataTable>
+                            
+                            <input type="hidden" class="rownumquestion" value="{!rowNumquestion}" name="rownumquestion"/>
+                            <div class="btn-block pagination-centered"> <a class="btn"   href="javascript:void(0)" onclick="addskuQuestionsprocess();" ><i class="icon-plus-sign"></i> Add New</a></div>
+                            <!--  <button type="button" data-loading-text="Loading..." class="btn btn-primary"> Loading state </button>--> 
+                            <!--     <apex:commandButton action="{!addskuQuestions}" value="Add New" style="margin-top:20px;" reRender="refreshblocksku" status="AddCustomAnswer" />-->
+                            
+                            </apex:outputPanel>
+
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                 
+               
+               
+               
+                <div class="btn-block pagination-centered">
+                    <a class="btn btn-primary" href="javascript:void(0)" onclick="ValidateSkuQuestion();" ><i class="icon-ok icon-white"></i> Save</a> 
+                  <!--   <apex:commandButton value="Save" action="{!SaveQuestionSku}" onclick="if(!ValidateSkuQuestion()) return false;" reRender="refreshblocksku,changefieldtype,savestausanswer" status="SavingStatusCustomAnswer" oncomplete="processcomplete();"/> --> 
+                </div>
+                
+                <apex:outputPanel id="savestausanswer">
+                  <apex:outputPanel rendered="{!Answersavestaus}">
+                   <div class="alert alert-success">Custom Answer Map Field Settings Saved Successfully.</div>
+                  </apex:outputPanel>
+                </apex:outputPanel>
+                              
+                              
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Custom Question Map Field Settings</h5>
+                      </div>
+                      <div class="widget-content"> 
+
+
+                            <apex:outputPanel id="refreshblockqn">
+                            <apex:variable value="0" var="rowNum"/>
+                            
+                            <apex:dataTable value="{!customquestionlist}" var="cq" styleClass="table table-bordered table-striped" >
+                              <apex:column headerValue="Object Map">
+                                <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:selectList value="{!cq.questionobject}" size="1" styleclass="customquestionobject{!rowNum}" onchange="changeobject_function(this.value);"  style="width:120px;">
+                                  <apex:selectOptions value="{!Objectlist}"/>
+                                </apex:selectList>
+                                </apeX:outputPanel>
+                              </apex:column>
+                              <apex:column >
+                                <apex:outputLabel value=">>"/>
+                              </apex:column>
+                              <apex:column headerValue="Field Map">
+                                <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:outputPanel id="Questionfields">
+                                  <apex:outputPanel rendered="{!IF(cq.questionobject!=null,true,false)}">
+                                    <apex:selectList value="{!cq.questionfield}" size="1" styleClass="customquestionfield{!rowNum}" onchange="changefield_function (this.value,'{!cq.questionobject}');changevaluecustom('{!rowNum}');">
+                                      <apex:selectOption rendered="{!IF(cq.questionobject!=null,true,false)}" itemLabel="--Select--" itemValue="" ></apex:selectOption>
+                                      <apex:selectOptions rendered="{!IF(cq.questionobject!=null,true,false)}" value="{!fieldlistmapquestion[cq.questionobject]}"  ></apex:selectOptions>
+                                    </apex:selectList>
+                                  </apex:outputPanel>
+                                </apex:outputPanel>
+                                </apex:outputPanel>
+                              </apex:column>
+                              <apex:column style="white-space:nowrap;">
+                                <apex:outputLabel value="If the question is"/>
+                              </apex:column>
+                              <apex:column headerValue="Question">
+                                <apex:outputPanel styleClass="requiredInput" layout="block"  >
+                                <apex:outputPanel styleClass="requiredBlock" layout="block"/>
+                                <apex:inputText value="{!cq.questionname}" maxlength="80" size="20" styleClass="customquestionname{!rowNum}" onblur="trimvalue(this.value,'customquestionname{!rowNum}');" style="width:150px;"/>
+                                </apex:outputPanel>
+                              </apex:column>
+                              <apex:column style="white-space:nowrap;">
+                                <apex:outputLabel value=" & the answer is " />
+                              </apex:column>
+                              <apex:column headerValue="Answer*">
+                                <apex:inputText value="{!cq.originalans}" size="20" maxlength="255" styleClass="originalans{!rowNum}" onblur="trimvalue(this.value,'originalans{!rowNum}');" style="width:150px;"/>
+                              </apex:column>
+                              <apex:column headerValue="then replace text with**">
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='picklist',true,false)}">
+                                  <apex:selectList value="{!cq.replacedanswer}" size="1" styleClass="replacedanswer{!rowNum}"  rendered="{!IF(cq.questionfield!=null,true,false)}">
+                                    <apex:selectOptions value="{!pickfieldlistmap[cq.questionfield]}" rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='picklist',true,false)}"  />
+                                  </apex:selectList>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='string',true,false)}">
+                                  <apex:inputText value="{!cq.replacedanswer}" size="40" maxlength="80" styleClass="replacedanswer{!rowNum} input-block-level" onblur="trimvalue(this.value,'replacedanswer{!rowNum}');"/>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='textarea',true,false)}">
+                                  <apex:inputTextarea value="{!cq.replacedanswer}"  styleClass="replacedanswer{!rowNum} input-block-level"  onblur="trimvalue(this.value,'replacedanswertext{!rowNum}');"/>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='integer',true,false)}">
+                                  <apex:inputText value="{!cq.replacedanswer}"  styleClass="replacedanswerinteger{!rowNum} input-block-level" onblur="trimvalue(this.value,'replacedanswerinteger{!rowNum}');" />
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='double',true,false)}"  >
+                                  <apex:inputText value="{!cq.replacedanswer}"  styleClass="replacedanswerdouble{!rowNum} input-block-level" maxlength="10" onblur="trimvalue(this.value,'replacedanswerdouble{!rowNum}');"/>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='boolean',true,false)}"  >
+                                  <apex:inputcheckbox value="{!cq.replacedanswer}"  styleClass="replacedanswerboolean{!rowNum}"  style="width:50px;"/>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='currency',true,false)}"  >
+                                  <apex:inputText value="{!cq.replacedanswer}"  styleClass="replacedanswercurrency{!rowNum} input-block-level"  maxlength="8" onblur="calculatecurr();trimvalue(this.value,'replacedanswercurrency{!rowNum}');"  style="width:100px;"/>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='date',true,false)}"  >
+                                  <apex:selectList value="{!cq.replacedanswer}" size="1" styleclass="todaydate{!rowNum}">
+                                    <apex:actionsupport event="onchange" rerender="thedateval_answer,refreshblock"/>
+                                    <apex:selectoption itemlabel="--Select--" itemValue=""/>
+                                    <apex:selectoptions value="{!selectclosedateval}"/>
+                                  </apex:selectList>
+                                </apex:outputpanel>
+                                <apex:outputpanel rendered="{!IF(cq.questionfield!=null && picklistchecking[cq.questionfield]=='datetime',true,false)}"  >
+                                  <apex:selectList value="{!cq.replacedanswer}" size="1" styleclass="todaydatetime{!rowNum}">
+                                    <apex:actionsupport event="onchange" rerender="thedateval_answer,refreshblock"/>
+                                    <apex:selectoption itemlabel="--Select--" itemValue=""/>
+                                    <apex:selectoptions value="{!selectclosedateval}"/>
+                                  </apex:selectList>
+                                </apex:outputpanel>
+                                <apex:inputtext value="{!fieldlengthcheck[cq.questionfield]}" rendered="{!IF(cq.questionfield!=null,true,false )}" styleclass="customfieldlen{!rowNum}" style="display:none"  />
+                              </apex:column>
+                              <apex:column >
+                                <apex:outputPanel id="thedateval_answer">
+                                  <apex:outputPanel rendered="{!IF(cq.questionfield!=null && (picklistchecking[cq.questionfield]=='datetime' || picklistchecking[cq.questionfield]=='date'),true,false)}">
+                                    <apex:inputtext rendered="{!IF(cq.replacedanswer=='Select Date',true,false)}" onclick="DynamicDatePicker(this);" id="time" style="width:70px;" size="3" value="{!cq.selecteddate}" styleclass="replacetextfixeddate{!rowNum}"/>
+                                    <apex:inputtext rendered="{!IF(cq.replacedanswer =='DateNow Plus',true,false)}" maxlength="3" styleclass="replacedatenowplus{!rowNum}" size="3" value="{!cq.datenowplusnumber}" style="width:40px;"/>
+                                    <apex:selectlist value="{!cq.daysmonths}" rendered="{!IF(cq.replacedanswer=='DateNow Plus',true,false)}" size="1" style="width:85px;">
+                                      <apex:selectOptions value="{!selectdatenowval}"></apex:selectOptions>
+                                    </apex:selectlist>
+                                    <apex:inputtext rendered="{!IF(cq.replacedanswer=='DateNow Minus',true,false)}" maxlength="3" styleclass="replacedatenowminus{!rowNum}" size="5" value="{!cq.datenowminusnumber}" style="width:40px;"/>
+                                    <apex:selectlist value="{!cq.daysmonths}" rendered="{!IF(cq.replacedanswer =='DateNow Minus',true,false)}" size="1" style="width:85px;" >
+                                      <apex:selectOptions value="{!selectdatenowval}"></apex:selectOptions>
+                                    </apex:selectlist>
+                                  </apex:outputPanel>
+                                </apex:outputPanel>
+                              </apex:column>
+                              <apex:column headervalue="Action" style="text-align:center;" headerClass="align_center">
+                                <div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="DelCustomQuestionprocess('{!rowNum}','{!cq.questionid}');"><i class="icon-trash"></i></a></div>
+                                <!--   <apex:commandButton value="Delete" action="{!DelCustomQuestion}" reRender="refreshblock" status="DeleteCustomQuestion" >
+                                                               <apex:param name="contIdParamCamp" value="{!rowNum}" assignTo="{!DelIdCustomQuestion}"/>
+                                                               <apex:param name="contIdParam1Camp" value="{!cq.questionid}" assignTo="{!DelFromObjectIdCustomQuestion}"/>
+                                                             </apex:commandButton>--> 
+                                
+                              </apex:column>
+                              <apex:column >
+                                <apex:variable var="rowNum" value="{!VALUE(rowNum) + 1}"/>
+                              </apex:column>
+                            </apex:dataTable>
+                            
+                            <input type="hidden" class="customquestionrowvalue" value="{!rowNum}"/>
+                            <div class="btn-block pagination-centered">
+                            <a class="btn" href="javascript:void(0)" onclick="addCustomQuestionsprocess();" ><i class="icon-plus-sign"></i> Add New</a>
+                            <!-- <apex:commandButton action="{!addCustomQuestions}" style="margin-top:20px" value="Add New"  reRender="refreshblock" status="AddCustomQuestion"/>-->
+                            </div>                           
+                            
+                            </apex:outputPanel>
+                          
+                          <div class="alert alert-info">
+                          <strong>*  Blank for any answer (max 255 characters)<br/>
+                          ** Leave blank for no replacement (max 255 characters)"</strong>
+                          </div>
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                 
+
+               
+                       <div class="btn-block pagination-centered">
+                       <a class="btn btn-primary" href="javascript:void(0)" onclick="ValidateCustomQuestion();" ><i class="icon-ok icon-white"></i> Save </a>
+                         <!--  <apex:commandButton value="Save" action="{!saveQuestions}" onclick="if(!ValidateCustomQuestion()) return false;" status="SavingStatusCustomQuestion" reRender="refreshblock,savestaus" oncomplete="processcomplete();"/> -->
+                       </div>  
+                                            
+                                                               
+                                <apex:outputPanel id="savestaus">
+                                <apex:outputPanel rendered="{!Questionsavestaus}">
+                                <div class="alert alert-success">Custom Question Map Field Settings Saved Successfully.</div>
+                                </apex:outputPanel>
+                                </apex:outputPanel>
+
+            
+              </apex:pageBlock>
+</div>
+</apex:form>
+     
+</apex:page>

@@ -1,0 +1,313 @@
+<apex:page controller="CnP_PaaS.SettingsController" action="{!loadhelpContent}">
+<script type="text/javascript">
+      
+/*    function countryprocess(){
+           jQuery("#light").attr('style','display:block');
+           jQuery("#fade").attr('style','display:block');
+           return true;
+    }  */
+     function taskhidevalue(value,id){
+     
+      if(value!='email'){
+         jQuery('.hidevalue'+id).show();
+      }else{
+         jQuery('.hidevalue'+id).hide();
+      }
+    }
+ function TaskSaveFunction(actionvalue){
+var t=0;
+    var rowNumTask = jQuery(".rowNumTask").val();
+    
+        for(var i=0;i<rowNumTask;i++){
+        var contactidtask = jQuery(".contactidtask"+i).val();
+        var conditionsassign = jQuery(".conditionsassign"+i).val();
+        var contacttask = jQuery(".contacttask"+i).val();
+    var useridtask = jQuery(".useridtask"+i).val();
+    var usertask= jQuery(".usertask"+i).val();
+      var reg_days=/^([0-9\-])+$/;
+   
+        var emailtask = jQuery(".emailtask"+i).val();
+        var conditionsnotifier = jQuery(".conditionsnotifier"+i).val();
+
+    // var reg_email= /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+     var reg_email = /^([A-Za-z0-9_\-\+\&\.\!\#\$\%\'\*\/\=\?\^\`\{\|\}\~])+\@([A-Za-z0-9\-\.])+\.([A-Za-z]{2,4})$/; // remove ; and _ adding &
+        var remaindertask = jQuery(".remaindertask"+i).is(':checked');
+        var remainderdaystask = jQuery(".remainderdaystask"+i).val();
+        var messagetask  = jQuery(".messagetask"+i).val();
+      if(conditionsassign == ''){
+             t = t+1;
+             alert('Please select a condition for task creation');
+             jQuery(".conditionsassign"+i).focus();
+                 return false;
+     }
+
+     if(conditionsassign == 'contacttask' && contacttask == ''){
+     t = t+1;
+        alert('Please Select a Contact Name');
+         jQuery(".contacttask"+i).focus();
+            return false;
+    }
+
+    if(conditionsassign == 'usertask' && usertask == ''){
+     t = t+1;
+        alert('Please Select a User  Name');
+         jQuery(".usertask"+i).focus();
+            return false;
+    }
+
+   if(conditionsassign == 'email' && emailtask  == ''){
+     t = t+1;
+        alert('Please Enter an email Id');
+         jQuery(".emailtask"+i).focus();
+            return false;
+    }
+        
+   if(conditionsassign == 'email' && emailtask!='' && !reg_email.test(emailtask)) 
+   {
+      t = t+1;
+           alert("Enter valid  Email");
+           jQuery(".emailtask"+i).focus();
+            return false;
+    }
+
+if(conditionsassign == 'email' && emailtask!='' && messagetask == '') 
+   {
+      t = t+1;
+           alert("Enter Message when Email is selected");
+           jQuery(".messagetask"+i).focus();
+            return false;
+    }
+
+    if(conditionsassign == 'contacttask'&& contactidtask == ''){
+       t = t+1;
+           alert('Please Enter Proper Contact Name');
+           jQuery(".contacttask"+i).focus();
+           return false;
+       }
+       
+    if(conditionsassign == 'usertask'&& useridtask  == ''){
+            t = t+1;
+            alert('Please Enter Proper User Name');
+            jQuery(".usertask"+i).focus();
+            return false;
+            
+        }
+        
+      if(remaindertask == true && remainderdaystask ==''){ 
+            t = t+1;
+             alert("Please Enter the Number of days to remind");
+             jQuery(".remainderdaystask"+i).focus();
+             return false;
+     }
+
+        if(remaindertask == true && remainderdaystask !='' && !reg_days.test(remainderdaystask)){ 
+            t= t+1;
+             alert("Please Enter only Numbers");
+             jQuery(".remainderdaystask"+i).focus();
+             return false;
+         }
+      
+            for(var j=i+1;j<=rowNumTask;j++){
+                var contactidtask_dup = jQuery(".contactidtask"+j).val();
+                var useridtask_dup = jQuery(".useridtask"+j).val();
+          
+                var conditionsassign_dup = jQuery(".conditionsassign"+j).val();
+                var conditionsnotifier_dup = jQuery(".conditionsnotifier"+j).val();
+
+              
+                if(conditionsnotifier == conditionsnotifier_dup && conditionsassign == conditionsassign_dup && contactidtask== contactidtask_dup && contactidtask !='')
+                {
+                     t=t+1;
+                     alert("Error:  Duplicate Contact found! " + contacttask);                    
+                     jQuery(".contacttask"+j).focus();
+                     return false;
+                } 
+           
+         if(conditionsnotifier == conditionsnotifier_dup && conditionsassign == conditionsassign_dup && useridtask == useridtask_dup && useridtask != '' && useridtask_dup!= '')
+                {
+                     t=t+1;
+                     alert("Error:  Duplicate User found! " + usertask);                    
+                     jQuery(".usertask"+j).focus();
+                     return false;
+                } 
+          } 
+   }
+       if(actionvalue== 'add'){
+       addItemTask();
+       }
+       if(actionvalue == 'save'){
+       tasksave();
+       }
+     
+        if(t==0){
+        processstart();
+            return true;
+        }else{
+           return false;
+           }
+
+}
+function delContTask(val1,val2){
+    processstart();
+    delContTaskaction(val1,val2);
+}
+   /* function processcomplete(){
+   
+           jQuery("#light").attr('style','display:none');
+           jQuery("#fade").attr('style','display:none');
+           
+    }*/
+</script>
+
+<!-- <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/ConstantContact/html-admin/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://click-pledge.v-empower.com/web/ConstantContact/html-admin/css/main.css"/>-->
+
+  <apex:form >
+  
+  
+               <div id="light" class="white_content">   
+                   <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="height: 15px;width: 20px;"  /><br/>
+                   <apex:outputlabel value="we are processing your request. please wait...                  "  />
+               </div>
+               <div id="fade" class="black_overlay"></div>
+               
+               <div class="padding_5" style="float:right;">
+                  <apex:outputLink styleClass="helpLink align_right"  rendered="{!subTab['Settings']['Notifications'].display=='true'}" >
+                    <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo10]').css('display','block');" />
+                    <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo10]').css('display','block');"  style="display:inline;"/>
+                  </apex:outputLink>
+                  <apex:outputPanel id="Foo10" styleClass="video"  >
+                    <ul style="padding-left:5px;" >
+                      {!subTab['Settings']['Notifications'].description} <br/>
+                      <br/>
+                      <apex:outputpanel rendered="{!subTab['Settings']['Notifications'].ActiveLink=='true'}">
+                        <li><a href="{!subTab['Settings']['Notifications'].link}" target="_blank" >{!subTab['Settings']['Notifications'].strlink}</a> <br/>
+                        </li>
+                      </apex:outputpanel>
+                      <apex:outputpanel rendered="{!subTab['Settings']['Notifications'].ActiveVideo=='true'}">
+                        <li> <a href="{!subTab['Settings']['Notifications'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['Notifications'].strvideo}</a></li>
+                      </apex:outputpanel>
+                    </ul>
+                  </apex:outputPanel>
+                </div>
+
+
+<div id="content-header">
+    <h1><img alt="Notifications" title="Notifications" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/notifications_icon.png" style="display:inline;vertical-align:top;" width="25" /> Notifications</h1>                                    
+</div>
+<div class="container-fluid">
+
+<apex:actionFunction action="{!addItemTask}" name="addItemTask" id="addItemTask" reRender="RefreshBlockTask" oncomplete="processcomplete();"/>
+<apex:actionFunction action="{!tasksave}" name="tasksave" id="tasksave" reRender="RefreshBlockTask,tasksavestatus" oncomplete="processcomplete();"/>
+
+<apex:actionFunction action="{!delContTask}" name="delContTaskaction" id="delContTaskaction" reRender="RefreshBlockTask" status="statusIdForDeleteATask" oncomplete="processcomplete();">
+     <apex:param name="DeleteIdTask" value="" assignTo="{!DeleteIdTask}"/>
+     <apex:param name="DeleteFromObjectTask" value="" assignTo="{!DeleteFromObjectTask}"/>
+</apex:actionFunction>
+
+
+
+ <apex:pageBlock mode="maindetail">
+ 
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>C&amp;P Notifications</h5>
+                      </div>
+                      <div class="widget-content">  
+                      
+                       <apex:outputPanel id="notification">
+                        <apex:outputPanel id="ShowTaskItem" >      
+                         <apex:outputPanel id="RefreshBlockTask">
+                           <apex:variable value="0" var="rowNumTask"/>
+                    
+                            <table class="table table-bordered table-striped" >
+                              <tr>
+                                <th></th>
+                                <th>Condition</th>
+                                <th>Task</th>
+                                <th>Whom</th>
+                                <th>Message</th>
+                                <th class="hidevalue">Status</th>
+                                <th class="hidevalue">Priority</th>
+                                <th class="hidevalue" width="50" >Reminder</th>
+                                <th></th>
+                                <th></th>
+                                <th style="width:50px;"></th>
+                              </tr>
+                              <apex:repeat value="{!FieldValueslistTask}" var="item"  >
+                                <tr>
+                                  <td><apex:outputLabel >For Every</apex:outputLabel></td>
+                                  <td><apex:selectlist value="{!item.notifiertask}"  size="1" style="width:130px"  styleclass="conditionsnotifier{!rowNumTask}">
+                                      <!--<apex:selectOptions value="{!showConditionNotifier}" /> -->
+                                      <apex:selectOption itemValue="TemporaryContact" itemLabel="Temporary Contact" rendered="{!IF(contactoption!='automatic',true,false)}"></apex:selectOption>
+                                      <apex:selectOption itemValue="NewContact" itemLabel="New Contact" rendered="{!IF(contactoption =='automatic',true,false)}"></apex:selectOption>
+                                    </apex:selectlist></td>
+                                  <td><apex:selectlist value="{!item.assigntask}"  size="1" style="width:170px"  styleclass="conditionsassign{!rowNumTask}" >
+                                      <apex:actionSupport event="onchange" reRender="RefreshBlockTask"/>
+                                      <apex:selectOptions value="{!showConditionTask}"/>
+                                    </apex:selectlist>
+                                    <script>taskhidevalue('{!JSENCODE(item.assigntask)}','{!JSENCODE(rowNumTask)}');</script></td>
+                                  <td><apex:inputText value="{!item.contact_name}" style="display:{!IF(item.assigntask == 'contacttask','block','none')};width: 150px;"  styleclass="contacttask{!rowNumTask}" >
+                                      <c:PaymentAutoCompleteSettings objecttype="contact" autocomplete_textbox="contacttask{!rowNumTask}" autocomplete_id="contactidtask{!rowNumTask}" autocomplete_process="2" />
+                                    </apex:inputText>
+                                    <apex:inputText value="{!item.user_name}" style="display:{!IF(item.assigntask == 'usertask','block','none')};width: 150px;"  styleclass="usertask{!rowNumTask}">
+                                      <c:PaymentAutoCompleteSettings objecttype="user" autocomplete_textbox="usertask{!rowNumTask}" autocomplete_id="useridtask{!rowNumTask}" autocomplete_process="0"/>
+                                    </apex:inputText>
+                                    <apex:inputText value="{!item.email}" style="display:{!IF(item.assigntask == 'email','block','none')}"  styleclass="emailtask{!rowNumTask}"/></td>
+                                  <td><apex:inputTextarea value="{!item.messagetask}" styleclass="messagetask{!rowNumTask}" onblur="trimvalue(this.value,'messagetask{!rowNumTask}')" style="width:180px;"/></td>
+                                  <td ><apex:selectlist value="{!item.statustask}" size="1" rendered="{!IF(item.assigntask != 'email',true,false)}" styleclass="hidevalue{!rowNumTask}" style="width:160px;">
+                                      <apeX:selectOptions value="{!ShowStatusTask}"/>
+                                    </apex:selectlist></td>
+                                  <td ><apex:selectlist value="{!item.prioritytask}" size="1" rendered="{!IF(item.assigntask != 'email',true,false)}" styleclass="hidevalue{!rowNumTask}"  style="width:100px;">
+                                      <apeX:selectOptions value="{!ShowPriorityTask}"/>
+                                    </apex:selectlist></td>
+                                  <td ><apex:inputcheckbox value="{!item.remaindertask}"  styleclass="remaindertask{!rowNumTask} hidevalue{!rowNumTask}" rendered="{!IF(item.assigntask != 'email',true,false)}" style="width:50px;">
+                                      <apeX:actionsupport event="onclick" rerender="RefreshBlockTask"/>
+                                    </apex:inputCheckbox></td>
+                                  <td><apex:inputtext value="{!item.remainderdaystask}" style="width:35px"   styleclass="remainderdaystask{!rowNumTask}" size="3"  rendered="{!IF(item.assigntask != 'email' && item.remaindertask == true,true,false)}" maxlength="4"/></td>
+                                  <td><apex:outputLabel value="days" rendered="{!IF(item.assigntask != 'email' && item.remaindertask == true,true,false)}"/>
+                                    <apex:inputText value="{!item.contactid}" styleClass="contactidtask{!rowNumTask}"  style="display:none;" />
+                                    <apex:inputText value="{!item.userid}" styleClass="useridtask{!rowNumTask}" style="display:none;"/>
+                                    <apex:inputHidden value="{!item.RecordIdTask}"/>
+                                    <apex:inputhidden value="{!item.task}"/>
+                                    </td>
+                                  <td ><div class="btn-group"><a class="btn" href="javascript:void(0);" onclick="delContTask('{!JSENCODE(rowNumTask)}','{!JSENCODE(item.RecordIdTask)}');"><i class="icon-trash"></i></a></div>
+                                    <apex:actionstatus id="statusIdForDeleteATask" startText="Please wait..">
+                                      <apex:facet name="stop"/>
+                                    </apex:actionstatus>
+                                    
+                                    <apex:variable var="rowNumTask" value="{!VALUE(rowNumTask) + 1}"/>
+                                    </td>
+                                </tr>
+                              </apex:repeat>
+                            </table>
+                                                           
+                            <input type="hidden" value="{!rowNumTask}" class="rowNumTask" name="rowNumTask"/>
+                            
+                            <div class="btn-block pagination-centered">
+                            <a class="btn btn-primary" href="javascript:void(0)" onclick="TaskSaveFunction('add');" ><i class="icon-plus-sign icon-white"></i> Add New</a>                                                                           
+                            <a class="btn btn-primary" href="javascript:void(0)" onclick="TaskSaveFunction('save');" ><i class="icon-ok icon-white"></i> Save</a>
+                            </div> 
+                            
+                         </apex:outputPanel>
+                        </apex:outputPanel>
+                        
+                        <apex:outputPanel id="tasksavestatus">
+                                                                                                  
+                         <apex:actionstatus id="NextRowStatusTaskSave" startText="Please wait....">
+                         <apex:facet name="stop">                      
+                           <apex:outputPanel rendered="{!tasksavestatus = true}">
+                                       <apex:outputPanel ><div class="alert alert-success">Notification Settings Saved Successfully.</div></apex:outputPanel>
+                                      </apex:outputPanel>       
+                                </apex:facet>                                        
+                        </apex:actionstatus>
+                        
+                         </apex:outputPanel>
+                       </apex:outputPanel> 
+                </div><!-- widget-content -->
+                </div><!-- widget-box -->                       
+                       
+  </apex:pageBlock>
+</div>  
+  </apex:form>
+</apex:page>

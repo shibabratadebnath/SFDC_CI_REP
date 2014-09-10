@@ -1,0 +1,641 @@
+<apex:page standardController="CnP_PaaS_EVT__Event__c" extensions="CnP_PaaS_EVT.EventBasicInformation_class" showHeader="false" sidebar="false" standardStylesheets="false" action="{!loadhelpContent}" >
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+
+<!--<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap-responsive.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/main.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/grey.css"/>-->
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/main.js')}"/> 
+<style>
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+
+.mainfrm, body {
+
+ border:0px;
+ height:98%;
+}
+</style>
+<apex:form >
+
+ <div id="content-header">
+    <h1><i class="icon icon-tasks"></i>&nbsp;<apex:outputField value="{!CreateAnEvent.Name}"/></h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"> <!--<a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a>-->
+      <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Basic Information'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Basic Information'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Basic Information'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Basic Information'].link}" target="_blank" >{!subTab['Active Events']['Basic Information'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Basic Information'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Basic Information'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Basic Information'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel> 
+     </div>
+  </div>
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a ><apex:outputField value="{!CreateAnEvent.Name}"/></a> <a class="current">Basic Information</a></div>
+
+<div id="frame-content" class="container-fluid">
+ 
+         <!-- <div id="EventDates" class="alert alert-success"><span id="Start"><strong>Start Date:</strong> &nbsp;<apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Start_date_and_time__c}" dir=""/></span>&nbsp;&nbsp;&nbsp;&nbsp;
+         <span id="End"><strong>Ends on:</strong> &nbsp;<apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__End_date_and_time__c}" styleClass="Datetime_endDT" id="Datetime_endDT" /></span>&nbsp;&nbsp;&nbsp;&nbsp;
+         <span id="Published"><strong>Published on:</strong>&nbsp;  
+         <apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Publish_date__c}"  style="width:150px" id="Datetime_publishdate" styleClass="Datetime_publishdate"/></span>
+         </div> -->
+         
+         <div class="pagination-centered">
+                        <ul class="stat-boxes">
+                            <li class="popover-startdate">
+                                <div class="left"><span>Start Date</span></div>
+                                <div class="right">
+                                    <strong><apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Start_date_and_time__c}" dir=""/></strong>                                    
+                                </div>
+                            </li>
+                            <li class="popover-endson">
+                                <div class="left"><span>End Date</span></div>
+                                <div class="right">
+                                    <strong><apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__End_date_and_time__c}" styleClass="Datetime_endDT" id="Datetime_endDT" /></strong>                                   
+                                </div>
+                            </li>
+                            <li class="popover-endson">
+                                <div class="left"><span>Publish Date</span></div>
+                                <div class="right">
+                                    <strong><apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Publish_date__c}"  style="width:150px" id="Datetime_publishdate" styleClass="Datetime_publishdate"/></strong>                                   
+                                </div>
+                            </li>
+                           
+                        </ul>
+            </div>
+
+<apex:pageBlock id="evtdetails" >
+         
+         <div class="btn-block pagination-centered">
+         <apex:commandButton value="Edit" styleClass="btn btn-primary" action="{!EventEdit}"/>
+         &nbsp;
+         <apex:commandButton value="Delete" action="{!Eventdelete}" styleClass="btn btn-primary" onclick="if(!reportdelete()) return false;" rendered="{!If(eveid!=null && CreateAnEvent.CnP_PaaS_EVT__Inventory_sold__c==0,true,false)}"/>
+         &nbsp;
+         <apex:commandButton value="Clone" action="{!eventclone}" styleClass="btn btn-primary"/>
+         &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Event_Site_2v__c}" id="ViewSite"/>
+         </span>
+         <!--<apex:commandButton value="{!CreateAnEvent.CnP_PaaS_EVT__Event_Site_2v__c}" styleClass="btn btn-primary"/>-->
+         </div>
+         
+ <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Event Information</h5>
+            
+          </div>
+          <div class="widget-content">
+             
+            <div class="detailstable">
+            <apex:pageBlockSection columns="1">
+             
+            <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Event Name (Internal)"/>
+            <apex:outputField value="{!CreateAnEvent.Name}"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Event Name (External)"/>
+            <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Event_title__c}"/>
+               </apex:pageBlockSectionItem>
+
+             <apex:pageBlockSectionItem helpText="External website address for users to view information and register – you can get the domain address by clicking on the 'get URL link'. If you don't have a domain created, you need to create one.">
+                 
+                 <apex:outputLabel value="Salesforce Public Site URL"/>
+                 <apex:outputPanel >
+                 <span  class="catlook"> 
+                <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Site_Url__c}"/>  
+              <!--  <apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Site_Url__c}" styleClass="Eventinfo_siteurl" style="width:450px" id="Eventinfo_siteurl" required="true" onblur="changedtohttps(this.value);"/>-->
+               </span>
+              
+              
+                 </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Event Site"/>
+                
+               <a href="{!CreateAnEvent.CnP_PaaS_EVT__Site_Url__c}/CnP_PaaS_EVT__ExternalRegistrationPage?event_id={!eveid}" target="_new">View</a>
+               
+                </apex:pageBlockSectionItem>
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Registration Widget"/>
+                
+               <!--<apex:outputField value="{!CreateAnEvent.Tickets_widget__c}"/>--> 
+               <a href="{!CreateAnEvent.CnP_PaaS_EVT__Site_Url__c}/CnP_PaaS_EVT__ExternalRegistrationPage?event_id={!eveid}&WidgetType=RegistrationWidget" target="_new">View</a>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                
+                 <apex:outputlabel value="Event Template"/> 
+                 <apex:outputpanel >
+                 <apex:outputtext value="{!CreateAnEvent.Select_Template__r.Name}"/>
+                 <!--<a href="/apex/EventsDesignerView?id={! CreateAnEvent.Select_Template__c }&ObjType=Sites&EventId={! eveid }" target="EventsIframe">
+<apex:outputtext value="{!CreateAnEvent.Select_Template__c}"/></a>-->
+ </apex:outputpanel>
+                </apex:pageBlockSectionItem>
+                
+             <apex:pageBlockSectionItem helpText="{!$ObjectType.CnP_PaaS_EVT__Event__c.Fields.CnP_PaaS_EVT__Total_Inventory__c.inlineHelpText}" >
+                       <apex:outputLabel value="Total Inventory" />
+                       <apex:outputpanel >
+                        <apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Total_Inventory__c}" style="width:50px" id="EventSetinfo_Capacity" styleclass="TotalInventory"/>
+                      
+                        </apex:outputpanel>
+                        
+                       </apex:pageBlockSectionItem>
+                       
+                 <apex:pageBlockSectionItem helpText="{!$ObjectType.CnP_PaaS_EVT__Event__c.Fields.CnP_PaaS_EVT__Inventory_sold__c.inlineHelpText}" >
+                       <apex:outputLabel value="Inventory sold" />
+                       <apex:outputpanel >
+                        <apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Inventory_sold__c}" style="width:50px" id="EventSetinfo_Capacity" styleclass="TotalInventory"/>
+                      
+                        </apex:outputpanel>
+                        
+                       </apex:pageBlockSectionItem>      
+                       
+                   <apex:pageBlockSectionItem helpText="{!$ObjectType.CnP_PaaS_EVT__Event__c.Fields.CnP_PaaS_EVT__Available_Inventory__c.inlineHelpText}" >
+                       <apex:outputLabel value="Available Inventory" />
+                       <apex:outputpanel >
+                        <apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Available_Inventory__c}" style="width:50px" id="EventSetAvailableInventory" styleclass="AvailableInventory"/>
+                      
+                        </apex:outputpanel>
+                        
+                       </apex:pageBlockSectionItem>     
+                       
+                    <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Report Color"></apex:outputLabel>
+                        <apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Report_Color__c}" styleClass="color {hash:true}" style="width:63px" id="Eventreport"/>
+                       </apex:pageBlockSectionItem>  
+                       <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Anonymous"></apex:outputLabel>
+                        <apex:inputCheckbox value="{!CreateAnEvent.CnP_PaaS_EVT__Anonymous__c}" disabled="true"/>
+                       </apex:pageBlockSectionItem> 
+                       <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Registration Timeout"></apex:outputLabel>
+                       <apex:outputPanel >
+                       <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Registration_Timeout__c}"/>
+                             minutes. Inventory will be blocked during this time
+                   </apex:outputPanel>
+                       </apex:pageBlockSectionItem>  
+                       
+                     <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="Mode"></apex:outputLabel>
+                     <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Registration_Type__c}"/>
+                     </apex:pageBlockSectionItem>  
+                     
+                       <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="Discount Type"></apex:outputLabel>
+                     <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Discount_Type__c}"/>
+                     </apex:pageBlockSectionItem>  
+            </apex:pageBlockSection>
+            </div>
+
+</div>
+</div>
+</div>
+</div>
+
+<!-- 
+<div class="DateTimeInfo detailstable">
+   <apex:pageBlockSection id="DateTimeInfo" title="Event Date and Time" columns="1" collapsible="false">
+                      
+                                         
+                        <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="Event Starts Date"  />
+                           <apex:outputPanel >
+                           <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Start_date_and_time__c}"/>
+                         
+                     
+                           </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="Event Ends Date"  />
+                           <apex:outputPanel >
+                           <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__End_date_and_time__c}"  style="width:150px;" styleClass="Datetime_endDT" id="Datetime_endDT"                           />
+                      
+                           </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem >
+                           <apex:outputLabel value="Event Published Date"  />
+                           <apex:outputPanel >
+                           
+                        <apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Publish_date__c}"  style="width:150px" id="Datetime_publishdate" styleClass="Datetime_publishdate"/>
+                        
+                           </apex:outputPanel>
+                        </apex:pageBlockSectionItem>                                                                                                                                    
+                </apex:pageBlockSection>
+  </div>  
+ <div class="Inventory detailstable">
+  <apex:pageBlockSection columns="1" >
+
+  </apex:pageBlockSection> 
+  </div> -->
+  <div class="SelectPayOptions detailstable">
+<!--<apex:commandButton value="+Add Levels" action="{!addlevel}" reRender="itemlist"/> -->
+ <!--  <apex:pageBlockSection id="SelectPayOptions" title="Selected Payment Options" columns="1" collapsible="false">
+                         <apex:pageblocksectionItem id="AccountIdItem" helpText="Your Click & Pledge Account Number to be found in C&P admin portal [Account Info>Your Profile>Account Number]">
+                         <apex:outputLabel value="C&P Account Number"/>
+                        <apex:outputfield value="{!CreateAnEvent.C_P_Account_Id__c}"  />
+                                              <apex:selectList value="{!CreateAnEvent.C_P_Account_Id__c}" size="1">
+                       <apex:selectOptions value="{!acclist}"></apex:selectOptions>
+                       </apex:selectList>
+                         </apex:pageBlockSectionItem>
+                         <!--<apex:pageblocksectionItem id="CurrencyItem">
+                         <apex:outputLabel value="Currency"/>
+                         <apex:outputfield value="{!CreateAnEvent.Currency__c}"/>
+                         </apex:pageBlockSectionItem>
+                        <apex:pageblocksectionItem helpText="Accepted payment options – refer to your Click & Pledge admin portal for accepted cards [Accepted Cards]" id="CreditCardItem" >
+                                 <apex:outputLabel value="Online Options"/>
+                                 <apex:outputpanel >
+                                 
+                                        <apex:inputCheckbox value="{!CreateAnEvent.Credit_card__c}" id="Credit_card" onchange="CreditOptions();" styleclass="Credit_card">
+                                        
+                                        </apex:inputCheckbox>
+                                        <apex:outputLabel value="Credit Card"/><br />
+                                        <apex:outputpanel id="CreditCardOptions" style="position:relative;left:30px;">
+                                        <apex:outputpanel >
+                                        <apex:inputCheckbox value="{!CreateAnEvent.Visa__c}" id="Visa_card" styleclass="Visa_card"/>
+                                        <apex:outputLabel value="Visa"/><br />
+                                        <apex:inputCheckbox value="{!CreateAnEvent.master_card__c}" id="Master_card" StyleClass="Master_card"/>
+                                        <apex:outputLabel value="Master Card"/><br />
+                                        <apex:inputCheckbox value="{!CreateAnEvent.Discover__c}" id="Discover" StyleClass="Discover"/>
+                                        <apex:outputLabel value="Discover"/><br />
+                                        <apex:inputCheckbox value="{!CreateAnEvent.American_express__c}" id="AmericanEx" StyleClass="AmericanEx"/>
+                                        <apex:outputLabel value="American Express"/><br />
+                                        
+                                        </apex:outputpanel>
+                                        </apex:outputpanel>
+                                        <apex:outputfield value="{!CreateAnEvent.e_check__c}" id="e_check" StyleClass="e_check"/>
+                                        <apex:outputLabel value="eCheck"/><br />
+                                        <apex:outputfield value="{!CreateAnEvent.Invoice_P_O__c}" id="InVoice" StyleClass="InVoice"/>
+                                        <apex:outputLabel value="Invoice"/><br />
+                                        <apex:outputfield value="{!CreateAnEvent.Purchase_order__c}" id="PurchaseOrder" StyleClass="PurchaseOrder"/>
+                                        <apex:outputLabel value="Purchase Order"/><br />
+                                       </apex:outputpanel>
+                         </apex:pageblocksectionItem>  
+                                                         
+   
+    </apex:pageBlockSection>   -->          
+  </div>
+
+<div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Pricing/ Registration Level</h5>
+            
+          </div>
+          <div class="widget-content">
+          
+                <div class="Registration detailstable">
+                <apex:outputPanel >
+                
+                 <apex:variable value="0" var="rowNum"/>
+                 <apex:pageblockTable value="{!registrationlevellist}"   var="reg"    >
+                 
+                 <apex:column headerValue="Order">
+                 <apex:outputField value="{!reg.CnP_PaaS_EVT__OrderLevel__c}"/>
+                 
+                 </apex:column>
+                 <apex:column headerValue="Level Name" >
+                 <apex:outputfield value="{!reg.CnP_PaaS_EVT__Name_on_the_form__c}"/>
+                 </apex:column>
+                <apex:column HeaderValue="Price" >
+                 <apex:outputfield value="{!reg.CnP_PaaS_EVT__Price__c}" style="width:75px;" />
+                 </apex:column> 
+                 <apex:column headerValue="Tax (%)">
+                  <apex:outputfield value="{!reg.CnP_PaaS_EVT__Tax_rate__c}" style="width:45px;"/>
+                 </apex:column>
+                 <apex:column >
+                  <apex:facet name="header">
+                        Tax <br/>Deductible
+                    </apex:facet>
+                 <apex:outputfield value="{!reg.CnP_PaaS_EVT__Tax_Deductible__c}" style="width:45px;"/>
+                 </apex:column>
+                 <apex:column >
+                  <apex:facet name="header">
+                    Additional <br/> Fee
+                    </apex:facet>
+                 <apex:outputfield value="{!reg.CnP_PaaS_EVT__Additional_Fee__c}" style="width:45px;"/>
+                 </apex:column>
+                 <apex:column >
+                 <apex:facet name="header">
+                       Total <br/> Inventory
+                 </apex:facet>
+                 <apex:outputfield value="{!reg.CnP_PaaS_EVT__Limit_for_this_type__c}" style="width:45px;"/>
+                 </apex:column>
+                 
+                 <apex:column >
+                 <apex:facet name="header">
+                  Registrations  <br/> Included
+                 </apex:facet>
+                 <apex:outputfield value="{!reg.CnP_PaaS_EVT__Tickets_Included__c}" style="width:45px;"/>
+                 </apex:column>
+                 
+                 <apex:column headerValue="Registration Start Date">
+                 <apex:outputfield value="{!reg.CnP_PaaS_EVT__Display_this_registration_from__c}"/>
+                 </apex:column>
+                 
+                 <apex:column headerValue="Registration End Date" >
+                 <apex:outputfield value="{!reg.CnP_PaaS_EVT__Hide_this_registration_from__c}"/>
+                 </apex:column>
+                 
+                 <apex:column headerValue="Mode">
+                 <apex:outputField value="{!reg.CnP_PaaS_EVT__Mode__c}" rendered="{!IF(reg.CnP_PaaS_EVT__Mode__c!='Manual',true,false)}"/>
+                 <apex:outputtext value="Box Office Only" rendered="{!IF(reg.CnP_PaaS_EVT__Mode__c=='Manual',true,false)}"/>
+                 </apex:column>
+                 
+                 
+                
+                 </apex:pageblockTable>
+                 </apex:outputPanel>
+                </div>
+    </div>
+</div>
+</div>
+</div>            
+ 
+ 
+ <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Registration Fields Visibility</h5>
+            
+          </div>
+          <div class="widget-content">
+ 
+     <div class="detailstable" style="overflow-x: auto;" > 
+        
+           <apex:pageBlockSection columns="1" >
+            <apex:pageBlockSectionItem labelStyle="width:320px">
+            <apex:outputLabel value="Price"></apex:outputLabel>
+           
+            <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Price__c}"/>
+             </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Additional Fee"></apex:outputLabel>
+          
+            <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Additional_Fee__c}"/>
+             </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem > 
+             <apex:outputLabel value="Registrations Incl."></apex:outputLabel>
+            
+            <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Registrations_Included__c}"/>
+             </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Qty."></apex:outputLabel>
+           
+            <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Quantity__c}"/>
+             </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem >
+             <apex:outputLabel value="Total"></apex:outputLabel>
+            
+            <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Total__c}"/>
+            </apex:pageBlockSectionItem>
+           </apex:pageBlockSection>
+      
+           
+           
+           
+            </div> <!-- overflow scroll bar -->
+
+</div>
+</div>
+</div>
+</div>
+
+ 
+ 
+                
+  <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>C&amp;P Account</h5>
+            
+          </div>
+          <div class="widget-content">
+              
+                <div class="detailstable">
+                <apex:outputPanel id="Eveacclist">
+                <apex:variable value="0" var="RowEveAcc"/>
+                     <apex:dataTable value="{!Eventaccountlist}" var="Evacc" styleClass="lvltable table table-bordered table-striped">
+                     <apex:column headerValue="C&P Account ">
+                            <apex:outputField value="{!Evacc.Name}"/>             
+                                     
+                     </apex:column>
+                    <apex:column headerValue="Currency Label">
+                      <apex:outputField value="{!Evacc.CnP_PaaS_EVT__Currency_label__c}"/>
+                     </apex:column>
+                    
+                     <apex:column headerValue="Payment Type" >
+       
+                                 <apex:outputpanel >
+                                 
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Credit_Card__c}" id="Credit_card" onchange="CreditOptions();" styleclass="Credit_card{!RowEveAcc} pull-left" disabled="true">
+                                        </apex:inputCheckbox>
+                                        <apex:outputLabel value="Credit Card" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        <apex:outputpanel id="CreditCardOptions" styleClass="CreditCardOptions{!RowEveAcc} padding_left_15 display_block">
+                                        <apex:outputpanel >
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Visa__c}" id="Visa_card" styleclass="Visa_card pull-left" disabled="true"/>
+                                        <apex:outputLabel value="Visa" styleClass="padding_left_15" />
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Master_Card__c}" id="Master_card" StyleClass="Master_card pull-left" disabled="true"/>
+                                        <apex:outputLabel value="Master Card" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Discover__c}" id="Discover" StyleClass="Discover pull-left" disabled="true"/>
+                                        <apex:outputLabel value="Discover" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__American_Express__c}" id="AmericanEx" StyleClass="AmericanEx pull-left" disabled="true"/>
+                                        <apex:outputLabel value="AmEx" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__JCB__c}" id="JCB" StyleClass="JCB pull-left" disabled="true"/>
+                                        <apex:outputLabel value="JCB" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        </apex:outputpanel>
+                                        </apex:outputpanel>
+                                      <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__eCheck__c}" id="e_check" StyleClass="e_check pull-left" disabled="true"/>
+                                        <apex:outputLabel value="eCheck" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Invoice__c}" id="InVoice" StyleClass="InVoice pull-left" disabled="true"/>
+                                        <apex:outputLabel value="Invoice" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Purchase_Order__c}" id="PurchaseOrder" StyleClass="Purchaseorder pull-left" disabled="true"/>
+                                        <apex:outputLabel value="Purchase Order" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                       </apex:outputpanel>
+     </apex:column>
+   
+      <apex:column headerValue="Custom Payment">
+        <apex:outputField value="{!Evacc.CnP_PaaS_EVT__Custom_Payment_Check__c}" id="customPayment" StyleClass="e_check" />
+      
+    
+      <apex:outputpanel id="DisplayCustomPaymentName" style="position:relative;" styleclass="cplabel" >
+   
+      <apex:outputField value="{!Evacc.CnP_PaaS_EVT__Custom_Payment_Name__c}"  /><br/>
+   
+      </apex:outputpanel>
+      </apex:column>
+      <apex:column headerValue="Free Payment">
+       <apex:outputField value="{!Evacc.CnP_PaaS_EVT__Free_Payment__c}"/>
+          <apex:variable var="RowEveAcc" value="{!VALUE(RowEveAcc) + 1}"/>
+      </apex:column>
+     </apex:dataTable>
+     
+     
+     <apex:pageBlockSection columns="1">
+     
+     <apex:pageBlockSectionItem >
+     <apex:outputLabel value="Account Selector Label"></apex:outputLabel>
+    
+  
+   <apex:outputField value="{!CreateAnEvent.CnP_PaaS_EVT__Organization__c}"/></apex:pageBlockSectionItem></apex:pageBlockSection>
+     <input type="hidden" value="{!RowEveAcc}" class="totalaccounts"/>
+   </apex:outputPanel>  
+  </div>   
+ 
+</div>
+</div>
+</div>
+</div>
+  <div class="btn-block pagination-centered">
+         <apex:commandButton value="Edit" styleClass="btn btn-primary" action="{!EventEdit}"/>
+         &nbsp;
+         <apex:commandButton value="Delete" action="{!Eventdelete}" styleClass="btn btn-primary" onclick="if(!reportdelete()) return false;" rendered="{!If(eveid!=null && CreateAnEvent.CnP_PaaS_EVT__Inventory_sold__c==0,true,false)}"/>
+         &nbsp;
+         <apex:commandButton value="Clone" action="{!eventclone}" styleClass="btn btn-primary"/>
+         &nbsp;
+         <span class="btn btn-primary" >
+         <apex:outputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Event_Site_2v__c}"/>
+         </span>
+         </div>
+ 
+</apex:pageBlock>
+
+</div>
+<apex:outputPanel rendered="{!refreshdemopage}">
+ <script>
+      window.top.location='/apex/ManagingEvents';
+   </script>
+</apex:outputPanel>
+
+</apex:form> 
+ 
+<form id="pgheight" method="get" >
+<input type="hidden" id="hghval" value="" />
+
+</form>
+<script type="text/javascript">
+$(document).ready( function() {
+var myLocalVariable ;
+    //$(".mainfrm table").removeAttr("class");
+    // $(".mainfrm table").attr("class","event-table");
+          $("#doch").attr("value",$(document).height()+"px");
+                 //  alert($("#doch").val()) ;
+                   myLocalVariable = $("#doch").val();
+                 //  parent.hello('simple');
+                 //  $("#doch").parent.appendTo("#apdval");
+
+                   });
+    </script>  
+
+   
+    
+    <script type="text/javascript" charset="utf-8">
+      $(document).ready(function() {
+
+       $(".detailstable table").attr("class","table table-bordered table-striped");
+       //$(".Registration table").removeAttr("class","table table-bordered table-striped");
+      // $(".Registration table table").attr("class","table table-bordered table-striped");
+             //   $("table").tablecloth({ theme: "default" });
+             $("table").fadeIn(500);
+              $(document).height()
+              $("#hghval").attr("value",$(document).height());
+              
+               var i=0;
+       var total=$(".totalaccounts").val();
+    
+            for(i=0;i<total;i++){
+               
+
+           if($(".CustomPayment_main"+i).is(':checked')==false)
+           {
+            $(".CustomPayment_Name"+i).css({"display":"none"});
+             $(".CustomPayment_Name1"+i).css({"display":"none"});
+             
+            $(".cplabel"+i).css({"display":"none"});
+           }
+           if($(".Credit_card"+i).is(':checked')==false)
+            {
+               $(".CreditCardOptions"+i).css({"display":"none"});
+               
+           
+             }
+ 
+           }
+
+      });
+      
+      function reportdelete()
+    {
+
+
+      var numrows=$(".totallevels").val();
+     
+      if(numrows==1)
+      {
+       alert("Event should have atleast one Pricing/ Registration Level");
+       
+       return false;
+      }
+      if(confirm("Are you sure you want to permanently delete this record?")==true)
+      {
+        return true;
+      }
+}
+
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+
+    </script> 
+</apex:page>

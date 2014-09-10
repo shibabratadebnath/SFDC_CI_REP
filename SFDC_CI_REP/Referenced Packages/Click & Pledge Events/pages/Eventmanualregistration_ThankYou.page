@@ -1,0 +1,218 @@
+<apex:page controller="CnP_PaaS_EVT.EventManualRegistration" showHeader="true" standardStylesheets="true" >
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+<link type="text/css" rel="stylesheet"  href="{!URLFOR($Resource.Payment_Event, 'styles.css')}" /> 
+<script>
+$(document).ready(function () { 
+                      var Title=$(".Title").text();
+                      $(".Title").html(Title);
+                      
+                      var titleandinfo=$(".titleandinfo").text();
+                      $(".titleandinfo").html(titleandinfo);
+                      
+                      var t1=$(".t1").text();
+                      $(".t1").html(t1);
+                      
+                      var sectiondesc=$(".sectiondesc").text();
+                      $(".sectiondesc").html(sectiondesc);
+                      
+                      var eventend=$(".eventend").text();
+                      $(".eventend").html(eventend);
+                      
+                      var soldout=$(".soldout").text();
+                      $(".soldout").html(soldout);
+                      
+                      var FooterInfo=$(".FooterInfo").text();
+                      $(".FooterInfo").html(FooterInfo);
+                      
+                      var termsandconditions=$(".termsandconditions").text();
+                      $(".termsandconditions").html(termsandconditions);
+                      
+                      var enginecss=$(".enginecss").text();
+                      $(".enginecss").html(enginecss);
+ });
+</script>
+
+<style>
+     #cnp {
+ 
+            line-height:25px;
+            
+            color:#CCC;
+            font-family:Arial, Helvetica, sans-serif;
+            font-size:11px;
+            max-width:700px;
+            text-align:center;
+            margin:0 auto;
+    
+    } 
+   .pbSubsection {
+   /* background-color: #CCC;
+   /* border-radius: 20px 20px 20px 20px;  padding: 9px;*/
+
+  width: 600px; 
+margin:24px auto 0 auto;
+
+}
+    .pbSubsection .detailList {
+    border-collapse: collapse;
+    font-family: 'Arial';
+    font-size: 12px;
+    margin-left: 3px;
+    text-align: left;
+    
+      /*   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+
+      -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);*/
+
+}
+
+.pbSubsection .detailList tr:nth-child(1) td:nth-child(1)
+{
+
+   -webkit-border-top-left-radius: 10px;
+    -khtml-border-radius-topleft: 10px; 
+    -moz-border-radius-topleft: 10px;
+    border-top-left-radius: 10px;
+    line-height:30px
+}
+.pbSubsection .detailList tr:nth-child(1) td:nth-child(2)
+{
+
+-webkit-border-top-right-radius: 10px;
+    -khtml-border-radius-topright: 10px;    
+    -moz-border-radius-topright: 10px;
+    border-top-right-radius: 10px;
+}
+.pbSubsection .detailList tr:nth-child(5) td:nth-child(1)
+{
+
+  -webkit-border-bottom-left-radius: 10px;
+    -khtml-border-radius-bottomleft: 10px;  
+    -moz-border-radius-bottomleft: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.pbSubsection .detailList tr:nth-child(5) td:nth-child(2)
+{
+
+-webkit-border-bottom-right-radius: 10px;
+    -khtml-border-radius-bottomright: 10px; 
+    -moz-border-radius-bottomright: 10px;
+    border-bottom-right-radius: 10px;
+}
+.detailList tr td.dataCol{
+
+    line-height:25px;
+    padding:0px;
+}
+.detailList tr td.first {
+ background-color: #F2F2F2;
+ color:#000;
+ font-size:13px;
+ padding-left :10px;
+  font-weight: bold;
+ }
+ .detailList tr td.last {
+ background-color: #F2F2F2;
+ color:#000;
+ }
+#MainContent_divContent{
+    border-radius: 10px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+
+
+}
+
+/* diveVTPage CSS */
+
+.msgsuc {
+  border-radius:10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+     background-color:#D6F8D7;
+     color:#000;
+     font-size:12px;
+     font-weight:bold;
+     text-align:center;
+     width:595px;
+     border:solid 1px #009966;    
+     margin:5px 0px;
+     clear: both;
+     line-height: 25px;
+         display: block;
+}
+
+/* diveVTPage CSS END */
+</style>
+<apex:form >
+
+ <apex:pageBlock >
+
+    
+                             <script type="text/javascript">      
+                            $(document).ready(function (){ 
+                            var Result=$(".Result").text();
+                            $(".Result").html(Result);
+                            });
+                            </script>
+                            <div class="Result">
+                            <apex:outputText value="{!Resultdisply1}" style="display:none"/>
+                            </div>
+                            <apex:pageBlockSection >   
+                            
+
+                  <apex:outputLabel value="Payment Summary" style=" ">
+                 </apex:outputLabel> <apex:outputText value="" />
+                 <apex:outputLabel value="Total Fee"  style="padding-left:10px;font-weight:bold;text-align:left;display:block;float:left;width: 95%;" rendered="{!IF($CurrentPage.parameters.TotalFee!='0.00' && $CurrentPage.parameters.TotalFee!='0',true,false)}"></apex:outputLabel>
+                 <apex:outputtext value="${!JSENCODE($CurrentPage.parameters.TotalFee)}" style="width:80px;text-align:right;font-weight:bold;display:block;float:right; margin-right: 12px;" rendered="{!IF($CurrentPage.parameters.TotalFee!='0.00' && $CurrentPage.parameters.TotalFee!='0',true,false)}"/>
+                
+                 <apex:outputLabel value="Total Discount" style="padding-left:10px;font-weight:bold;text-align:left;display:block;float:left;border-top:1px dotted #F2F2F2;width: 100%; " rendered="{!IF($CurrentPage.parameters.TotalDiscount!='0.00' && $CurrentPage.parameters.TotalDiscount!='0',true,false)}"></apex:outputLabel>
+                <apex:outputtext value="- ${!JSENCODE($CurrentPage.parameters.TotalDiscount)}" style="width:80px;text-align:right;font-weight:bold;display:block;float:right; margin-right: 12px;" rendered="{!IF($CurrentPage.parameters.TotalDiscount!='0.00' && $CurrentPage.parameters.TotalDiscount!='0' ,true,false)}"/>
+                 <apex:outputLabel value="Total Tax" style="padding-left:10px;font-weight:bold;text-align:left;display:block;float:left;border-top:1px dotted #F2F2F2;width: 100%; " rendered="{!IF($CurrentPage.parameters.TotalTax !='0.00' && $CurrentPage.parameters.TotalTax !='0' ,true,false)}"></apex:outputLabel>
+                 <apex:outputtext value="${!JSENCODE($CurrentPage.parameters.TotalTax)}" style="width:80px;text-align:right;font-weight:bold;display:block;float:right; margin-right: 12px;" rendered="{!IF($CurrentPage.parameters.TotalTax !='0.00' && $CurrentPage.parameters.TotalTax !='0',true,false)}"/>                
+                 <apex:outputLabel value="{!Eventid.CnP_PaaS_EVT__Label_for_additional_donation__c}" style="padding-left:10px;font-weight:bold;text-align:left;display:block;float:left;border-top:1px dotted #F2F2F2;width: 100%;" rendered="{!IF($CurrentPage.parameters.Donation!='0.00' && $CurrentPage.parameters.Donation!='0',true,false)}"></apex:outputLabel>
+                 <apex:outputtext value="${!JSENCODE($CurrentPage.parameters.Donation)}" style="width:80px;text-align:right;font-weight:bold;display:block;float:right; margin-right: 12px;" rendered="{!IF($CurrentPage.parameters.Donation!='0.00' && $CurrentPage.parameters.Donation!='0',true,false)}"/>                
+                 
+                  
+                 <apex:outputLabel value="Total Tax Deductible" styleClass="summaryleft" style="padding-left:10px;font-weight:bold;text-align:left;display:block;float:left;border-top:1px dotted #F2F2F2;width: 100%;" rendered="{!If($CurrentPage.parameters.TotalTaxDeductible!='0.00' && $CurrentPage.parameters.TotalTaxDeductible!='0',true,false)}"></apex:outputLabel>
+                 
+                 <apex:outputText value="${!JSENCODE($CurrentPage.parameters.TotalTaxDeductible)}" style="width:80px;text-align:right;font-weight:bold;display:block;float:right; margin-right: 12px;" rendered="{!If($CurrentPage.parameters.TotalTaxDeductible!='0.00' && $CurrentPage.parameters.TotalTaxDeductible!='0',true,false)}">                                  
+                 </apex:outputText>
+                 
+                 <apex:outputLabel value="Grand Total" style="padding-left:10px;font-weight:bold;text-align:left;display:block;float:left;border-top:1px dotted #F2F2F2;width: 100%;" ></apex:outputLabel>
+                 <apex:outputtext value="${!JSENCODE($CurrentPage.parameters.GrandTotal)}" style="width:80px;text-align:right;font-weight:bold;display:block;float:right; margin-right: 12px;"/>                
+                
+                            
+                 <apex:outputpanel >
+
+                 
+    <apex:commandLink value="New Registration" action="{!goBack}" style="text-decoration:none;display:block;border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    color: #666666;
+    font-size: 0.9em;
+    font-weight: bold;
+    margin: 1px;
+    padding: 0px 4px;float:right;background-color:#FFFFFF;"/> &nbsp;&nbsp;
+                  <apex:commandLink value="Back To Event" action="/{!EventId.id}" style="text-decoration:none;display:block;border-radius: 2px 2px 2px 2px;
+    border-style: solid;
+    border-width: 1px;
+    color: #666666;
+    font-size: 0.9em;
+    font-weight: bold;
+    margin: 1px;
+    padding: 0px 4px;float:right;background-color:#FFFFFF;" />
+                  </apex:outputpanel>  
+                  </apex:pageBlockSection> 
+  
+ 
+  </apex:pageBlock>
+
+
+  
+    </apex:form>
+ 
+</apex:page>

@@ -1,0 +1,62 @@
+<apex:page standardController="Contact" extensions="CnP_PaaS.CreditTransactions" showHeader="true" sidebar="true">
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+ <apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__DataTables,'js/jquery.dataTables.js')}"/>
+ <apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS__DataTables,'css/demo_table_jui.css')}"/>
+ <script>
+ function popitup(url) {    
+    newwindow=window.open(url,'name','height=500,width=450,scrollbars=yes');
+    if (window.focus) {newwindow.focus()}
+    return false;
+}
+ </script>
+ <apex:form >
+ <apex:pagemessages />
+
+<apex:pageBlock title="Credit Card Payments" mode="maindetail">
+
+<apex:pageBlockTable value="{!Results}" var="transaction" rendered="{!resultvalue}" >
+
+<apex:inputhidden value="{!transaction.tranId}" id="transactid" />
+
+  <apex:column headerValue="Date Last Used" value="{!transaction.tDate2}" /> 
+  <apex:column headerValue="Last 4 digits" value="{!transaction.cardnum}"/> 
+  <apex:column headerValue="Credit Card Expiration" value="{!transaction.cardexp}"/> 
+  <apex:column headerValue="Credit Card Name" value="{!transaction.cardname}"/>
+  <apex:column >
+      <apex:outputLink value="/apex/VirtualTerminal" styleClass="btn" target="_top"  > Virtual Terminal
+         <apex:actionSupport event="onClick" action="{!Vterminal}" />
+               <apex:param name="id" value="{!transaction.tranId}" assignTo="{!para}" ></apex:param>
+               <apex:param name="expired" value="{!transaction.cardexp}" assignTo="{!expired}"></apex:param>                                              
+      </apex:outputLink>          
+  </apex:column>
+  <apex:column >
+   <apex:actionSupport event="onClick" action="{!Quickchargeform}" />
+     <apex:param name="id" value="{!transaction.tranId}" assignTo="{!para}" ></apex:param>
+     <apex:param name="expired" value="{!transaction.cardexp}" assignTo="{!expired}"></apex:param>    
+     <a href="javascript:void(0);" onclick="return popitup('../apex/Quickchargeform?id={!HTMLENCODE(transaction.tranId)}&qcf=1')"  style="text-decoration:none;postion:relative;" class="btn">Quick Charge Form</a>
+  </apex:column>
+</apex:pageBlockTable>
+</apex:pageBlock>
+<apex:pagemessages />
+<apex:pageBlock title="eCheck Payments" rendered="{!resultvalue1}">
+  <apex:pageBlockTable value="{!CheckResults}" var="checktransaction"  rendered="{!resultvalue1}">
+    <apex:outputLabel ><b>eCheck Information:</b></apex:outputLabel>
+    <apex:inputhidden value="{!checktransaction.chktranId}" id="chktranId" />
+      <apex:column headerValue="Date Last Used" value="{!checktransaction.tDate2}"  /> 
+      <apex:column headerValue="Check Number" value="{!checktransaction.icnum}" /> 
+      <apex:column headerValue="Payment Type" value="{!checktransaction.paytype1}"  /> 
+      <apex:column >
+        <apex:outputLink value="/apex/VirtualTerminal" styleClass="btn" target="_top"  > Virtual Terminal
+         <apex:actionSupport event="onClick" action="{!CheckVterminal}" />
+         <apex:param name="id" value="{!checktransaction.chktranId}" assignTo="{!chkpara}"></apex:param>
+        </apex:outputLink>  
+      </apex:column>
+     <apex:column >
+        <apex:actionSupport event="onClick" action="{!Quickchargeform}" />
+         <apex:param name="id" value="{!checktransaction.chktranId}" assignTo="{!chkpara}"></apex:param>
+            <a href="javascript:void(0);" onclick="return popitup('../apex/Quickchargeform?id={!HTMLENCODE(checktransaction.chktranId)}&qcf=1')"  style="text-decoration:none;postion:relative;" class="btn">Qucik Charge Form </a>
+     </apex:column>
+    </apex:pageBlockTable>
+ </apex:pageBlock>
+ </apex:form>
+ </apex:page>

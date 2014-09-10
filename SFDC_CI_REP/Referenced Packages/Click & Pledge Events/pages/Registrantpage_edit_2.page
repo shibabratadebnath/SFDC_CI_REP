@@ -1,0 +1,96 @@
+<apex:page standardController="CnP_PaaS_EVT__Event_registrant_session__c" extensions="CnP_PaaS_EVT.Registrant_claas_2" sidebar="false" showHeader="false" standardStylesheets="false"> 
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+
+<apex:form >
+<div id="content-header">
+    <h1><i class="icon icon-home"></i> Registrant</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"> <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a> </div>
+  </div>
+  <div id="breadcrumb"> <a href="#" class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a href="#" class="current">Registrant</a> </div>
+
+
+<apex:pageBlock >
+<div class="tab-content">
+
+  <div class="tab-pane active noborder" id="tab1">    
+            <div class="btn-block pagination-centered">  
+            <apex:commandButton value="Save" action="{!save}" styleClass="btn btn-primary"/>
+            &nbsp;
+            <apex:outputLink value="/apex/registrantsandattendeepage?id={!registrant.CnP_PaaS_EVT__EventId__c}" target="_self"  styleClass="btn btn-primary">Cancel</apex:outputLink>
+            </div>            
+            
+    <div class="row-fluid">            
+      <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5>Edit Registrant</h5>
+              </div>
+              <div class="tab-content">
+                          
+            <apex:pageBlockSection columns="1">
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Registrant Name"></apex:outputLabel>
+            <apex:inputField value="{!registrant.Name}" />
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Contact"></apex:outputLabel>
+            <apex:outputLabel value="{!registrant.CnP_PaaS_EVT__ContactId__c}"> </apex:outputLabel>
+            </apex:pageBlockSectionItem>
+            
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Event"></apex:outputLabel>
+            <apex:outputLabel value="{!registrant.EventId__r.Name}"> </apex:outputLabel>
+            </apex:pageBlockSectionItem>
+            
+             <apex:inputField value="{!registrant.CnP_PaaS_EVT__Status__c}"/>
+             
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Transaction Order Number"></apex:outputLabel>
+            <apex:outputLabel value="{!registrant.CnP_PaaS_EVT__Transaction_order_number__c}"> </apex:outputLabel>
+            </apex:pageBlockSectionItem>
+            
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Net Amount Paid"></apex:outputLabel>
+            <apex:outputLabel value="{!registrant.Total_Amount__c }"> </apex:outputLabel>
+            </apex:pageBlockSectionItem>
+
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Total Discount"></apex:outputLabel>
+            <apex:outputLabel value="{!registrant.CnP_PaaS_EVT__Total_Discount__c}"> </apex:outputLabel>
+            </apex:pageBlockSectionItem>
+            
+            <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Contact Data"></apex:outputLabel>
+            <apex:outputLabel value="{!registrant.CnP_PaaS_EVT__Contact_Data__c}"> </apex:outputLabel>
+            </apex:pageBlockSectionItem>
+            
+           <apex:pageBlockSectionItem >
+            <apex:outputLabel value="Additional Donation"></apex:outputLabel>
+            <apex:outputLabel value="{!registrant.CnP_PaaS_EVT__Additional_Donation__c}"> </apex:outputLabel>
+            </apex:pageBlockSectionItem>
+          
+          
+      
+            </apex:pageBlockSection>
+
+           
+
+        </div><!-- widget-content -->
+        </div><!-- widget-box --> 
+        
+        
+             <div class="btn-block pagination-centered">
+            <apex:commandButton value="Save" action="{!save}" styleClass="btn btn-primary"/>
+            &nbsp;
+            <apex:outputLink value="/apex/registrantsandattendeepage?id={!registrant.CnP_PaaS_EVT__EventId__c}" target="_self"  styleClass="btn btn-primary">Cancel</apex:outputLink>
+            </div>
+            
+   </div><!-- row-fluid --> 
+</div> <!-- container-fluid -->
+</div>
+</apex:pageBlock>
+</apex:form>
+</apex:page>

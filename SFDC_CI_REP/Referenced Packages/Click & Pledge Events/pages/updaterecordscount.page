@@ -1,0 +1,3 @@
+<apex:page controller="CnP_PaaS_EVT.updaterecordscount_class" action="{!recordsCount}" readOnly="true">
+ 
+</apex:page>

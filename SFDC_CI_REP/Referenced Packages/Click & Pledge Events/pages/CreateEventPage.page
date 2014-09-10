@@ -1,0 +1,1323 @@
+<apex:page standardController="CnP_PaaS_EVT__Event__c"  extensions="CnP_PaaS_EVT.CreateEventController" standardStylesheets="false" sidebar="false" showHeader="false">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+<!-- <script src="{!URLFOR($Resource.DateTimePicker, "DateTimePicker/jquery.calendar.js")}" type="text/javascript"></script>
+
+ <link type="text/css" rel="stylesheet"  href="{!URLFOR($Resource.DateTimePicker, "DateTimePicker/jquery.calendar.css")}" />-->
+ 
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__BootstrapFrontend,'BootstrapFrontend/bootstrap-datetimepicker-master/css/datetimepicker.css')}"/> 
+<script src="{!URLFOR($Resource.BootstrapFrontEnd,'BootstrapFrontend/frontend-html/js/jquery.js')}"></script> 
+ 
+
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__JsColor, '/jscolor/jscolor.js')}"/> 
+<style>
+.helpLink {
+       position:relative;       
+    }
+ .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    } 
+ .dateFormat {
+    /* padding: 0 50px; */
+     display:none;
+ }
+ .headercolor
+ {
+  Text-color:red;
+ }
+ .requiredInput
+ {
+  float:left;
+ }
+ .calenderIcon{    
+    
+    padding-left: 5px;
+    padding-top: 3px;
+    padding-right:15px;
+}
+.catlook  input{
+
+    width:250px;
+}
+.catlook .errorMsg {
+
+    float:left;
+}
+th.headerRow {
+    width:50px;
+    
+}
+ 
+
+#rightcontainer {
+    height:950px;
+}
+
+.Required{
+color: #CC0000;
+}
+
+.black_overlay{
+display: none;
+position: absolute;
+top: 0%;
+left: 0%;
+width: 100%;
+height: 100%;
+background-color: black;
+z-index:1001;
+-moz-opacity: 0.8;
+opacity:.40;
+filter: alpha(opacity=80);
+}
+.white_content {
+display: none;
+position: absolute;
+text-align: center;
+top: 30%;
+left: 20%;
+/*width: 15%;*/
+height: 4%;
+padding: 16px;
+background-color: white;
+z-index:1002;
+overflow: auto;
+border-radius:20px;
+-webkit-border-radius: 20px;
+-moz-border-radius: 20px;
+border:1px solid #000;
+}  
+
+</style>
+
+
+<script>
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+
+  function checkvalidate()
+  {   
+   a = 0;
+    
+           var sd = $(".Datetime_StartDT_event").val();         
+          var ed = $(".Datetime_endDT_event").val();
+          var pd = $(".Datetime_publishdate_event").val(); 
+         
+         
+        
+          var TotalInventory = $(".TotalInventory").val();
+          
+          TotalInventory=TotalInventory.replace(/\,/g,"");
+          var InventorySold = $(".InventorySold").val();
+          var ev_internal= $(".Eventinfo_name").val();
+          var ev_external=$(".Eventinfo_title").val();
+          var Eventinfo_siteurl=$(".Eventinfo_siteurl").val();
+          reg_text=/^([a-zA-Z0-9\'\;\,\.\-\ ])+$/;
+          reg_number_inventory=/^\s*\d+\s*$/;
+       //   reg_text_eventname=/^([a-zA-Z0-9\.\'\,\_\-\:\@\$\%\(\)\[\]\/\!\~\?\#\^\*\+\=\|\/\ ])+$/;
+         // reg_text_eventname=["\<\>\&\\\{\}]/;
+         reg_text_eventname=/["\<\>\&\\\{\}]/;
+          url = /^(((ht){1}(tps:[/][/]){1})|((www.){1}))[-a-zA-Z0-9:%_\+.~?&//=]+$/;
+          var registrationtimeout=$(".Registration_Timeout").val();
+         var eventmode=$(".Event_Mode").val(); 
+         var esite=$(".Event_site").val();
+         var tcount= $(".Templatecount").val();
+       
+       
+         
+          if(ev_internal=="" || !ev_internal.indexOf(' ',0))
+          {
+              alert("Please Enter a Valid Event Name");
+              $(".Eventinfo_name").focus();
+              return false;
+          }
+          if(reg_text_eventname.test(ev_internal))
+          {
+           alert("The value entered in the highlighted field has invalid characters.  The following characters are not allowed {}=\"&<>\\ Please remove any of the listed characters and try again. ");
+            $(".Eventinfo_name").focus();
+              return false;
+          }
+          if(ev_external=="" || !ev_external.indexOf(' ',0) )
+          {
+              alert("Please Enter a Valid Event Title");
+              $(".Eventinfo_title").focus();
+              return false;
+          }
+          if(reg_text_eventname.test(ev_external))
+          {
+           alert("The value entered in the highlighted field has invalid characters.  The following characters are not allowed {}=\"&<>\\ Please remove any of the listed characters and try again. ");
+           $(".Eventinfo_title").focus();
+              return false;
+          }
+          if(!url.test(Eventinfo_siteurl) || Eventinfo_siteurl=="" || !Eventinfo_siteurl.indexOf(' ',0))
+          {
+             alert("Please Enter The Salesforce Public Site URL\n e.g:- https://salesforce.com");
+             $(".Eventinfo_siteurl").focus();
+             return false;
+          }
+         
+          if(TotalInventory>10000000)
+          {
+           alert("Total inventory should be less than or equal to 10,000,000");
+           $(".TotalInventory").focus();
+           return false;
+          }
+          
+          if(esite=="" && tcount>0)
+          {
+            alert("Please Select The Template For This Event");
+            $(".Event_site").focus();
+            return false;
+          }
+          
+          if(sd=="")
+          {
+               alert('Please enter the "Start Date"');
+               $(".Datetime_StartDT_event").focus();
+               return false;
+          }
+          if(ed=="")
+          {
+               alert('Please enter the "End Date"');
+               $(".Datetime_endDT_event").focus();
+               return false;
+          }
+                 
+          if(pd=="")
+          {
+                alert('Please enter the "Published Date"');
+                $(".Datetime_publishdate_event").focus();
+                return false;
+          }
+        
+          if (Date.parse(sd) > Date.parse(ed)) {
+                alert("Invalid Date Range\nStart Date cannot be after End Date!")
+                return false;
+           }
+           if(Date.parse(pd) > Date.parse(ed))
+           {   
+                alert("Invalid Date Range\nPublish Date cannot be after End Date!")
+                return false;               
+           }
+          
+           if(Date.parse(sd) < Date.parse(pd)){
+           alert("Invalid Date Range\nStart Date cannot be before publish Date!")
+                return false;
+           }
+           
+           
+           if(registrationtimeout=="" ||  !reg_number_inventory.test(registrationtimeout))
+           {
+             alert("Please Enter Valid Registration Timeout");
+             $(".Registration_Timeout").focus();
+             return false;
+           }
+           if(registrationtimeout < 15)
+           {
+             alert("Registration Timeout should be atleast 15 mins");
+             $(".Registration_Timeout").focus();
+             return false;
+           }
+           if(registrationtimeout > 999)
+           {
+             alert("Registration Timeout should Not Exceed 999");
+             $(".Registration_Timeout").focus();
+             return false;
+           
+           }
+          
+           if(eventmode=="")
+           {
+            alert("Please Select Event Mode");
+            $(".Event_Mode").focus();
+            return false;
+           }
+          // reg_levelname=/^([a-zA-Z0-9\.\'\,\_\-\:\@\$\%\(\)\[\]\/\!\~\?\#\^\*\+\=\|\/\ ])+$/;
+         reg_levelname=/["\<\>\&\\\{\}]/;
+           var numrows=$(".totallevels").val();
+           
+           for(h=0;h<numrows;h++)
+           {
+             var levelname=$(".Registration_levelname"+h).val();
+             var levelstartdate=$(".Datetime_StartDT"+h).val();
+             var levelenddate=$(".Datetime_endDT"+h).val();
+             var TaxDeductible=$(".LevelPrice_TaxDeductible"+h).val();
+             var LevelPrice=$(".LevelPrice_Price"+h).val();
+             
+             LevelPrice=LevelPrice.replace(",","");
+              LevelPrice=LevelPrice.replace(".","");
+              TaxDeductible=TaxDeductible.replace(",","");
+            
+             var Fee=$(".LevelPrice_Fee"+h).val();
+             var TaxRate=$(".LevelTaxRate"+h).val();
+             var levelmode= $(".LevelMode"+h).val();
+             var levellimit=$(".Level_inventory"+h).val();
+             
+            levellimit=levellimit.replace(/\,/g,"");
+              
+             var rowvalues=$(".rowvalues").val(); 
+    
+  
+                 if(!isNaN(LevelPrice)){            
+                    
+                     //$(".LevelPrice_Price"+h).val(parseFloat(LevelPrice).toFixed(2)); 
+                 }
+       
+          //  The value entered in the highlighted field has invalid characters.  The following characters are not allowed { } = \ " & <>\\ Please remove any of the listed characters and try again. 
+          
+            if(levelname=="" || !levelname.indexOf(' ',0) )
+            {
+              alert("Please enter the Valid Level name");
+               $(".Registration_levelname"+h).focus();
+               return false;
+            }
+            if(reg_levelname.test(levelname))
+            {
+              alert("The value entered in the highlighted field has invalid characters.  The following characters are not allowed {}=\"&<>\\ Please remove any of the listed characters and try again. ")
+              $(".Registration_levelname"+h).focus();
+               return false;
+            }
+             if(levelname.length>80)
+             {
+                  alert("Level Name length should be 80 characters only.");
+                  $(".Registration_levelname"+h).focus();
+                  return false;
+              }
+           
+              if(LevelPrice <0 || LevelPrice=="" || isNaN(LevelPrice) )
+              {
+                     alert("Please enter the Valid Price");
+                      
+                     $(".LevelPrice_Price"+h).focus();
+                    
+                     return false;
+                 
+              }
+                 if(Fee<0 ){
+                     alert("Please enter the Positive Values in Additional Fee Field");
+                     $(".LevelPrice_Fee"+h).focus();
+                     return false;
+                 
+                 }
+                 if(TaxDeductible<0){
+                     alert("Please enter the Positive Values in Tax Deductible Portion Field");
+                     $(".LevelPrice_TaxDeductible"+h).focus();
+                     return false;
+                 
+                 }
+                 
+                 if(TaxRate <0){
+                     alert("Please enter the Positive Values in Tax Rate% Field");
+                     $(".LevelTaxRate"+h).focus();
+                     return false;
+                 
+                 }
+               
+                
+                if(parseFloat(TaxDeductible)>parseFloat(LevelPrice)){
+               
+                alert("Tax Deductible Portion Must Be Less Than or Equal to Price");
+                $(".LevelPrice_TaxDeductible"+h).focus();
+                return false;
+                }    
+                
+               if(levellimit==0 && levellimit!="") 
+               {
+                alert("Level Inventory should be greater than zero");
+                 $(".Level_inventory"+h).focus();
+                 return false;
+               }
+               
+                if(levellimit>10000000)
+                 {
+                   alert("Level inventory should be less than or equal to 10,000,000");
+                   $(".Level_inventory"+h).focus();
+                   return false;
+                 }
+          
+                 
+            if(levelstartdate=="")
+            {
+              alert("Please Select Level Start Date")
+              $(".Datetime_StartDT"+h).focus();
+              return false;
+            }
+           
+            if(levelenddate=="")
+            {
+              alert("Please Select Level End Date")
+              $(".Datetime_endDT"+h).focus();
+              return false;
+            }
+            if (Date.parse(levelstartdate) < Date.parse(pd)) 
+            {
+                alert("Invalid Date Range\nLevel Start Date cannot be Before Event Publish Date!")
+                return false;
+            }
+           if(Date.parse(levelenddate) > Date.parse(ed))
+           {   
+                alert("Invalid Date Range\nLevel End Date cannot be after Event End Date!")
+                return false;               
+           }
+          }
+      
+          
+          if(parseInt(TotalInventory)<parseInt(InventorySold)){
+          
+          alert("Invalid Total Inventory");
+          $(".TotalInventory").focus();
+          return false;
+          }
+         
+          var acknowledgement=$(".acknowledgement").is(':checked');
+          var showterm = $(".showterm").is(':checked');
+         
+          
+         
+         
+          var total=$(".totalaccounts").val();
+        
+          for(c=0;c<total;c++)
+          {
+         
+           var n = $(".actid"+c).val();
+           
+           var displaylable=$(".displaylabel"+c).val();
+           var Creditcard=$(".Credit_card"+c).is(':checked');
+           var custompayment=$(".CustomPayment_main"+c).is(':checked');
+         
+          var Visa=$(".Visa_card"+c).is(':checked');
+          var master=$(".Master_card"+c).is(':checked');
+          var Discover=$(".Discover"+c).is(':checked');
+          var AmericanEx=$(".AmericanEx"+c).is(':checked');
+          var e_check=$(".e_check"+c).is(':checked');
+          var InVoice=$(".InVoice"+c).is(':checked');
+          var PurchaseOrder=$(".PurchaseOrder"+c).is(':checked');
+           var jcb=$(".JCB"+c).is(':checked');
+          
+                  
+           var reg = /^([0-9])+$/;
+           
+           if(n==null)
+           {
+                   alert("Please Add At least One C&P Account in C&P Settings");
+                  $(".actid"+c).focus();
+                  return false;  
+             
+           }
+           if(n=="" || n=='none' || n==null)
+           {
+                  alert('Please enter valid "C&P Account Number"');
+                  $(".actid"+c).focus();
+                  return false;         
+           }
+           
+            if(displaylable=="")     
+            {
+             alert("Please Enter Currency Label");
+             $(".displaylabel"+c).focus();
+             return false;
+            
+            }
+          
+           if(Visa==false && master==false && AmericanEx==false &&  jcb==false && e_check==false && InVoice==false && PurchaseOrder==false  && Discover==false && custompayment==false)
+           {
+              alert("Please select payment options");
+                      
+                      return false; 
+          }
+          if(Creditcard==true)
+          {
+              if(Visa==false && master==false && AmericanEx==false && Discover==false && jcb==false)
+              {
+                       alert("Please select Credit Card options");
+                      
+                      return false; 
+              
+              }          
+          }
+          
+          
+           if(custompayment==true)
+            {
+             
+              if($(".CustomPayment_Name"+c).val()=="" || !$(".CustomPayment_Name"+c).val().indexOf(' ',0) || !reg_text.test($(".CustomPayment_Name"+c).val()))
+              {
+               alert("Please Enter valid Custom Payment Name");
+               $(".CustomPayment_Name"+c).focus();
+               return false;
+              }
+              var custompay=$(".CustomPayment_Name"+c).val();
+              if(custompay.indexOf('creditcard')!=-1 || custompay.indexOf('check')!=-1 || custompay.indexOf('invoice')!=-1 || custompay.indexOf('purchaseorder')!=-1 || custompay.indexOf('CreditCard')!=-1 || custompay.indexOf('Check')!=-1 || custompay.indexOf('Invoice')!=-1 || custompay.indexOf('PurchaseOrder')!=-1 || custompay.indexOf('CREDITCARD')!=-1 || custompay.indexOf('CHECK')!=-1 || custompay.indexOf('INVOICE')!=-1 || custompay.indexOf('PURCHASEORDER')!=-1)
+              {
+               alert("Please Enter valid Custom Payment Name");
+               $(".CustomPayment_Name"+c).focus();
+               return false;
+              }
+             
+              custompay=custompay.trim();
+              
+             
+              if(custompay.lastIndexOf(";")+1==custompay.length)
+              custompay=custompay.substring(0,custompay.lastIndexOf(";"));
+            
+              if(custompay.indexOf(';')!=-1)
+              {
+                                         
+                 var customarray=custompay.split(";");
+                
+                                    
+                  for(ar=0;ar<customarray.length;ar++)
+                  {
+                  
+                 
+                    if((customarray[ar].length>50 || customarray[ar].length <1) )
+                    {
+                      alert("Custom Payment Name option length should be in between 1 to 50 characters");
+                       $(".CustomPayment_Name"+c).focus();
+                       return false;
+                    }
+                  }
+              }
+              else 
+              {
+               if(custompay.length>50 || custompay.length <1)
+                {
+                  alert("Custom Payment Name option length should be in between 1 to 50 characters");
+                   $(".CustomPayment_Name"+c).focus();
+                   return false;
+                }
+              }
+              
+             
+             }
+              
+            
+                    
+          }
+          
+          if(acknowledgement==true && showterm==false)
+          {
+              alert("Please Select The Show Terms & Conditions");
+              return false;
+          }
+          
+           var accountselect=$(".Accountselectorlabel").val(); 
+            
+            if(accountselect.length>100)
+            {
+              alert("Account Selector Label should be less than 100 characters");
+              $(".Accountselectorlabel").focus();
+              return false;
+            }
+            
+     
+       
+         $("#loading-indicator1").attr('style','display:block');
+       
+        }    
+  
+ function completerequest()
+     {
+           $("#loading-indicator1").attr('style','display:none');
+     }
+
+function CreditOptions(rownum){
+
+
+var total=$(".totalaccounts").val();
+
+for(i=0;i<total;i++){
+if(rownum==i){
+
+  if($(".CustomPayment_main"+i).is(':checked')==false)
+       {
+         $(".CustomPayment_Name"+i).css({"display":"none"});
+             $(".CustomPayment_Name1"+i).css({"display":"none"});
+             
+            $(".cplabel"+i).css({"display":"none"});
+       }
+  else if($(".CustomPayment_main"+i).is(':checked')==true)
+  {
+  $(".CustomPayment_Name"+i).css({"display":"block"});
+  $(".CustomPayment_Name1"+i).css({"display":"block"});
+  
+  $(".cplabel"+i).css({"display":"block"});
+ }
+
+ if($(".Credit_card"+i).is(':checked')==false)
+ {
+    $(".CreditCardOptions"+i).css({"display":"none"});
+           
+ }
+ else
+ {
+   $(".CreditCardOptions"+i).css({"display":"block"});
+ }
+}  
+}     
+}
+function actionfun()
+{
+
+var total=$(".totalaccounts").val();
+
+for(i=0;i<total;i++){
+
+if($(".CustomPayment_main"+i).is(':checked')==false)
+       {
+        $(".CustomPayment_Name"+i).css({"display":"none"});
+         $(".CustomPayment_Name1"+i).css({"display":"none"});
+              $(".CustomPayment_Name2"+i).css({"display":"none"});
+               $(".CustomPayment_Name3"+i).css({"display":"none"});
+        $(".cplabel"+i).css({"display":"none"});
+       }
+  if($(".Credit_card"+i).is(':checked')==false)
+            {
+               $(".CreditCardOptions"+i).css({"display":"none"});
+               
+           
+             }
+  
+}  
+}
+
+function showLoadingDiv(){
+  $(".modal_close").one().attr("disabled", "true");
+  $('.loading-indicator1').fadeIn("normal"); 
+  $('.quntitytextenable').attr('disabled','true');
+  $('.Anonymous_Confirmbutton').attr('disabled','true');
+  // $('.Register_Confirmbutton').attr('disabled','true');
+  
+}
+
+function submitprocess(){
+  $('.loading-indicator1').hide();
+  
+   }
+
+function popitup(url) {    
+    newwindow=window.open(url,'name','height=400,width=350,scrollbars=yes');
+    if (window.focus) {newwindow.focus()}
+    return false;
+}
+function changedtohttps(url)
+{
+
+      var Edition= $(".Edition").val();
+    
+   
+      url_1 = /^(((ht){1}(tp:[/][/]){1})|((www.){1}))[-a-zA-Z0-9@:%_\+.~#?&//=]+$/;
+      if(url!="")
+      {
+             if(url.match(url_1))
+             {
+                 var re_place = url.replace('http:','https:'); 
+                 
+                //if(Edition=='Enterprise Edition')
+                //{
+                 var re_place=re_place.replace('force.com','secure.force.com'); 
+               // }
+                                  
+                 $(".Eventinfo_siteurl").val(re_place);
+             }
+      }
+}
+function trimvalue(value,fieldclass)
+{
+     var replace=value.trim();
+     $("."+fieldclass).attr('value',replace);
+}
+function reportdelete(type)
+{
+
+
+  var numrows=$(".totallevels").val();
+ 
+  if(numrows==1 && type=='level')
+  {
+   alert("Event should have atleast one Pricing/ Registration Level");
+   
+   return false;
+  }
+  if(confirm("Are you sure you want to permanently delete this record?")==true)
+  {
+    return true;
+  }
+}
+</script>
+
+
+<apex:form >
+  <input type="hidden" value="{!EventTemplateList.size}" class="Templatecount"/>
+   <input type="hidden" value="{!CreateAnEvent.Inventory_sold__c}" Class="InventorySold" /> 
+ <div id="content-header">
+    <h1><i class="icon icon-tasks"></i> Create New Event</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;">
+     <apex:outputLink styleClass="helpLink" rendered="{!subTab['Active Events']['Create An Event'].display=='true'}"> 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo0]').css('display','block');" >
+                            
+                             </Apex:outputLabel>
+                       </apex:outputLink>
+                        <apex:outputPanel id="Foo0" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Active Events']['Create An Event'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Active Events']['Create An Event'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Active Events']['Create An Event'].link}" target="_blank" >{!subTab['Active Events']['Create An Event'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Active Events']['Create An Event'] .ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Active Events']['Create An Event'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Active Events']['Create An Event'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel> 
+     </div>
+  </div>
+    
+  <div id="breadcrumb"> <a class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a class="current">Create New Event</a> </div>
+
+<div id="frame-content" class="container-fluid">
+
+<apex:outputPanel rendered="{!refreshdemopage}">
+ <script>
+      window.top.location='/apex/ManagingEvents';
+   </script>
+</apex:outputPanel>
+
+<apex:pageBlock >
+ <input type="hidden" value="{!EventTemplateList.size}" class="templates"/>
+ <div class="row-fluid">
+      <div class="span12">
+         <div class="btn-block pagination-centered">
+ 
+<apex:commandButton value="Save" action="{!Eventsave}" styleClass="btn btn-primary" onclick="return checkvalidate();" /> 
+&nbsp;&nbsp;&nbsp;
+<apex:outputLink value="/apex/activeeventpage" styleClass="btn btn-primary" target="_self" rendered="{!If(EventRecordId==null,true,false)}"> Cancel</apex:outputLink>
+<apex:outputLink value="/apex/EventBasicInformation?id={!EventRecordId}" styleClass="btn btn-primary" target="_self" rendered="{!If(EventRecordId!=null,true,false)}"> Cancel</apex:outputLink>
+</div> 
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Event Details</h5>
+            
+          </div>
+          <div class="widget-content">
+         
+        <div class="detailstable">  
+        <apex:pageBlockSection columns="1" >
+          
+          <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Event Name (Internal)"><span class="Required">*</span></apex:outputLabel>
+          <apex:outputpanel >
+          <apex:inputField value="{!CreateAnEvent.Name}" required="false" styleClass="Eventinfo_name" onblur="trimvalue(this.value,'Eventinfo_name');" />
+          <apex:outputLabel value="(Name may not include & symbol)" />
+          </apex:outputpanel>
+          </apex:pageBlockSectionItem>
+          
+        <apex:pageBlockSectionItem >
+          <apex:outputLabel value="Event Name (External)"><span class="Required">*</span></apex:outputLabel>
+        <apex:outputpanel >
+        <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Event_title__c}" required="false" styleClass="Eventinfo_title"  onblur="trimvalue(this.value,'Eventinfo_title');"/>
+        <apex:outputLabel value="(Name may not include & symbol)" />
+        </apex:outputpanel>
+        </apex:pageBlockSectionItem>
+           <apex:pageBlockSectionItem helpText="External website address for users to view information and register – you can get the domain address by clicking on the 'get URL link'. If you don't have a domain created, you need to create one.">
+                 
+                 <apex:outputLabel value="Salesforce Public Site URL"><span class="Required">*</span></apex:outputLabel>
+                 <apex:outputPanel >
+                   
+                     <span class="catlook">
+                    
+                        <span><apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Site_Url__c}" style="min-width:450px;" styleClass="Eventinfo_siteurl" id="Eventinfo_siteurl" required="false" onblur="changedtohttps(this.value);"/></span>
+                        <span><a href="javascript:void(0);" onclick="return popitup('../0DM/o?setupid=CustomDomain&retURL=%2Fui%2Fsetup%2FSetup%3Fsetupid%3DDevToolsIntegrate')" style="text-decoration:none;float:center;postion:relative;margin-left:5px" class="btn"><apex:outputText value="Get the Site URL"></apex:outputText></a></span>
+                     </span>
+                     <br/>
+                      <apex:outputlabel value="(For Developer or Sandbox edition please remove .secure from the URL.)" /> 
+                      <!--<apex:outputlabel value="[for secure site change URL to .secure.force.com instead of .force.com]" />
+                     <apex:outputlabel value="e.g. https://yourdomain.SECURE.FORCE.COM/pagename" /> -->          
+                    
+                 </apex:outputPanel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                <apex:outputPanel >
+                 <apex:outputlabel value="Event Template" style="display:inline;" ><span class="Required" style="display:{!IF(EventTemplateList.size!=0,'','none')}">*</span></apex:outputlabel></apex:outputPanel> 
+                 <apex:outputPanel >
+                     <apex:selectList value="{!CreateAnEvent.CnP_PaaS_EVT__Select_Template__c}" size="1" styleClass="Event_site">
+                     <apex:selectOptions value="{!selectEventTemplate}"/>
+                     </apex:selectList></apex:outputPanel> 
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem helpText="{!$ObjectType.CnP_PaaS_EVT__Event__c.Fields.CnP_PaaS_EVT__Total_Inventory__c.inlineHelpText}" >
+                
+                       <apex:outputLabel value="Total Inventory" ></apex:outputlabel>
+                       <apex:outputpanel >
+                        <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Total_Inventory__c}" style="width:50px" required="false" id="EventSetinfo_Capacity" styleclass="TotalInventory" />
+                      
+                        </apex:outputpanel>
+                        
+                       </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Report Color"></apex:outputLabel>
+                        <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Report_Color__c}" required="false" styleClass="color {hash:true}" style="width:63px" id="Eventreport"/>
+                       </apex:pageBlockSectionItem>  
+                       <apex:pageBlockSectionItem >
+                       <apex:outputLabel value="Anonymous"></apex:outputLabel>
+                       <apex:outputPanel >
+                        <apex:inputCheckbox value="{!CreateAnEvent.CnP_PaaS_EVT__Anonymous__c}" required="false" style="width:20px" disabled="{!IF(CreateAnEvent.CnP_PaaS_EVT__Inventory_sold__c!=null && CreateAnEvent.CnP_PaaS_EVT__Inventory_sold__c>0,true,false)}"/>
+                       &nbsp; Anonymous setting cannot be changed once a ticket has been sold
+                        </apex:outputPanel>
+                     </apex:pageBlockSectionItem> 
+                   <apex:pageBlockSectionItem >
+                   <apex:outputPanel >
+                      <apex:outputLabel value="Registration Timeout"><span class="Required">*</span></apex:outputlabel></apex:outputPanel>
+                       <apex:outputPanel >
+                     <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Registration_Timeout__c}" required="false"  style="width:100px" styleClass="Registration_Timeout" />
+                      in minutes. Inventory will be blocked during this time.
+                     </apex:outputPanel>
+                   </apex:pageBlockSectionItem>   
+               <apex:pageBlockSectionItem >
+               <apex:outputLabel value="Mode"><span class="Required">*</span></apex:outputLabel>
+               <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Registration_Type__c}" required="false" styleClass="Event_Mode"/>
+               </apex:pageBlockSectionItem>
+        </apex:pageBlockSection>
+        </div>
+               
+</div>
+</div>
+</div>
+</div>
+
+<div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Event Date and Time</h5>
+            
+          </div>
+          <div class="widget-content">
+
+
+    <div class="detailstable">
+    <apex:pageBlockSection id="DateTimeInfo" columns="1" >
+    
+                     
+                                         
+                        <apex:pageBlockSectionItem helpText="The event start date">
+                           <apex:outputLabel value="Start Date" ><span class="Required">*</span></apex:outputlabel>
+                           <apex:outputPanel >
+                           <apex:inputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Start_date_and_time__c}" required="false"  style="width:150px;"  styleClass="Datetime_StartDT_event" id="Datetime_StartDT_event" />
+                            <apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__datepicker, "datepicker/calendar.gif")}" styleClass="calenderIcon" />
+                           
+                           </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                         <apex:pageBlockSectionItem helpText="The event end date">
+                           <apex:outputLabel value="End Date"  ><span class="Required">*</span></apex:outputlabel>
+                           <apex:outputPanel >
+                        <apex:inputfield value="{!CreateAnEvent.CnP_PaaS_EVT__End_date_and_time__c}" required="false"  style="width:150px;" styleClass="Datetime_endDT_event" id="Datetime_endDT_event"/>
+                        <apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__datepicker, "datepicker/calendar.gif")}" styleClass="calenderIcon" />
+                       
+                                 
+                           </apex:outputPanel>
+                        </apex:pageBlockSectionItem>
+                        <apex:pageBlockSectionItem helpText="Date the event will be published and visible on public site">
+                           <apex:outputLabel value="Publish Date" ><span class="Required">*</span></apex:outputlabel>
+                           <apex:outputPanel >
+                        <apex:inputfield value="{!CreateAnEvent.CnP_PaaS_EVT__Publish_date__c}" required="false" style="width:150px" id="Datetime_publishdate_event" styleClass="Datetime_publishdate_event"/>
+                       <apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__datepicker, "datepicker/calendar.gif")}" styleClass="calenderIcon" />
+                       
+                           </apex:outputPanel>
+                        </apex:pageBlockSectionItem>  
+                                                                                                                                                 
+                </apex:pageBlockSection>
+                </div>
+                 
+ 
+</div>
+</div>
+</div>
+</div>
+ 
+ 
+<div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Pricing/ Registration Level</h5>
+            
+          </div>
+          <div class="widget-content">
+ 
+     <div class="detailstable" style="overflow-x: auto;" > 
+         <apex:outputPanel >
+        <apex:outputPanel id="reglist">
+        <apex:outputPanel id="RegistrationLevelblock">
+        
+         <apex:variable value="0" var="rowNum"/>
+ 
+            <apex:dataTable value="{!dumpregistrationlevellist}" var="reg" styleClass="lvltable table table-bordered table-striped">
+             
+                                                      <apex:column headerValue="Order">
+                                                      <apex:inputField value="{!reg.CnP_PaaS_EVT__OrderLevel__c}" style="width:20px;" required="false" styleClass="LevelOrder{!rowNum}" onkeyup="javascript:this.value=this.value.replace(/[^0-9]/g, '');"/>
+                                                     </apex:column>
+                                                    
+                                                    
+                                                     <apex:column headerValue="Level Name*" styleClass="Required">
+                                                     <apex:inputField value="{!reg.CnP_PaaS_EVT__Name_on_the_form__c} " required="false" styleClass="Registration_levelname{!rowNum}" style="width:200px;" onblur="trimvalue(this.value,'Registration_levelname{!rowNum}');"/>
+                                                   
+                                                     </apex:column>
+                                                     
+                                                    
+                                                     
+                                                     <apex:column HeaderValue="Price" >
+                                                     
+                                                     <apex:inputField value="{!reg.CnP_PaaS_EVT__Price__c}"  style="width:60px;" styleClass="LevelPrice_Price{!rowNum}" required="false" onfocus="if (this.value ==0.00){this.value=''}"   onkeyup="javascript:this.value=this.value.replace(/[^0-9.]/g, '');" onblur="if(this.value==''){this.value=0}"/>
+                                                     <!-- <apex:inputField value="{!reg.CnP_PaaS_EVT__Price__c}"  style="width:60px;" styleClass="LevelPrice_Price{!rowNum}" required="false" />-->
+                                                     </apex:column> 
+                                                     <apex:column headerValue="Tax (%)">
+                                                      <apex:inputField value="{!reg.CnP_PaaS_EVT__Tax_rate__c}"  style="width:40px;" styleClass="LevelTaxRate{!rowNum}" required="false"  onfocus="if (this.value ==0.00){this.value=''}"   onkeyup="javascript:this.value=this.value.replace(/[^0-9.]/g, '');" onblur="if(this.value==''){this.value=0.00}"/>
+                                                     </apex:column>
+                                                     <apex:column >
+                                                     <apex:facet name="header">
+                                                            Tax <br/>Deductible
+                                                        </apex:facet>
+                                                     <apex:inputField value="{!reg.CnP_PaaS_EVT__Tax_Deductible__c}" style="width:40px;" styleClass="LevelPrice_TaxDeductible{!rowNum}" required="false" onfocus="if (this.value ==0.00){this.value=''}"   onkeyup="javascript:this.value=this.value.replace(/[^0-9.]/g, '');" onblur="if(this.value==''){this.value=0.00}"/>
+                                                     </apex:column>
+                                                     <apex:column >
+                                                      <apex:facet name="header">
+                                                        Additional <br/> Fee
+                                                      </apex:facet>
+                                                      
+                                                     <apex:inputField value="{!reg.CnP_PaaS_EVT__Additional_Fee__c}"  style="width:40px;" styleClass="LevelPrice_Fee{!rowNum}" required="false" onfocus="if (this.value ==0.00){this.value=''}"   onkeyup="javascript:this.value=this.value.replace(/[^0-9.]/g, '');" onblur="if (this.value==''){this.value=0.00}"/>
+                                                     </apex:column>
+                                                     
+                                                     <apex:column >
+                                                     <apex:facet name="header">
+                                                           Total <br/> Inventory
+                                                     </apex:facet>
+                                                     <apex:inputField value="{!reg.CnP_PaaS_EVT__Limit_for_this_type__c}"  style="width:40px;" styleClass="Level_inventory{!rowNum}" required="false" / >
+                                                     </apex:column>
+                                                     
+                                                     <apex:column >
+                                                     <apex:facet name="header">
+                                                      Registrations  <br/> Included(*)
+                                                     </apex:facet>
+                                                    
+                                                     <apex:selectList value="{!reg.CnP_PaaS_EVT__Tickets_Included__c}" style="width:55px;" required="false" size="1"  disabled="{!If(reg.CnP_PaaS_EVT__Inventory_Sold__c!=null && reg.CnP_PaaS_EVT__Inventory_Sold__c >0 ,true,false)}">
+                                                     <apex:selectOption itemLabel="1" itemValue="1"></apex:selectOption>
+                                                      <apex:selectOption itemLabel="2" itemValue="2"></apex:selectOption>
+                                                       <apex:selectOption itemLabel="3" itemValue="3"></apex:selectOption>
+                                                        <apex:selectOption itemLabel="4" itemValue="4"></apex:selectOption>
+                                                         <apex:selectOption itemLabel="5" itemValue="5"></apex:selectOption>
+                                                          <apex:selectOption itemLabel="6" itemValue="6"></apex:selectOption>
+                                                           <apex:selectOption itemLabel="7" itemValue="7"></apex:selectOption>
+                                                            <apex:selectOption itemLabel="8" itemValue="8"></apex:selectOption>
+                                                             <apex:selectOption itemLabel="9" itemValue="9"></apex:selectOption>
+                                                              <apex:selectOption itemLabel="10" itemValue="10"></apex:selectOption>
+                                                               <apex:selectOption itemLabel="11" itemValue="11"></apex:selectOption> 
+                                                               <apex:selectOption itemLabel="12" itemValue="12"></apex:selectOption>
+                                                               
+                                                     </apex:selectList>
+                                                     </apex:column>
+                                                     
+                                                      <apex:column headerValue="Registration Start Date*" style="white-space: nowrap;">
+                                                     <apex:inputField value="{!reg.CnP_PaaS_EVT__Display_this_registration_from__c}" required="false"  style="width:118px;" styleClass="Datetime_StartDT{!rowNum}"/>
+                                                     <apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__datepicker, "datepicker/calendar.gif")}" styleClass="calenderIcon" />
+                                                     </apex:column>
+                                                     
+                                                     <apex:column headerValue="Registration End Date*" style="white-space: nowrap;">
+                                                     <apex:inputField value="{!reg.CnP_PaaS_EVT__Hide_this_registration_from__c}"  required="false" style="width:118px;" styleClass="Datetime_endDT{!rowNum}" />
+                                                     <apex:image url="{!URLFOR($Resource.CnP_PaaS_EVT__datepicker, "datepicker/calendar.gif")}" styleClass="calenderIcon" />
+                                                     </apex:column>
+                                                     
+                                                     <!--<apex:column headerValue="Mode">
+                                                     <apex:inputField value="{!reg.CnP_PaaS_EVT__Mode__c}" style="width:80px;" required="false" styleClass="LevelMode{!rowNum}"/>
+                                                     </apex:column>-->
+                                                     <apex:column headerValue="Mode">
+                                                    <!-- <apex:inputField value="{!reg.CnP_PaaS_EVT__Mode__c}" style="width:80px;" required="false" styleClass="LevelMode{!rowNum}"/>-->
+                                                           <apex:selectList value="{!reg.CnP_PaaS_EVT__Mode__c}" style="width:80px;" required="false" size="1" >
+                                                           <apex:selectOption itemLabel="Active" itemValue="Active"></apex:selectOption>
+                                                           <apex:selectOption itemLabel="Inactive" itemValue="Inactive"></apex:selectOption>
+                                                           <apex:selectOption itemLabel="Box Office Only" itemValue="Manual"></apex:selectOption>
+                                                           </apex:selectList>
+                                                     </apex:column>
+                                                   
+                                                     <apex:column headerValue="Action" styleClass="text_align_center">
+                                                      <apex:commandButton action="{!delCont}" onclick="if(!reportdelete('level')) return false;" styleClass="icon-trash btn_none"  rerender="RegistrationLevelblock" rendered="{!If(dumpregistrationlevellist.size >1 &&  reg.CnP_PaaS_EVT__Inventory_Sold__c!=null && reg.CnP_PaaS_EVT__Inventory_Sold__c >0 ,false,true)}" immediate="true" oncomplete="datetimeclick();" >
+                                                          <apex:param name="contIdParam" value="{!rowNum}" assignTo="{!DeleteId}"/>
+                                                           <apex:param name="contIdParam1" value="{!reg.Id}" assignTo="{!DeleteFromObjectId}"/>                                                           
+                                                        </apex:commandbutton>
+                                                          <apex:variable var="rowNum" value="{!VALUE(rowNum) + 1}" />
+                                                         
+                                                        </apex:column>
+                                                    </apex:dataTable>
+                                                      <input type="hidden" value="{!rowNum}" class="totallevels"/>
+            </apex:outputPanel> 
+            </apex:outputPanel>
+            </apex:outputPanel>
+           
+             <strong>* How many tickets are included with each registration</strong>
+                <div class="btn-block pagination-centered">
+                <apex:commandButton value="Add Levels" action="{!addItem}" immediate="false"   styleClass="btn btn-primary" oncomplete="datetimeclick();"  reRender="reglist"/>
+                </div>
+            </div> <!-- overflow scroll bar -->
+
+</div>
+</div>
+</div>
+</div>
+
+<div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Registration Fields Visibility</h5>
+            
+          </div>
+          <div class="widget-content">
+ 
+     <div class="detailstable" style="overflow-x: auto;" > 
+        
+           <apex:pageBlockSection columns="1"  >
+            <apex:pageBlockSectionItem labelStyle="width:250px">
+            <apex:outputLabel value="Price"></apex:outputLabel>
+            <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Price__c}" required="true"/>
+             </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Additional Fee"></apex:outputLabel>
+            <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Additional_Fee__c}" required="true"/>
+             </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem > 
+             <apex:outputLabel value="Registrations Incl."></apex:outputLabel>
+            <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Registrations_Included__c}" required="true"/>
+             </apex:pageBlockSectionItem>
+              <apex:pageBlockSectionItem >
+              <apex:outputLabel value="Qty.(*)"></apex:outputLabel>
+            <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Quantity__c}" required="true"/>
+             </apex:pageBlockSectionItem>
+             <apex:pageBlockSectionItem >
+             <apex:outputLabel value="Total"></apex:outputLabel>
+            <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Total__c}" required="true"/>
+            
+            </apex:pageBlockSectionItem>
+          
+           </apex:pageBlockSection>
+      
+           
+             <strong>* The quantity field cannot be hidden for an anonymous event.</strong>
+           
+            </div> <!-- overflow scroll bar -->
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>C&amp;P Account</h5>
+            
+          </div>
+          <div class="widget-content">
+
+
+
+
+                <div class="detailstable">
+                <apex:outputPanel id="Eveacclist">
+                <apex:variable value="0" var="RowEveAcc"/>
+                     <apex:dataTable value="{!dumpEventaccountlist}" var="Evacc" styleClass="lvltable table table-bordered table-striped">
+                     <apex:column id="account" headerValue="C&P Account*">
+                                         
+                                       <apex:selectList value="{!Evacc.CnP_PaaS_EVT__C_P_API_Settings__c}" size="1" required="false" styleClass="actid{!RowEveAcc}">
+                                       <apex:selectOptions value="{!acclist}" ></apex:selectOptions>
+                                       </apex:selectList>
+                     </apex:column>
+                     <apex:column headerValue="Currency Label*">
+                     <apex:inputField value="{!Evacc.CnP_PaaS_EVT__Currency_label__c}" required="false" styleClass="displaylabel{!RowEveAcc}" style="min-width:100px;"/>
+                     </apex:column>
+                   
+                     <apex:column headerValue="Payment Type*" >
+       
+                                 <apex:outputpanel id="creditcards">
+                                 
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Credit_Card__c}" id="Credit_card" required="false"  styleclass="Credit_card{!RowEveAcc} pull-left" onclick="CreditOptions({!RowEveAcc});"  >
+                                        </apex:inputCheckbox>
+                                        <apex:outputLabel value="Credit Card" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        <apex:outputpanel id="CreditCardOptions"  styleClass="CreditCardOptions{!RowEveAcc} padding_left_15 display_block">
+                                        <apex:outputpanel >
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Visa__c}" required="false" id="Visa_card" styleclass="Visa_card{!RowEveAcc} pull-left" />
+                                        <apex:outputLabel value="Visa" styleClass="padding_left_15" />
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Master_Card__c}" required="false" id="Master_card" StyleClass="Master_card{!RowEveAcc} pull-left" />
+                                        <apex:outputLabel value="Master Card" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__Discover__c}" required="false" id="Discover" StyleClass="Discover{!RowEveAcc} pull-left"/>
+                                        <apex:outputLabel value="Discover" styleClass=" padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__American_Express__c}" required="false" id="AmericanEx" StyleClass="AmericanEx{!RowEveAcc} pull-left"/>
+                                        <apex:outputLabel value="AMEX" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        <apex:inputCheckbox value="{!Evacc.CnP_PaaS_EVT__JCB__c}" required="false" id="JCB" StyleClass="JCB{!RowEveAcc} pull-left"/>
+                                        <apex:outputLabel value="JCB" styleClass="padding_left_15"/>
+                                        <div class="clearboth"></div>
+                                        </apex:outputpanel>
+                                        </apex:outputpanel>
+                                 <div class="clearboth"></div>        
+                                  <apex:inputField value="{!Evacc.CnP_PaaS_EVT__eCheck__c}" required="false" id="e_check" StyleClass="e_check{!RowEveAcc} pull-left"/>
+                                  <apex:outputLabel value="eCheck" styleClass="padding_left_15"/>
+                                 
+                                  <div class="clearboth"></div>
+                                    <apex:inputField value="{!Evacc.CnP_PaaS_EVT__Invoice__c}" required="false" id="InVoice" StyleClass="InVoice{!RowEveAcc} pull-left"/>
+                                      <apex:outputLabel value="Invoice" styleClass="padding_left_15"/>
+                                    <div class="clearboth"></div>    
+                                    <apex:inputField value="{!Evacc.CnP_PaaS_EVT__Purchase_Order__c}" required="false" id="PurchaseOrder" StyleClass="PurchaseOrder{!RowEveAcc} pull-left"/>    
+                                      <apex:outputLabel value="Purchase Order" styleClass="padding_left_15"/>
+                                       </apex:outputpanel>
+     </apex:column>&nbsp;&nbsp;
+     <apex:column headerValue="Custom Payment">
+      <apex:inputField value="{!Evacc.CnP_PaaS_EVT__Custom_Payment_Check__c}" required="false" StyleClass="CustomPayment_main{!RowEveAcc}"  id="CustomPayment"  onclick="CreditOptions({!RowEveAcc});" /><br/>
+       
+    
+    <apex:inputField value="{!Evacc.CnP_PaaS_EVT__Custom_Payment_Name__c}" required="false" id="CustomPaymentName"  StyleClass="CustomPayment_Name{!RowEveAcc}" onblur="trimvalue(this.value,'CustomPayment_Name');" style="height:75px;" onkeyup="javascript:this.value=this.value.replace(/\n|\s{2,}/g, '');" /><br/>
+       <apex:outputLabel value="Separate with semicolon (;)" id="CustomPaymentName_label" styleClass="CustomPayment_Name1{!RowEveAcc}"></apex:outputLabel>
+     
+     </apex:column>
+     
+     <apex:column headerValue="Free Payment Type">
+    <apex:inputField value="{!Evacc.CnP_PaaS_EVT__Free_Payment__c}" required="false"  id="FreePayment" styleClass="Freepayment{!RowEveAcc}" style="min-width:100px;"/>
+         </apex:column>
+     <apex:column headerValue="Action" styleClass="text_align_center">
+     <apex:commandButton styleClass="icon-trash btn_none" action="{!delEveAccount}" onclick="if(!reportdelete('CPacc')) return false;" reRender="Eveacclist" immediate="true" rendered="{!if(dumpEventaccountlist.size >1 && RowEveAcc!='0',true,false)}" oncomplete="actionfun();" >
+      <apex:param name="contIdParam3" value="{!RowEveAcc}" assignTo="{!DelEveaccountno}"/>
+      <apex:param name="contIdParam4" value="{!Evacc.Id}" assignTo="{!DeleteFromEveaccObjectId}"/>  
+   
+     </apex:commandButton>
+       <apex:variable var="RowEveAcc" value="{!VALUE(RowEveAcc) + 1}"/>
+     </apex:column>
+     </apex:dataTable>
+     
+      <input type="hidden" value="{!RowEveAcc}" class="totalaccounts"/>
+       <div class="btn-block pagination-centered">
+            <apex:commandButton value="Add Accounts" action="{!addaccount}"  styleClass="btn btn-primary"  reRender="Eveacclist" oncomplete="actionfun();" /> 
+        </div> 
+         
+       </apex:outputPanel>  
+      </div> 
+      <apex:pageBlockSection columns="1">
+      <apex:pageBlockSectionItem >
+     
+     <apex:outputLabel value="Account Selector Label"></apex:outputLabel>
+     <apex:outputPanel >
+    <apex:inputField value="{!CreateAnEvent.CnP_PaaS_EVT__Organization__c}" styleClass="Accountselectorlabel"/> &nbsp; Maximum 100 Characters    </apex:outputPanel>
+    </apex:pageBlockSectionItem></apex:pageBlockSection>
+
+</div>
+</div>
+</div>
+</div>
+
+ <div class="btn-block pagination-centered">
+   
+<apex:commandButton value="Save" action="{!Eventsave}" styleClass="btn btn-primary" onclick="return checkvalidate();" /> 
+&nbsp;&nbsp;&nbsp;
+
+<apex:outputLink value="/apex/activeeventpage" styleClass="btn btn-primary" target="_self" rendered="{!If(EventRecordId==null,true,false)}"> Cancel</apex:outputLink>
+<apex:outputLink value="/apex/EventBasicInformation?id={!EventRecordId}" styleClass="btn btn-primary" target="_self" rendered="{!If(EventRecordId!=null,true,false)}"> Cancel</apex:outputLink>
+ 
+ 
+</div> 
+      
+                  
+</apex:pageBlock>
+  
+</div>  
+ 
+    <div id="loading-indicator1" class="loading-indicator1 modal-backdrop " style="display:none;z-index: 90;">
+    <div style="position: fixed;left:50%;top:50%;">      
+       <apex:image value="{!URLFOR($Resource.CnP_PaaS_EVT__BootstrapFrontend,'BootstrapFrontend/frontend-html/img/ajax-loader.gif')}"/>       
+    </div></div>
+    
+   <input type="hidden" value="{!datetime_format}" Class="dateformat" /> 
+</apex:form>   
+
+<script type="text/javascript" >
+      $(document).ready(function() {
+      
+      var dformat=$(".dateformat").val();
+       var i=0;
+       
+     var total=$(".totalaccounts").val();
+    
+            for(i=0;i<total;i++){
+               
+
+           if($(".CustomPayment_main"+i).is(':checked')==false)
+           {
+            $(".CustomPayment_Name"+i).css({"display":"none"});
+             $(".CustomPayment_Name1"+i).css({"display":"none"});
+             
+            $(".cplabel"+i).css({"display":"none"});
+           }
+           if($(".Credit_card"+i).is(':checked')==false)
+            {
+               $(".CreditCardOptions"+i).css({"display":"none"});
+               
+           
+             }
+ 
+           }
+     
+        var numrows=$(".totallevels").val();
+       for(var i=0;i<numrows;i++)
+         {
+                      
+             $(".Datetime_StartDT"+i).datetimepicker({
+                   
+                    language: 'es',
+                    pick12HourFormat: true,     
+                    format: dformat,
+                    pickerPosition: "bottom-left",              
+                    todayBtn:  1,              
+                    autoclose: 1,                    
+                    showMeridian: 1,
+                  
+                }); 
+                $(".Datetime_endDT"+i).datetimepicker({
+                   
+                    language: 'es',
+                    pick12HourFormat: true,     
+                    format: dformat,
+                    pickerPosition: "bottom-left",              
+                    todayBtn:  1,              
+                    autoclose: 1,                    
+                    showMeridian: 1,
+                  
+                });     
+                
+  
+         }
+              
+          s1=$(".Datetime_StartDT_event").val();  
+             
+          $(".Datetime_StartDT_event").datetimepicker({
+                   
+                    language: 'es',
+                    pick12HourFormat: true,     
+                    format: dformat,
+                    pickerPosition: "bottom-left",              
+                    todayBtn:  1,         
+                    autoclose: 1,    
+                                
+                    showMeridian: 1,
+                  
+                });      
+                
+              $(".Datetime_endDT_event").datetimepicker({
+                   
+                    language: 'es',
+                    pick12HourFormat: true,     
+                    format: dformat,
+                    pickerPosition: "bottom-left",              
+                    todayBtn:  1,              
+                    autoclose: 1,                    
+                    
+                   showMeridian: 1,
+                  
+                });    
+                  
+               $(".Datetime_publishdate_event").datetimepicker({
+                   
+                    language: 'es',
+                    pick12HourFormat: true,     
+                    format: dformat,
+                    pickerPosition: "bottom-left",              
+                    todayBtn:  1,              
+                    autoclose: 1,                    
+                    
+                   showMeridian: 1,
+                  
+                });     
+       
+       $(".detailstable table").attr("class","table table-bordered table-striped");
+        $(".ui-datepicker-close").click(function(){
+    
+       $(".ui-datepicker-div").hide();
+    
+    
+});
+  
+    
+});
+      function datetimeclick()
+      {
+         var i=0;
+        var numrows=$(".totallevels").val();
+        var dformat=$(".dateformat").val();
+        
+       for(var i=0;i<numrows;i++)
+         {
+        
+                
+              $(".Datetime_StartDT"+i).datetimepicker({
+                   
+                    language: 'es',
+                    pick12HourFormat: true,     
+                    format: dformat,
+                    pickerPosition: "bottom-left",              
+                    todayBtn:  1,              
+                    autoclose: 1,                    
+                    //timeFormat: 'hh:mm tt',         
+                  
+                   showMeridian: 1,
+                  
+                }); 
+              $(".Datetime_endDT"+i).datetimepicker({
+                   
+                    language: 'es',
+                    pick12HourFormat: true,     
+                    format: dformat,
+                    pickerPosition: "bottom-left",              
+                    todayBtn:  1,              
+                    autoclose: 1,                    
+                    //timeFormat: 'hh:mm tt',         
+                  
+                   showMeridian: 1,
+                  
+                });    
+       
+         }
+       
+      }
+    </script>
+
+<script src="{!URLFOR($Resource.BootstrapFrontEnd,'BootstrapFrontend/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js')}" type="text/javascript"></script>
+
+
+</apex:page>

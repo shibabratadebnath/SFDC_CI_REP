@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>Alias_Contact_Data__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>C&amp;P Alias Contact Data</label>
+        <length>32768</length>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>LongTextArea</type>
+        <visibleLines>3</visibleLines>
+    </fields>
+    <fields>
+        <fullName>CnP_Connect_Alias_Index__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>true</externalId>
+        <label>C&amp;P Connect Alias</label>
+        <length>255</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CnP_Global_Rank__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>C&amp;P Patron Value Rank</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CnP_Total_Intrinsic__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>C&amp;P Total Personal Value</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>CnP_Total_extrinsic__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>C&amp;P Total Network Value</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>2</scale>
+        <trackFeedHistory>false</trackFeedHistory>
+        <type>Currency</type>
+    </fields>
+    <fields>
+        <fullName>Connect_Link__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(CnP_Connect_Alias_Index__c != null, HYPERLINK(&apos;https://Connect.ClickandPledge.com/Fundraiser/&apos;+CnP_Connect_Alias_Index__c, &apos;https://Connect.ClickandPledge.com/Fundraiser/&apos;+CnP_Connect_Alias_Index__c, &apos;_blank&apos;), &apos;&apos;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>C&amp;P Connect Global Profile</label>
+        <required>false</required>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <recordTypes>
+        <fullName>C_P_Online</fullName>
+        <active>true</active>
+        <label>C&amp;P Online</label>
+        <picklistValues>
+            <picklist>LeadSource</picklist>
+            <values>
+                <fullName>Other</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Partner Referral</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Phone Inquiry</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Purchased List</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Web</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
+            <picklist>Name</picklist>
+            <values>
+                <fullName>Dr%2E</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Mr%2E</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Mrs%2E</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Ms%2E</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>Prof%2E</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+    </recordTypes>
+    <webLinks>
+        <fullName>Invoice_Virtual_Terminal</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>Invoice Virtual Terminal</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <url>/apex/cnp_paas__invoice?invoicecontactid={!Contact.Id}</url>
+    </webLinks>
+    <webLinks>
+        <fullName>Virtual_Terminal</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <encodingKey>UTF-8</encodingKey>
+        <linkType>url</linkType>
+        <masterLabel>Virtual Terminal</masterLabel>
+        <openType>replace</openType>
+        <protected>false</protected>
+        <url>/apex/CnP_PaaS__virtualterminal?sfContactId={!Contact.Id}</url>
+    </webLinks>
+</CustomObject>

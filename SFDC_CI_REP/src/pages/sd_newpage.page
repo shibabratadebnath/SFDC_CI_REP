@@ -1,0 +1,6 @@
+<apex:page >
+ 
+  <h1>Congratulations</h1><br/>
+  Hello {!$User.FirstName}!
+
+</apex:page>

@@ -1,0 +1,22 @@
+<apex:page controller="ActionPageControl1">
+    <apex:form id="frm">
+    <script>
+function Demo() {
+           document.getElementById("{!$Component.frm.txt1}").innerHTML="Hello";
+           }
+    </script>
+
+        <apex:actionFunction name="hitMe" action="{!iWantMyJSValues}" rerender="jsvalues">
+            <apex:param name="one" value="" />
+            
+        </apex:actionFunction>
+        
+        <apex:outputPanel id="jsvalues">
+        
+            <apex:outputText value="Value one: {!valueOne}" id="txt1" /><br/>
+                       
+        </apex:outputPanel>
+        <apex:commandButton value="Submit" onclick="Demo()" rerender="none"/>
+        
+    </apex:form>
+</apex:page>

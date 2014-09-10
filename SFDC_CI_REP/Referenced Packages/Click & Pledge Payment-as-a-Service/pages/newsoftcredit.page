@@ -1,0 +1,317 @@
+<apex:page standardcontroller="CnP_PaaS__Soft_Credit__c" extensions="CnP_PaaS.relationshipcontroller" tabStyle="Opportunity" action="{!loadhelpContent}">
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS__jquery)}"/>
+
+<style>
+.helpLink {
+       position:relative;       
+    }
+
+    .video{
+      display:none;
+      width:12%;
+      height:auto; 
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:920Px;
+    }
+.items {
+    font-size:13px;
+    color:#000;
+    width: auto;
+    text-align: left;
+    border-collapse: collapse;
+    box-shadow: 0 0 5px #CCC;
+    border: 1px solid #666;
+  }
+.items thead {
+     background:#999;
+}
+.items th {
+        font-size: 12px;
+        background:#999;        
+        background-repeat:repeat-x;
+        padding:6px 6px 0px 6px;
+        font-weight:600;
+        color:#FFF;
+         
+}
+.items td {
+    padding:10px 10px 0px 10px;
+    background: #FFFFFF;
+    border-bottom: 1px solid #CCC;
+    color:#666;
+    
+
+}
+.items tbody td {
+  height:20px;
+  padding-bottom:2px;  
+
+}
+
+.items .requiredInput .requiredBlock{
+  bottom:1px;
+
+}
+
+
+.items .btn {
+ padding:0px;
+}
+.black_overlay{
+    display: none;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: black;
+    z-index:1001;
+    -moz-opacity: 0.8;
+    opacity:.40;
+    filter: alpha(opacity=80);
+}
+.white_content {
+        display: none;
+        position: absolute;
+        text-align: center;
+        top: 30%;
+        left: 35%;
+        /*width: 25%;
+        height: 12%;*/
+        padding: 16px;
+        background-color: white;
+        z-index:1002;
+        overflow: auto;
+        border-radius:20px;
+        -webkit-border-radius: 20px;
+        -moz-border-radius: 20px;
+        border:1px solid #000;
+    } 
+</style>
+<script>
+jQuery=$.noConflict();
+
+jQuery(function(){
+          jQuery(".video").mouseout(function(){
+              jQuery(this).fadeOut(8000);
+             
+          })
+          });
+    function relationshipcontroller(){
+         var t=0;
+         var rowNumRelationship= jQuery(".rowNumRelationship").val();
+          var totalamount  = 0;
+         var amount = parseFloat(jQuery(".amount").val());
+       
+          for(var i=0;i<rowNumRelationship;i++){
+             var objects = jQuery(".objects"+i).val(); 
+             var sharedwithcontactname= jQuery(".sharedwithcontactname"+i).val();
+             var sharedwithaccountname= jQuery(".sharedwithaccountname"+i).val();
+             var sharedwithcontactid= jQuery(".sharedwithcontactid"+i).val();
+             var sharedwithaccountid= jQuery(".sharedwithaccountid"+i).val();
+              totalamount+= parseFloat(jQuery(".totalamount"+i).val());
+              var tamt = jQuery(".totalamount"+i).val();
+               var reg_percent = /^([0-9.])+$/;
+                var relation = jQuery(".relation"+i).val();
+            
+            if(relation == '' || relation == null){
+              t = 1;
+              alert("Please add Connection Types at C&P Settings");
+              jQuery(".relation").focus();
+              return false;
+            }
+             if(objects == ''){
+                t= 1;
+                alert("Please select Contact/Account");
+                jQuery(".objects"+i).focus();
+                return false;
+            }
+            if(objects == 'Contact' && sharedwithcontactname ==''){
+                t=1;
+                alert("Please select a Contact Name");
+                jQuery(".sharedwithcontactname"+i).focus();
+                return false;
+            }
+            
+             if(objects == 'Account' && sharedwithaccountname ==''){
+                t=1;
+                alert("Please select Account Name");
+                jQuery(".sharedwithaccountname"+i).focus();
+                return false;
+            }
+             
+            if(objects == 'Contact'&& sharedwithcontactid== ''){
+                   t=1;
+                   alert('Please Enter Proper Contact Name');
+                  jQuery(".sharedwithcontactname"+i).focus();
+                   return false;
+            }
+            if(objects == 'Account'&& sharedwithaccountid == ''){
+                   t=1;
+                   alert('Please Enter Proper Account Name');
+                   jQuery(".sharedwithaccountname"+i).focus();
+                   return false;
+                   }
+      if(tamt!='' && !reg_percent.test(tamt)){
+                  t=1;
+                 alert("Please Enter only Numeric values in Total field");
+                 jQuery(".totalamount"+i).focus();
+                 return false;
+            }
+    
+    
+          }
+         
+          if(totalamount > amount){
+           t=1;
+           alert("Total Amount should not be greater than Opportunity Amount");
+           return false;
+       }
+        if(t==0)
+       {
+         countryprocess();
+          return true;
+       }else{
+          return false;
+       }
+    }
+    
+     function countryprocess(){
+           jQuery("#light").attr('style','display:block');
+           jQuery("#fade").attr('style','display:block');
+           return true;
+    }  
+    function processcomplete(){
+           jQuery("#light").attr('style','display:none');
+           jQuery("#fade").attr('style','display:none');
+    }
+</script>
+
+
+ <apex:form >
+ 
+     <apex:outputLink styleClass="helpLink"  rendered="{!subTab['Opportunity-Relationship']['Opportunity-Relationship'].display=='true'}" > 
+                            
+                             <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;margin-left:920Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo10]').css('display','block');" />
+                             <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo10]').css('display','block');" />
+                       </apex:outputLink>
+                      <apex:outputPanel id="Foo10" styleClass="video"  >
+                       <ul style="padding-left:5px;" > 
+                         {!subTab['Opportunity-Relationship']['Opportunity-Relationship'].description} <br/> <br/>
+                         <apex:outputpanel rendered="{!subTab['Opportunity-Relationship']['Opportunity-Relationship'].ActiveLink=='true'}">
+                             <li><a href="{!subTab['Opportunity-Relationship']['Opportunity-Relationship'].link}" target="_blank" >{!subTab['Opportunity-Relationship']['Opportunity-Relationship'].strlink}</a> <br/></li></apex:outputpanel>
+                          <apex:outputpanel rendered="{!subTab['Opportunity-Relationship']['Opportunity-Relationship'].ActiveVideo=='true'}">   
+                             <li> <a href="{!subTab['Opportunity-Relationship']['Opportunity-Relationship'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Opportunity-Relationship']['Opportunity-Relationship'].strvideo}</a></li></apex:outputpanel> 
+                          
+                       </ul>
+                      </apex:outputPanel>  
+ <apex:pageblock title="Soft Credits">
+ <!--<div align="center">
+       <apex:commandLink value="Back" action="/{!oppid}" styleClass="btn" style="text-decoration: none;" />
+       </div>-->
+       <apex:outputPanel >
+          &nbsp;&nbsp;&nbsp;&nbsp; <apex:outputLabel value="Opportunity :"></apex:outputLabel>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <apex:outputLink value="/{!oppname[0].Id}" target="_top">{!oppname[0].Name}</apex:outputLink> 
+       </apex:outputPanel><br/><br/>
+       <apex:outputPanel >
+          &nbsp;&nbsp;&nbsp;&nbsp; <apex:outputLabel value="Opportunity Total Amount :"></apex:outputLabel>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <apex:outputField value="{!oppname[0].Amount}"/>
+       </apex:outputPanel><br/><br/>
+       
+  <apex:pageblocksection columns="1">
+<apex:outputPanel rendered="{!IF(status == false,true,false)}">
+    <apex:outputPanel id="RefreshBlocksoft_1">  
+        <div id="light" class="white_content">   
+                   <apex:image value="{!URLFOR($Resource.CnP_PaaS__LoaderImage)}" title="we are processing your request. please wait..." style="height: 15px;width: 20px;"  /><br/>
+                   <apex:outputlabel value="we are processing your request. please wait...                  "  />
+               </div>
+               <div id="fade" class="black_overlay"></div>
+    <apex:variable value="0" var="rowNumRelationship"/>
+      <apex:dataTable value="{!FieldValueslistSoft}" var="item" styleclass="items" id="table1">
+      <apex:column headerValue="If Contact">
+         <apex:outputLink value="/{!oppname[0].Contact__c}" target="_top">{!oppname[0].Contact__r.Name}</apex:outputLink> 
+      </apex:column>
+     <apex:column headerValue="">
+        <apex:inputtext value="{!oppname[0].amount}" styleClass="amount" style="display:none;"/>
+      </apex:column>
+      <apex:column headerValue="">
+          <apex:outputlabel value="is"/>
+      </apex:column>
+        <apex:column headerValue="Connection">
+         <apex:selectList size="1"  value="{!item.relationship}" styleclass="relation{!rowNumRelationship}">
+           <apex:selectOptions value="{!relationships}" />
+         </apex:selectList>
+       </apex:column>
+        <apex:column headerValue="">
+          <apex:outputlabel value="of"/>
+      </apex:column>
+       <apex:column headervalue="Contact/Account">
+         <apex:selectList size="1"  value="{!item.objects}" styleclass="objects{!rowNumRelationship}">
+           <apex:actionSupport event="onchange" reRender="RefreshBlocksoft_1"/>
+             <apex:selectOptions value="{!objects}" />
+         </apex:selectList>
+       </apex:column>
+        <apex:column headervalue="Name">
+                     <apex:inputText value="{!item.sharedwithcontactname}"  styleclass="sharedwithcontactname{!rowNumRelationship}"  style="display:{!IF(item.objects == 'Contact','block','none')}">
+                            <c:PaymentAutoCompleteSettings objecttype="contact" autocomplete_textbox="sharedwithcontactname{!rowNumRelationship}" autocomplete_id="sharedwithcontactid{!rowNumRelationship}" autocomplete_process="3"/>
+                     </apex:inputText>
+                 
+                     <apex:inputText value="{!item.sharedwithaccountname}"  styleclass="sharedwithaccountname{!rowNumRelationship}"  style="display:{!IF(item.objects == 'Account','block','none')}">
+                            <c:PaymentAutoCompleteSettings objecttype="account1" autocomplete_textbox="sharedwithaccountname{!rowNumRelationship}" autocomplete_id="sharedwithaccountid{!rowNumRelationship}" autocomplete_process="3"/>
+                     </apex:inputText>
+                  </apex:column>
+      
+       <apex:column headerValue="Rcpr. Connection">
+         <apex:selectList size="1"  value="{!item.rcprrelationship}">
+           <apex:selectOptions value="{!relationships}" />
+         </apex:selectList>
+       </apex:column>
+       <apex:column headervalue="Total" >
+          <apex:inputtext value="{!item.totalamount}" styleclass="totalamount{!rowNumRelationship}" size="12" maxlength="11"/>
+       </apex:column>
+      <apex:column > 
+          <apex:inputText value="{!item.sharedwithcontactid}" styleClass="sharedwithcontactid{!rowNumRelationship}" style="display:none;"/>
+       </apeX:column> 
+       <apex:column >
+          <apex:inputText value="{!item.sharedwithaccountid}" styleClass="sharedwithaccountid{!rowNumRelationship}"  style="display:none;" />
+       </apeX:column>
+       <apex:column headerValue="">
+          <apex:inputHidden value="{!item.RecordIdsoft}"/>
+       </apex:column>
+       <apex:column >
+          <apex:commandButton value="Delete" action="{!delsoft}" reRender="RefreshBlocksoft_1">
+            <apex:param name="contIdParam" value="{!rowNumRelationship}" assignTo="{!DeleteIdSoft}"/>
+            <apex:param name="contIdParam1" value="{!item.RecordIdsoft}" assignTo="{!DeleteFromSoft}"/>
+          </apex:commandButton>
+       </apeX:column>
+       <apex:column >
+           <apex:variable var="rowNumRelationship" value="{!VALUE(rowNumRelationship) + 1}"/>
+      </apex:column>
+    </apex:dataTable> <br/>
+      <input type="hidden" value="{!rowNumRelationship}" class="rowNumRelationship" name="rowNumRelationship"/>  
+      <apex:commandButton action="{!addSoft}" style="margin-left:50px;"  value="Add New"  reRender="RefreshBlocksoft_1" />
+   </apex:outputPanel> 
+   
+    <apex:outputPanel id="RefreshBlocksoft_2">
+         <apex:commandButton value="Save" action="{!SaveSoftCredits}" status="NextRowStatussoft" reRender="RefreshBlocksoft_1,RefreshBlocksoft_2" onclick="if(!relationshipcontroller()) return false;" oncomplete="processcomplete();"/>
+        <!--  <apex:commandLink value="Back" action="/{!oppid}" styleClass="btn" style="text-decoration: none;"/>-->
+           <apex:actionstatus id="NextRowStatussoft" startText="Please wait  ....">      
+            <apex:facet name="stop">   
+             <apex:outputPanel rendered="{!softstatus = true}">
+                  <apex:outputPanel ><p>Soft Credits added/updated Successfully.</p></apex:outputPanel>
+             </apex:outputPanel>   
+            </apex:facet>
+          </apex:actionstatus>
+     </apex:outputPanel>
+   </apex:outputPanel>
+   <apex:outputPanel rendered="{!status}">
+   You cannot create soft credits here.. Go to opportunity--> Soft credit(related list) and create soft credits for the opportunity..
+   </apex:outputPanel>
+   
+  </apex:pageblocksection>
+ </apeX:pageblock>
+ </apex:form>
+</apex:page>

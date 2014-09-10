@@ -1,0 +1,71 @@
+<apex:page controller="CnP_PaaS.connectreport_controller" contentType="application/x-excel#PatronContributionStatistics.xls" standardStylesheets="false"  language="english" readOnly="true">
+  <h1>{!reportname}</h1>
+Download Time:{!Dvalue}
+<apex:pageBlock >
+  <apex:pageBlockTable value="{!rec_trans}" rows="4000" var="rect" id="testresult" styleClass="displaylevel" rendered="{!IF(filterresult==true,true,false)}" >
+    
+        
+         
+         
+           <apex:column value="{!rect.CnP_PaaS__Contact__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Contact__r.firstname}"/> 
+         <apex:column value="{!rect.CnP_PaaS__Contact__r.lastname}"/>
+         <apex:column value="{!rect.CnP_PaaS__Contact__r.Email}"/>
+         
+         <apex:column headerValue="Personal Contributions Amount">
+    <apex:outputText value="{0, number,$###,###,##0.00}">
+    <apex:param value="{!rect.CnP_PaaS__Personal_Donations_Amount__c}" id="yy" />
+   </apex:outputText></apex:column>
+         
+         
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Amount_Rank__c}"/>
+         
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Count__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Count_Rank__c}"/>
+         
+           
+           
+           <apex:column headerValue="Raised Contributions Amount">
+    <apex:outputText value="{0, number,$###,###,##0.00}">
+    <apex:param value="{!rect.CnP_PaaS__Raised_Donations_Amount__c}" id="fyy" />
+   </apex:outputText></apex:column>
+           
+         <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Amount_Rank__c}"/>
+          <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Count__c}"/> 
+          <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Count_Rank__c}"/>
+          
+           <apex:column headerValue="Donors Personal Contributions Amount">
+    <apex:outputText value="{0, number,$###,###,##0.00}">
+    <apex:param value="{!rect.CnP_PaaS__Personal_Donations_Amount_Donors__c}" id="TotalAmount" />
+   </apex:outputText></apex:column>
+           
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Amount_Rank_Donors__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Count_Donors__c}"/>
+        <apex:column value="{!rect.CnP_PaaS__Personal_Donations_Count_Rank_Donors__c}"/>
+        
+        <apex:column headerValue="Donors Raised Contributions Amount">
+    <apex:outputText value="{0, number,$###,###,##0.00}">
+    <apex:param value="{!rect.CnP_PaaS__Raised_Donations_Amount_Donors__c}" id="yt" />
+   </apex:outputText></apex:column>
+        
+         <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Amount_Rank_Donors__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Count_Donors__c}"/>
+         <apex:column value="{!rect.CnP_PaaS__Raised_Donations_Count_Rank_Donors__c}"/>
+         
+           <apex:column headerValue="Total Personal Value">
+    <apex:outputText value="{0, number,$###,###,##0.00}">
+    <apex:param value="{!rect.CnP_PaaS__Total_Intrinsic_Value__c}" id="personalvalue" />
+   </apex:outputText></apex:column>
+   
+           <apex:column headerValue="Total Network value">
+    <apex:outputText value="{0, number,$###,###,##0.00}">
+    <apex:param value="{!rect.CnP_PaaS__Total_extrinsic_value__c}" id="networkvalue" />
+   </apex:outputText></apex:column>
+        
+         <apex:column value="{!rect.CnP_PaaS__Global_Rank__c}"/>
+   
+  </apex:pageBlockTable> 
+  
+  
+  </apex:pageBlock>  
+</apex:page>

@@ -1,0 +1,25 @@
+<apex:page controller="searchAll">
+    <apex:form >
+        Enter the name<apex:inputText value="{!ipname}"/>
+        <apex:commandButton value="Submit" action="{!NameMethod}"/>
+        <apex:pageBlock >
+            <apex:pageBlockTable value="{!accrec}" var="Account">
+                <apex:column value="{!Account.id}"/>
+                <apex:column value="{!Account.name}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+         <apex:pageBlock >
+            <apex:pageBlockTable value="{!conrec}" var="Contact">
+                <apex:column value="{!Contact.id}"/>
+                <apex:column value="{!Contact.name}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+         <apex:pageBlock >
+            <apex:pageBlockTable value="{!emprec}" var="empl">
+                <apex:column value="{!empl.id}"/>
+                <apex:column value="{!empl.name}"/>
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+        
+    </apex:form>
+</apex:page>

@@ -1,0 +1,64 @@
+<apex:page controller="CnP_PaaS.SettingsController" action="{!loadhelpContent}">
+<script language="JavaScript">
+   function savemethodprocess(){
+         processstart();
+         savemethod();
+   }
+</script>
+<apex:form >
+           
+               <div class="padding_5" style="float:right;">
+                <apex:outputLink styleClass="helpLink align_right" rendered="{!subTab['Settings']['Swiper'].display=='true'}"    >
+                  <Apex:outputLabel value="C&P Help for this Page" style="font-size:100%;display:inline;margin-right:5Px;" onmouseover="jQuery('[id$=Foo4]').css('display','block');" />
+                  <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="$('[id$=Foo4]').css('display','block');"  style="display:inline;"/>
+                </apex:outputLink>
+                <apex:outputPanel id="Foo4" styleClass="video"  >
+                  <ul style="padding-left:5px;" >
+                    {!subTab['Settings']['Swiper'].description}
+                    <br/>
+                    <apex:outputpanel rendered="{!subTab['Settings']['Swiper'].ActiveLink=='true'}" >
+                      <li> <a href="{!subTab['Settings']['Swiper'].link}" target="_blank" >{!subTab['Settings']['Swiper'].strlink}</a> <br/>
+                      </li>
+                    </apex:outputpanel>
+                    <apex:outputpanel rendered="{!subTab['Settings']['Swiper'].ActiveVideo=='true'}" >
+                      <li> <a href="{!subTab['Settings']['Swiper'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Settings']['Swiper'].strvideo}</a> </li>
+                    </apex:outputpanel>
+                  </ul>
+                </apex:outputPanel>
+                </div>                      
+                       
+                <apex:actionFunction action="{!save}" name="savemethod" id="savemethod" rerender="swiper1block" oncomplete="processcomplete();"/>
+                
+<div id="content-header">
+    <h1><img alt="Swiper1" title="Swiper1" src="https://s3.amazonaws.com/clickandpledge/Salesforce/Bootstrap/img/swiper_icon.png" style="display:inline;vertical-align:top;" width="25" /> Swiper1</h1>                                    
+</div>
+<div class="container-fluid">                
+                
+               <apex:pageBlock id="swiper1block" mode="maindetail">
+               
+               <apex:pagemessages />
+               
+               <div class="btn-block pagination-centered">
+                  <a class="btn btn-primary" href="javascript:void(0)" onclick="savemethodprocess();" ><i class="icon-edit icon-white"></i> Update Settings</a>                                                        
+               </div>
+               
+                  <div class="widget-box">
+                      <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                        <h5>Swiper1</h5>
+                      </div>
+                      <div class="widget-content">                
+                           <apex:outputPanel id="swiperpanel">
+                                 <apex:pageBlockSection collapsible="false">
+                                       <apex:pageBlockSectionItem >
+                                              <apex:outputLabel value="Activate Swiper1"></apex:outputLabel>
+                                              <apex:inputCheckbox value="{!swiper1}"/>
+                                       </apex:pageBlockSectionItem>
+                                 </apex:pageBlockSection>
+                            </apex:outputPanel>
+                </div><!-- widget-content -->
+                </div><!-- widget-box --> 
+                                            
+               </apex:pageBlock>
+</div>
+</apex:form>             
+</apex:page>

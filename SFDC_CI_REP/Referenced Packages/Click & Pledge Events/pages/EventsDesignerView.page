@@ -1,0 +1,260 @@
+<apex:page standardController="CnP_PaaS__CnP_Designer__c" extensions="CnP_PaaS_EVT.EventsDesigner" showHeader="false" sidebar="false" standardStylesheets="false">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<apex:includeScript value="{!URlFOR($Resource.CnP_PaaS__jquery)}"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+
+<!--<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/bootstrap-responsive.min.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/main.css"/>
+<apex:stylesheet value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/css/grey.css"/>
+<apex:includeScript value="http://click-pledge.v-empower.com/web/SALESFORCE/Events2.0/Evt_Live/admin/js/main.js"/>-->
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/> 
+<apex:includeScript value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/js/main.js')}"/> 
+  
+ 
+  <style>
+
+      .helpLink {
+       position:relative;       
+    }
+
+    .video{
+      display:none;
+      width:12%;
+      font-size: 90%;
+      height:auto;
+      background:#EEE;
+      border:1px solid #CCC;
+      position:absolute;     
+      z-index:10;
+      margin-left:950Px;
+    }  
+    
+   
+ .customquestionapplycss input {
+     float:left;
+ }
+ .customquestionapplycss label {
+     padding-left: 18px;
+ }
+ .customquestionapplycss .overview, .customquestionapplycss table{
+     width:100%;
+ }
+ .customquestionapplycss td {
+     padding: 0px 10px;
+     line-height: normal;
+ }   
+
+</style> 
+<script type="text/javascript">
+   
+    
+    $(function(){
+          $(".video").mouseout(function(){
+             
+              $(this).fadeOut(8000);
+             
+          })
+          })  
+    
+    function confirmdelete()
+    {
+         if(confirm("Are you sure you want to permanently delete this record?"))
+         {
+             return true;
+         }else{
+             return false;
+         }
+    }
+</script>
+
+
+ <div id="content-header">
+    <h1><i class="icon icon-tasks"></i>Template View</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"> <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a> </div>
+  </div>
+  <div id="breadcrumb"> <a href="#" class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a href="#" class="current">Template View</a></div>
+
+<div id="frame-content" class="container-fluid">
+
+
+
+
+   <apex:form >
+     <!--<apex:sectionHeader title="" subtitle="C&P Design View"/> 
+     <apex:repeat value="{!subTab['Designer']}" var="sub">
+         
+    
+      <apex:outputPanel rendered="{!IF(sub=='designerView',true,false)}">
+                     <apex:outputLink styleClass="helpLink" rendered="{!subTab['Designer']['designerView'].display=='true'}">  
+                              <Apex:outputLabel value="C&P Help for this Page" style="font-size:90%;margin-left:950Px;margin-right:5Px;" onmouseover="jQuery('[id$=Foo]').css('display','block');"/>  
+                               <apex:image value="/s.gif" styleClass="helpIcon" onmouseover="jQuery('[id$=Foo]').css('display','block');"/>                        
+                         </apex:outputLink>
+                          <apex:outputPanel id="Foo" styleClass="video"  >   
+                           <ul style="padding-left:4px;" >                       
+                              {!subTab['Designer']['designerView'].description} <br/> <br/>
+                              <apex:outputpanel rendered="{!subTab['Designer']['designerView'].activeLink=='true'}">
+                             <li><a href="{!subTab['Designer']['designerView'].link}" target="_blank" >{!subTab['Designer']['designerView'].strlink}</a> <br/></li> </apex:outputpanel>
+                             <apex:outputpanel rendered="{!subTab['Designer']['designerView'].activeVideo=='true'}">
+                             <li> <a href="{!subTab['Designer']['designerView'].video}" onclick="window.open(this.href,'Video','height=300,width=400');return false;"  >{!subTab['Designer']['designerView'].strVideo}</a></li></apex:outputpanel>
+                           </ul>
+                          </apex:outputPanel>
+                       
+                          </apex:outputPanel>
+                  </apex:repeat>-->
+                          
+     <apex:pageMessages ></apex:pageMessages>         
+      <apex:pageBlock >      
+
+          <div class="pagination-centered">
+                 <!-- <apex:commandButton value="Edit Design" action="{!edit}"/> -->
+                 <!--<a href="/apex/EventsDesigner?design=true&id={!f.id}&ObjType={!TempObjectType}&EventId={!TempEventId}" target="EventIframe">Edit Template</a>-->                  
+                  <apex:commandButton value="Edit Template" action="{!Editdesign}" styleClass="btn btn-primary" />&nbsp;
+                  <apex:commandButton value="Delete" action="{!deletetemplatedata}" onclick="return confirmdelete();" styleClass="btn btn-primary" />
+                  <!--<apex:commandButton value="Test Mail" action="{!testmail}"/>-->
+                  <!--<apex:commandLink value="Preview" action="{!preview}" target="EmailDesinger" styleClass="btn1" />-->
+                  <apex:commandLink value="Clone" action="{!clonedesign}" target="_self" styleClass="btn btn-primary" />&nbsp;
+                  <apex:commandButton value="Cancel" action="{!cancel}" styleClass="btn btn-primary" />
+           </div>
+           
+      <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Template Information</h5>
+            
+          </div>
+          <div class="widget-content">
+           
+           
+         <apex:pageBlockSection columns="1"  >
+     
+             <apex:outputField value="{!emailpro.CnP_PaaS__Library__c}"/>            
+             <apex:outputField value="{!emailpro.Name}"/>
+             <!--<apex:outputField value="{!emailpro.CnP_PaaS__Tags__c}"/>-->
+             <apex:outputField value="{!emailpro.CnP_PaaS__Select_Template_Cat__c}"/>
+             <apex:outputField value="{!emailpro.CnP_PaaS__Select_Layout__c}" rendered="{!if(emailpro.CnP_PaaS__Library__c=='Click & Pledge',true,false)}"/>
+             <apex:outputField value="{!emailpro.CnP_PaaS__Template_Layout_Name__c}" rendered="{!if(emailpro.CnP_PaaS__Library__c=='Click & Pledge',true,false)}"/>
+             
+             <apex:outputField value="{!emailpro.CnP_PaaS__Design_Selection__c}" rendered="{!if(emailpro.CnP_PaaS__Library__c=='Click & Pledge',true,false)}"/>
+             <apex:pageBlockSectionItem rendered="{!IF(Eventlistingid!=null,true,false)}">
+             <apex:outputlabel value="iFrame Code" style="font-weight:bold"></apex:outputlabel>
+             <apex:outputtext value="{!Iframecode}" rendered="{!if(emailpro.CnP_PaaS__Library__c=='Click & Pledge',true,false)}"/>
+             </apex:pageBlockSectionItem>
+             <!-- <apex:outputField value="{!emailpro.SalesForce_Public_Site_URL__c}"/> -->
+            <!-- <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="PDF Attachment"></apex:outputLabel>
+                   <apex:outputPanel id="RefreshBlock_1">
+                   <a href="/servlet/servlet.FileDownload?file={!PdfId}" target="_blank">{!Pdfname}</a>       
+                       <apex:commandButton value="Delete" action="{!delCont}" styleClass="Delete" onclick="if(!confirmdelete()) return false" rendered="{!if(PdfId!=null,true,false)}" reRender="RefreshBlock_1" status="statusIdForDelete" style="margin-left:25px;"> 
+                       <apex:param name="contIdParam" value="{!PdfId}" assignTo="{!DeleteId}"/>
+                       </apex:commandButton>
+                   </apex:outputPanel>
+             </apex:pageBlockSectionItem>-->
+            <!-- <apex:pageBlockSectionItem >
+                     <apex:outputLabel value="Send attached PDF with email"/>
+                     <apex:outputField value="{!emailpro.Pdf_include__c}"/>
+             </apex:pageBlockSectionItem> -->
+            
+             <apex:pageBlockSectionItem >
+                   <apex:outputLabel value="Template Body" style="font-weight:bold"></apex:outputLabel>
+                  
+                   <apex:outputPanel >
+                   <script>
+                   
+                    $(document).ready(function(){
+                     var c=$(".emailcontent").text();
+                       $(".emailcontentbody").html(c);
+            });
+                   </script>                
+                   <apex:outputText value="{!Emailcontentstring}" style="display:none;" styleclass="emailcontent"></apex:outputText>
+                   <div class="emailcontentbody"></div>  
+                   </apex:outputPanel>
+             </apex:pageBlockSectionItem>
+          </apex:pageBlockSection>
+          
+      </div>
+      </div>
+      </div>
+      </div>
+      </apex:pageBlock>
+      <apex:pageBlock rendered="{!if(emailpro.CnP_PaaS__Select_Template_Cat__c=='EventListings',true,false)}">
+       
+                                           
+             
+    
+       <div class="row-fluid">
+      <div class="span12">
+        
+        <div class="widget-box">
+          <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+            <h5>Event Listings</h5>
+            
+          </div>
+          <div class="widget-content">
+          <apex:pageblockSection columns="1">
+          <apex:pageblockSectionItem >
+          <apex:outputLabel value="Select the events to be included in the listing"/>
+          <apex:outputpanel styleClass="customquestionapplycss">
+           
+          <apex:inputCheckbox value="{!Selectallcheckbox}" styleClass="checkallclass" label="Select All" onclick="checkAll(this)" />
+          <apex:outputLabel >Select All</apex:outputLabel>                            
+          <apex:selectCheckboxes value="{!Eventselectedlist}" id="checkedone" layout="pageDirection"  styleClass="Eventselect" >
+                                             <apex:selectOptions value="{!Eventdetailslist}"/>                                      
+                                          </apex:selectCheckboxes>
+                                          
+           </apex:outputPanel>
+            </apex:pageblockSectionItem>
+           </apex:pageblockSection>
+            </div>
+      </div>
+      </div>
+      </div>
+      <div class="btn-block pagination-centered">                                          
+                                           
+                                           <apex:commandButton value="Save" styleClass="btn btn-small btn-primary" onclick="return validate();" action="{!EventlistingJunction}" id="EventlistSave"  >
+                                          
+                                           </apex:commandButton> 
+                                           </div>
+      </apex:pageBlock>
+       <script>
+
+    function checkAll(cb)
+    {
+        var inputElem = document.getElementsByTagName("input");
+       
+        for(var i=0; i<inputElem.length; i++)
+        {
+            if(inputElem[i].id.indexOf("checkedone")!=-1)
+            inputElem[i].checked = cb.checked;
+
+        }
+
+    }
+    function validate(){
+                   
+                
+                if($(".Eventselect").length>0){
+                   if($('.Eventselect input[type=checkbox]:checked').length == 0) {
+                     alert("Please select at least one check box.");
+                     if($(".checkallclass").is(':checked')){ 
+                         $('.checkallclass').attr('checked', false); 
+                       }
+                     $(".Eventselect").focus();
+                            return false;
+                    }
+                 }
+                 if($(".checkallclass").is(':checked')){ 
+                 $('.checkallclass').attr('checked', false); 
+               }
+    }   
+
+</script>
+</apex:form>
+</div>
+</apex:page>

@@ -1,0 +1,26 @@
+<apex:page controller="wrapper_checkbox_mvgapplet">
+    
+    <apex:form >
+        <apex:pageBlock >
+            <apex:pageBlockSection columns="4">
+                <apex:pageBlockTable value="{!wrapperlist}" var="wraplist">
+                    <apex:column >
+                        <apex:inputCheckbox value="{!wraplist.checkboxvar}"/>
+                    </apex:column>
+                    <apex:column headervalue="Name" value="{!wraplist.empdata.Name}"/> 
+                                 
+                    </apex:pageBlockTable>            
+                <apex:pageBlockSection columns="2">
+                    <apex:commandButton value=">>" action="{!deleterows}"/>  
+                    <apex:commandButton value="<<" action="{!moveleft}"/>  
+                </apex:pageBlockSection>
+                <apex:pageBlockTable value="{!selected}" var="wraplistt">
+                    <apex:column >
+                        <apex:inputCheckbox value="{!wraplistt.checkboxvar}"/>
+                    </apex:column>
+                    <apex:column headervalue="Name" value="{!wraplistt.empdata.Name}"/>
+                </apex:pageBlockTable> 
+            </apex:pageBlockSection>   
+         </apex:pageBlock>
+    </apex:form>
+</apex:page>

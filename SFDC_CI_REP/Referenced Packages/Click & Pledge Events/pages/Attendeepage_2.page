@@ -1,0 +1,126 @@
+<apex:page standardController="CnP_PaaS_EVT__Event_attendee_session__c" extensions="CnP_PaaS_EVT.Attendee_class_2" sidebar="false" showHeader="false" standardStylesheets="false">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/bootstrap-responsive.min.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/main.css')}"/>
+<apex:stylesheet value="{!URLFOR($Resource.CnP_PaaS_EVT__bootstrap,'admin/css/grey.css')}"/>
+
+<apex:form >
+<apex:pageBlock >
+
+ <div id="content-header">
+    <h1><i class="icon icon-home"></i> Registered Attendee</h1>
+    <div class="btn-mini" style="width: auto; float:right; padding-top:25px;"> <a class="btn btn-small tip-left" data-original-title="Help for this Page"><i class="icon-question-sign"></i></a> </div>
+  </div>
+  <div id="breadcrumb"> <a href="#" class="tip-bottom" data-original-title="Go to Home"><i class="icon-home"></i> Home</a> <a href="#" class="current"> Registered Attendee</a> </div>
+
+<div class="container-fluid">
+
+    <div class="btn-block pagination-centered">
+    <apex:commandButton value="Save" action="{!save}" styleClass="btn btn-primary"/>
+    &nbsp;
+    <apex:outputLink value="/apex/registrantsandattendeepage?id={!attendee.CnP_PaaS_EVT__EventId__c}" target="_self"  styleClass="btn btn-primary">Cancel</apex:outputLink>
+    </div>
+
+    <div class="row-fluid">            
+      <div class="widget-box">
+              <div class="widget-title"><span class="icon"><i class="icon-th icon-white"></i></span>
+                <h5> Registered Attendee</h5>
+              </div>
+              <div class="widget-content">              
+              
+                <apex:pageBlockSection columns="1">                
+                <apex:inputField value="{!attendee.Name}"/>
+                
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Contact"> </apex:outputLabel>
+                <apex:outputLabel value="{!attendee.ContactId__r.Name}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Event"> </apex:outputLabel>
+                <apex:outputLabel value="{!attendee.EventId__r.Name}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Registration Level"> </apex:outputLabel>
+                <apex:outputLabel value="{!attendee.Registration_level__r.Name}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                 <apex:inputField value="{!attendee.CnP_PaaS_EVT__Status__c}"/>
+                 
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Registrant Name"> </apex:outputLabel>
+                <apex:outputLabel value="{!attendee.Registrant_session_Id__r.Name}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Gross Amount"> </apex:outputLabel>
+                <apex:outputLabel value="${!attendee.CnP_PaaS_EVT__Total_Amount__c}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Total Tax"> </apex:outputLabel>
+                <apex:outputLabel value="${!attendee.CnP_PaaS_EVT__Total_Tax__c}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Total Discount"> </apex:outputLabel>
+                <apex:outputLabel value="${!attendee.CnP_PaaS_EVT__Total_Discount__c}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="C&P Discount Plan"> </apex:outputLabel>
+                <apex:outputLabel value="{!attendee.C_P_Discount_Plan__r.Name}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                <!--<apex:pageBlockSectionItem >
+                <apex:outputLabel value="Contact Data"> </apex:outputLabel>
+                <apex:outputLabel value="{!attendee.Contact_Data__c}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>-->
+                
+                <apex:pageBlockSectionItem >
+                <apex:outputLabel value="Ticket Number"> </apex:outputLabel>
+                <apex:outputLabel value="{!attendee.CnP_PaaS_EVT__Ticket_Number__c}"></apex:outputLabel>
+                </apex:pageBlockSectionItem>
+                
+                 <!--<apex:pageBlockSectionItem >
+                <apex:outputLabel value="Ticket GUID"> </apex:outputLabel>
+                <apex:outputLabel value="{!attendee.Ticket_guid__c}"> </apex:outputLabel>
+                
+                </apex:pageBlockSectionItem>-->
+                
+              <!--  <apex:inputField value="{!attendee.ContactId__c}"/>
+                <apex:inputField value="{!attendee.EventId__c}"/>
+                <apex:inputField value="{!attendee.Registration_level__c}"/>
+               
+                <apex:inputField value="{!attendee.Registrant_session_Id__c}"/>
+                <apex:inputField value="{!attendee.Total_Amount__c}"/>
+                <apex:inputField value="{!attendee.Total_Discount__c}"/>
+                <apex:inputField value="{!attendee.Total_Tax__c}"/>
+                <apex:inputField value="{!attendee.C_P_Discount_Plan__c}"/>
+                <apex:inputField value="{!attendee.Contact_Data__c}" style="width:90%;height:150px"/>
+                <apex:inputField value="{!attendee.First_name__c}"/>
+                <apex:inputField value="{!attendee.Last_name__c}"/>                
+                <apex:inputField value="{!attendee.C_P_Event_LevelGroup__c}"/>
+                <apex:inputField value="{!attendee.CnP_PaaS_EVT__Ticket_Number__c}"/>-->
+               
+                </apex:pageBlockSection>
+                
+
+        </div><!-- widget-content -->
+        </div><!-- widget-box --> 
+
+                <div class="btn-block pagination-centered">
+                <apex:commandButton value="Save" action="{!save}" styleClass="btn btn-primary"/>
+                &nbsp;
+                <apex:outputLink value="/apex/registrantsandattendeepage?id={!attendee.CnP_PaaS_EVT__EventId__c}" target="_self"  styleClass="btn btn-primary">Cancel</apex:outputLink>
+                </div>
+                
+    </div><!-- row-fluid --> 
+</div> <!-- container-fluid -->
+
+</apex:pageBlock>
+</apex:form>
+</apex:page>
