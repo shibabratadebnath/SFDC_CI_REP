@@ -22,5 +22,4 @@ trigger CreateAccount on Employee_s__c(after insert)
     }
     Database.update(acclist);
 }
-/*hello hello*/
-//hello
+/*fetch is working*/
